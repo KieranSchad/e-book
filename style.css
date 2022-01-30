@@ -17,7 +17,7 @@ body {
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    font-family: monospace;
+    font-family: 'Roboto', sans-serif;
     color:#444;
     background: linear-gradient(180deg, rgba(255,230,203,1) 0%, rgba(255,248,240,1) 50%, rgba(255,230,203,1) 100%);
 }
@@ -25,6 +25,7 @@ body {
 
 h1 {
     font-size: 1.4rem;
+    font-family: 'Libre Baskerville', serif;
 }
 
 h2 {
@@ -33,10 +34,12 @@ h2 {
 
 h3 {
     font-size: 1rem;
+    font-family: 'Libre Baskerville', serif;
 }
 
 a {
     font-size: 1rem;
+    font-family: monospace;
 }
 
 .nav-bar,
@@ -61,34 +64,23 @@ a {
     align-items: center;
 }
 
-.page {
+.active.nav-button {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.panel {
+    display: none;
     width: 100%;
     height: calc(100vh - 12rem);
-    display: flex;
     padding: 0 0.25rem;
     flex-direction: column;
     align-items: center;
     overflow-y: scroll;
+    
 }
 
-.options {
-    display: none;
-}
-
-.chapters {
-    display: none;
-}
-
-.library {
-    display: none;
-}
-
-/* .browser {
-    display: none;
-} */
-
-.book {
-    display: none;
+.active.panel {
+    display: flex;
 }
 
 .search {
@@ -111,7 +103,7 @@ a {
     align-items: center;
 }
 
-.card {
+#card {
     width: 100%;
     min-height: 8rem;
     border-radius: var(--element-border-radius);
@@ -120,6 +112,9 @@ a {
     margin: 0.25rem 0;
 }
 
-.hide {
-    display: none;
+.page {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 1rem;
 }
