@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>e reader</title>
     <link rel="stylesheet" href="style.css">
-    <script async src="main.js"></script>
+    <script async type="module" src="main.js"></script>
 </head>
 <body>
     <div class="nav-bar">
-        <div class="nav-button" id="options"><a>Options</a></div>
-        <div class="nav-button" id="chapters"><a>Chapters</a></div>
-        <div class="nav-button" id="library"><a>Library</a></div>
         <div class="nav-button" id="browse"><a>Browse</a></div>
+        <div class="nav-button" id="library"><a>Library</a></div>
+        <div class="nav-button" id="chapters"><a>Chapters</a></div>
+        <div class="nav-button" id="options"><a>Options</a></div>
     </div>
     <div class="page options">
 
@@ -26,14 +26,14 @@
     </div>
     <div class="page browser">
         <div class="search">
-            <input type="search" id="search" placeholder="Search">
+            <input type="search" id="search-bar" data-search placeholder="Search">
         </div>
-        <div class="book-cards">
+        <div id="book-cards" book-cards>
             <template card-template>
                 <div class="card">
-                    <h1 class="title">A Brief History of the Internet</h1>
-                    <h2 class="subTitle">The Bright Side: The Dark Side</h2>
-                    <h3 class="author">Fuller, Maxwell; Hart, Michael, 1947-2011</h3>
+                    <h1 class="title" title>A Brief History of the Internet</h1>
+                    <h2 class="subTitle" subTitle>The Bright Side: The Dark Side</h2>
+                    <h3 class="author" author>Fuller, Maxwell; Hart, Michael, 1947-2011</h3>
                 </div>
             </template>
         </div>
@@ -42,10 +42,10 @@
     
     </div>
     <div class="control-bar">
-        <div class="control-button" id="previous"><a>Previous</a></div>
+        <div class="control-button" id="previous"><a>Previous Page</a></div>
         <div class="control-button" id="full-screen"><a>Full Screen</a></div>
-        <div class="control-button" id="theme"><a>Theme</a></div>
-        <div class="control-button" id="next"><a>Next</a></div>
+        <div class="control-button" id="theme"><a>Change Theme</a></div>
+        <div class="control-button" id="next"><a>Next Page</a></div>
     </div>
 </body>
 </html>
