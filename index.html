@@ -5,34 +5,47 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>e reader</title>
+    <link rel="stylesheet" href="style.css">
+    <script async src="main.js"></script>
 </head>
 <body>
     <div class="nav-bar">
-        <div class="nav-button" id="options"></div>
-        <div class="nav-button" id="chapters"></div>
-        <div class="nav-button" id="library"></div>
-        <div class="nav-button" id="browse"></div>
+        <div class="nav-button" id="options"><a>Options</a></div>
+        <div class="nav-button" id="chapters"><a>Chapters</a></div>
+        <div class="nav-button" id="library"><a>Library</a></div>
+        <div class="nav-button" id="browse"><a>Browse</a></div>
     </div>
-    <div class="options">
+    <div class="page options">
 
     </div>
-    <div class="chapters">
+    <div class="page chapters">
 
     </div>
-    <div class="library">
+    <div class="page library">
 
     </div>
-    <div class="browser">
-
+    <div class="page browser">
+        <div class="search">
+            <input type="search" id="search" placeholder="Search">
+        </div>
+        <div class="book-cards">
+            <template card-template>
+                <div class="card">
+                    <h1 class="title">A Brief History of the Internet</h1>
+                    <h2 class="subTitle">The Bright Side: The Dark Side</h2>
+                    <h3 class="author">Fuller, Maxwell; Hart, Michael, 1947-2011</h3>
+                </div>
+            </template>
+        </div>
     </div>
-    <div class="book">
-        
+    <div class="page book">
+    
     </div>
     <div class="control-bar">
-        <div class="control-button" id="previous"></div>
-        <div class="control-button" id="full-screen"></div>
-        <div class="control-button" id="theme"></div>
-        <div class="control-button" id="next"></div>
+        <div class="control-button" id="previous"><a>Previous</a></div>
+        <div class="control-button" id="full-screen"><a>Full Screen</a></div>
+        <div class="control-button" id="theme"><a>Theme</a></div>
+        <div class="control-button" id="next"><a>Next</a></div>
     </div>
 </body>
 </html>
