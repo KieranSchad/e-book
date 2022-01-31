@@ -110,7 +110,6 @@ a {
     color: #555;
 }
 
-#search-bar:hover,
 #search-bar:focus {
     background: rgba(255, 255, 255, 0.6);
     outline: none;
@@ -126,9 +125,7 @@ a {
     flex-direction: column;
     align-items: center;
 }
-.control-button:hover,
-.nav-button:hover,
-.card:hover,
+
 .card:focus {
     background: rgba(255, 255, 255, 0.6);
     cursor: pointer;
