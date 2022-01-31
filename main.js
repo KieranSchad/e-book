@@ -1,16 +1,17 @@
 import database from "./pg_caralog_2022_01_28.json" assert { type: "json" };
 
-const browseButton = document.getElementById("browse-button")
-const libraryButton = document.getElementById("library-button")
-const chaptersButton = document.getElementById("chapters-button")
-const optionsButton = document.getElementById("options-button")
-const bookPanel = document.getElementById('book-panel')
-const browserPanel = document.getElementById('browser-panel')
-const libraryPanel = document.getElementById('library-panel')
-const chaptersPanel = document.getElementById('chapters-panel')
-const optionsPanel = document.getElementById('options-panel')
-const iframe = document.getElementById('iframe')
-
+const browseButton = document.getElementById("browse-button");
+const libraryButton = document.getElementById("library-button");
+const chaptersButton = document.getElementById("chapters-button");
+const optionsButton = document.getElementById("options-button");
+const bookPanel = document.getElementById('book-panel');
+const browserPanel = document.getElementById('browser-panel');
+const libraryPanel = document.getElementById('library-panel');
+const chaptersPanel = document.getElementById('chapters-panel');
+const optionsPanel = document.getElementById('options-panel');
+const iframe = document.getElementById('iframe');
+const fullScreenButton = document.getElementById('full-screen-button');
+const html = document.getElementById('html');
 const searchInput = document.getElementById("search-bar");
 const bookCards = document.getElementById("book-cards");
 
@@ -130,6 +131,30 @@ function toggleOptions() {
     }
 }
 
+let fullScreen = false;
+
+function toggleFullScreen() {
+    if (fullScreen == true) {
+        fullScreen = false;
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) { /* Safari */
+            document.webkitExitFullscreen();
+          } else if (document.msExitFullscreen) { /* IE11 */
+            document.msExitFullscreen();
+          }
+    } else {
+        fullScreen = true;
+        if (html.requestFullscreen) {
+            html.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) { /* Safari */
+            html.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) { /* IE11 */
+            html.msRequestFullscreen();
+        }
+    }
+}
+
 function onClick(event) {
     const clickParentId = event.target.parentNode.id;
     const clickId = event.target.id;
@@ -151,5 +176,5 @@ libraryButton.addEventListener('click', toggleLibrary);
 chaptersButton.addEventListener('click', toggleChapters);
 optionsButton.addEventListener('click', toggleOptions);
 searchInput.addEventListener('input', searchFunction);
-
+fullScreenButton.addEventListener('click', toggleFullScreen);
 window.addEventListener('click', onClick);
