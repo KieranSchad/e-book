@@ -34,9 +34,21 @@ function searchFunction(e) {
 
 }
 
+function authorsSearch(inputValue) {
+    displayBooks = [];
+    searchBar.value = inputValue;
+    browserPanel.scrollTo(0, 0);
+    for (let j = 0; j < database.length && displayBooks.length < 20; j++) {
+        if (database[j].Authors.toLowerCase().includes(inputValue.toLowerCase())) {
+            displayBooks.push({...database[j]});
+        } 
+    }
+    toHtml();
+}
+
 function tagSearch(inputValue) {
     displayBooks = [];
-    searchBar.value = "";
+    searchBar.value = inputValue;
     browserPanel.scrollTo(0, 0);
     for (let j = 0; j < database.length && displayBooks.length < 20; j++) {
         if (database[j].Subjects.toLowerCase().includes(inputValue.toLowerCase()) || database[j].Bookshelves.toLowerCase().includes(inputValue.toLowerCase())) {
@@ -53,14 +65,14 @@ function toHtml() {
             .split(/;\s*|\s*--\s*|\.\s+|\,\s+/ig))]              //split into array based on regex
             .filter(item => item)                                //filter out empty strings
             .map((tag) => {                                      //asign html to each array item
-                return `<a class="tag">${tag}</a>`;          
+                return `<a class="tag" id="tag${tag}">${tag}</a>`;          
             })
             .join('');                                           //convert array to string
         return `
         <div class="card" id="${Object.values(book)[0]}">
             <h1 class="title">${book.Title}</h1>
             <h3 class="issued">${book.Issued}</h3>
-            <h2 class="author">${book.Authors}</h2>
+            <h2 class="author" id="aut${book.Authors}" >${book.Authors}</h2>
             <div class="subjects">${book.Tags}</div>
         </div>
         `;
@@ -172,16 +184,17 @@ function toggleFullScreen() {
 function onClick(event) {
     const clickParentId = event.target.parentNode.id;
     const clickId = event.target.id;
-    const clickHtml = event.target.innerHTML;
     
-    if (clickParentId > 0) {
+     if (clickId.length > 0) {
+        if (/^tag/.test(clickId)) {
+            tagSearch(clickId.slice(3));
+        } else if (/^aut/.test(clickId)) {
+            authorsSearch(clickId.slice(3));
+        }
+    } else if (clickParentId > 0) {
         iframe.src = `https://www.gutenberg.org/files/${clickParentId}/${clickParentId}-h/${clickParentId}-h.htm`
         toggleBrowse();
-    } else if (clickId.length > 0) {
-    } else if (clickHtml.length > 0) {
-        tagSearch(clickHtml);
     }
-
 }
 
 
