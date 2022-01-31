@@ -6,11 +6,14 @@
 
 :root {
     --element-border-radius: 0.5rem;
-    --element-background: rgba(255, 255, 255, 0.3);
+    --element-background: rgba(255, 255, 255, 0.5);
+    --active-background: rgba(255, 255, 255, 0.8);
+    --color-one: rgba(66,171,201,1);
+    --color-two: rgba(27,122,149,1);
   }
 
   html {
-    background: linear-gradient(180deg, rgba(144,230,255,1) 0%, rgba(37,137,166,1) 100%);
+    background: linear-gradient(180deg, var(--color-one) 0%, var(--color-two) 100%);
   }
 
 body {
@@ -28,7 +31,7 @@ body {
 
 
 h1 {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-family: 'Libre Baskerville', serif;
     padding: 0.25rem;
 }
@@ -72,10 +75,18 @@ a {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-weight: 800;
+    font-size: 0.9rem;
+    font-family: 'Roboto', sans-serif;
+    color: var(--color-two);
+}
+.nav-button {
+    color: var(--color-one);
 }
 
+
 .active.nav-button {
-    background: rgba(255, 255, 255, 0.6);
+    background: var(--active-background);
 }
 
 .panel {
@@ -110,8 +121,12 @@ a {
     color: #555;
 }
 
+#search-bar::placeholder {
+    color: var(--color-one);
+}
+
 #search-bar:focus {
-    background: rgba(255, 255, 255, 0.6);
+    background: var(--active-background);
     outline: none;
 }
 
@@ -123,7 +138,7 @@ a {
 }
 
 .card:focus {
-    background: rgba(255, 255, 255, 0.6);
+    background: var(--active-background);
     cursor: pointer;
 }
 
