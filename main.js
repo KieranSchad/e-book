@@ -17,11 +17,6 @@ const bookCards = document.getElementById("book-cards");
 
 let displayBooks = [];
 
-function tagSearch(e) {
-    console.log(e);
-    console.log("anythinf");
-}
-
 function searchFunction(e) {
     const inputValue = e.target.value
         .toLowerCase().split(" ")

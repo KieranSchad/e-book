@@ -127,6 +127,11 @@ a {
     align-items: center;
 }
 
+#book-cards:hover,
+#book-cards:focus {
+    background: rgba(255, 255, 255, 0.6);
+}
+
 .card {
     width: 100%;
     min-height: 8rem;
