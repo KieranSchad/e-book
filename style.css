@@ -5,8 +5,8 @@
 }
 
 :root {
-    --element-border-radius: 0.25rem;
-    --element-background: rgba(255, 255, 255, 0.5);
+    --element-border-radius: 0.5rem;
+    --element-background: rgba(255, 255, 255, 0.3);
   }
 
 body {
@@ -19,27 +19,33 @@ body {
     align-items: center;
     font-family: 'Roboto', sans-serif;
     color:#444;
-    background: linear-gradient(180deg, rgba(255,230,203,1) 0%, rgba(255,248,240,1) 50%, rgba(255,230,203,1) 100%);
+    background: linear-gradient(180deg, rgba(144,230,255,1) 0%, rgba(37,137,166,1) 100%);
 }
 
 
 h1 {
-    font-size: 1.4rem;
+    font-size: 1.1rem;
     font-family: 'Libre Baskerville', serif;
+    padding: 0.25rem;
 }
 
 h2 {
-    font-size: 0.8rem;
+    font-size: 1rem;
+    font-family: 'Libre Baskerville', serif;
+    padding: 0.25rem;
 }
 
 h3 {
     font-size: 1rem;
+    font-weight: 400;
     font-family: 'Libre Baskerville', serif;
+    padding: 0.25rem;
 }
 
 a {
-    font-size: 1rem;
-    font-family: monospace;
+    font-size: 0.9rem;
+    font-family: 'Roboto', sans-serif;
+    color: #555;
 }
 
 .nav-bar,
@@ -65,7 +71,7 @@ a {
 }
 
 .active.nav-button {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.6);
 }
 
 .panel {
@@ -94,7 +100,21 @@ a {
     border-radius: var(--element-border-radius);
     background: var(--element-background);
     margin: 0.25rem 0;
-    padding: 0.25rem;
+    padding: 1rem;
+    font-size: 0.9rem;
+    font-family: 'Roboto', sans-serif;
+    color: #555;
+}
+
+#search-bar:hover,
+#search-bar:focus {
+    background: rgba(255, 255, 255, 0.6);
+    outline: none;
+}
+
+#search-bar::-webkit-search-cancel-button{
+    font-size: 1rem;
+    filter: saturate(0%);
 }
 
 #book-cards {
@@ -103,7 +123,7 @@ a {
     align-items: center;
 }
 
-#card {
+.card {
     width: 100%;
     min-height: 8rem;
     border-radius: var(--element-border-radius);
@@ -112,9 +132,31 @@ a {
     margin: 0.25rem 0;
 }
 
+.subjects {
+    margin: 0 -0.25rem;
+}
+
+.tag {
+    display: inline-block;
+    border-radius: var(--element-border-radius);
+    background: var(--element-background);
+    margin: 0.1rem 0.25rem;
+    padding: 0.1rem 0.25rem;
+}
+
 .page {
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.5);
+    background: var(--element-background);
+    border-radius: var(--element-border-radius);
     padding: 1rem;
+    overflow-x: hidden;
+}
+
+#iframe {
+    border: none;
+    width: calc(100% + 200px);
+    margin-left: -95px;
+    height: 100%;
+    
 }

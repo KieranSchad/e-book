@@ -1,5 +1,3 @@
-
-
 import database from "./pg_caralog_2022_01_28.json" assert { type: "json" };
 
 const browseButton = document.getElementById("browse-button")
@@ -11,38 +9,52 @@ const browserPanel = document.getElementById('browser-panel')
 const libraryPanel = document.getElementById('library-panel')
 const chaptersPanel = document.getElementById('chapters-panel')
 const optionsPanel = document.getElementById('options-panel')
+const iframe = document.getElementById('iframe')
 
 const searchInput = document.getElementById("search-bar");
 const bookCards = document.getElementById("book-cards");
 
 let displayBooks = [];
 
+function tagSearch(e) {
+    console.log(e);
+    console.log("anythinf");
+}
+
 function searchFunction(e) {
-    console.log("anything");
-    const inputValue = e.target.value.toLowerCase();
+    const inputValue = e.target.value
+        .toLowerCase().split(" ")
+        .filter(item => item) ;
+
     displayBooks = [];
-    for (let i = 0; i < database.length; i++) {
-        if (displayBooks.length < 20) {
-            if ((database[i].Title.length > 0 && database[i].Title.toLowerCase().includes(inputValue))
-            || database[i].Authors.toLowerCase().includes(inputValue)
-            || database[i].Subjects.toLowerCase().includes(inputValue)
-            || database[i].Bookshelves.toLowerCase().includes(inputValue)) {
-                displayBooks.push(database[i]);
-            }
+    for (let i = 0; i < database.length && displayBooks.length < 20; i++) {
+        const bookData = Object.values(database[i]).join(" ").toLocaleLowerCase();
+        if (inputValue.every(el => bookData.includes(el))) {
+            displayBooks.push({...database[i]});
         }
     }
-    console.log(displayBooks)
-    
+
+
     const htmlString = displayBooks.map((book) => {
+        book.Tags = [...new Set(book.Subjects
+            .concat(';', book.Bookshelves)                       //join subjects and bookshelves to one string
+            .split(/;\s*|\s*--\s*|\.\s+|\,\s+/ig))]              //split into array based on regex
+            .filter(item => item)                                //filter out empty strings
+            .map((tag) => {                                      //asign html to each array item
+                return `<a class="tag">${tag}</a>`;          
+            })
+            .join('');                                           //convert array to string
         return `
-        <div id="card">
+        <div class="card" id="${Object.values(book)[0]}">
             <h1 class="title">${book.Title}</h1>
-            <h2 class="subjects">${book.Subjects}</h2>
-            <h3 class="author">${book.Authors}</h3>
+            <h3 class="issued">${book.Issued}</h3>
+            <h2 class="author">${book.Authors}</h2>
+            <div class="subjects">${book.Tags}</div>
         </div>
         `;
     })
     .join('');
+    
     bookCards.innerHTML = htmlString;
 }
 
@@ -118,9 +130,26 @@ function toggleOptions() {
     }
 }
 
+function onClick(event) {
+    const clickParentId = event.target.parentNode.id;
+    const clickId = event.target.id;
+    const clickHtml = event.target.innerHTML;
+    
+    if (clickParentId > 0) {
+        iframe.src = `https://www.gutenberg.org/files/${clickParentId}/${clickParentId}-h/${clickParentId}-h.htm`
+        toggleBrowse();
+    }
+
+
+    // console.log(clickId);
+    // console.log(clickHtml);
+}
+
 
 browseButton.addEventListener('click', toggleBrowse);
 libraryButton.addEventListener('click', toggleLibrary);
 chaptersButton.addEventListener('click', toggleChapters);
 optionsButton.addEventListener('click', toggleOptions);
 searchInput.addEventListener('input', searchFunction);
+
+window.addEventListener('click', onClick);
