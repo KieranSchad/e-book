@@ -12,7 +12,7 @@ const optionsPanel = document.getElementById('options-panel');
 const iframe = document.getElementById('iframe');
 const fullScreenButton = document.getElementById('full-screen-button');
 const html = document.getElementById('html');
-const searchInput = document.getElementById("search-bar");
+const searchBar = document.getElementById("search-bar");
 const bookCards = document.getElementById("book-cards");
 
 let displayBooks = [];
@@ -27,10 +27,26 @@ function searchFunction(e) {
         const bookData = Object.values(database[i]).join(" ").toLocaleLowerCase();
         if (inputValue.every(el => bookData.includes(el))) {
             displayBooks.push({...database[i]});
-        }
+        } 
     }
 
+    toHtml();
 
+}
+
+function tagSearch(inputValue) {
+    displayBooks = [];
+    searchBar.value = "Tag: " + inputValue;
+    browserPanel.scrollTo(0, 0);
+    for (let j = 0; j < database.length && displayBooks.length < 20; j++) {
+        if (database[j].Subjects.toLowerCase().includes(inputValue.toLowerCase()) || database[j].Bookshelves.toLowerCase().includes(inputValue.toLowerCase())) {
+            displayBooks.push({...database[j]});
+        } 
+    }
+    toHtml();
+}
+
+function toHtml() {
     const htmlString = displayBooks.map((book) => {
         book.Tags = [...new Set(book.Subjects
             .concat(';', book.Bookshelves)                       //join subjects and bookshelves to one string
@@ -50,9 +66,12 @@ function searchFunction(e) {
         `;
     })
     .join('');
-    
+
     bookCards.innerHTML = htmlString;
 }
+
+
+
 
 function toggleBrowse() {
     if (browserPanel.classList.contains("active")) {
@@ -158,11 +177,11 @@ function onClick(event) {
     if (clickParentId > 0) {
         iframe.src = `https://www.gutenberg.org/files/${clickParentId}/${clickParentId}-h/${clickParentId}-h.htm`
         toggleBrowse();
+    } else if (clickId.length > 0) {
+    } else if (clickHtml.length > 0) {
+        tagSearch(clickHtml);
     }
 
-
-    // console.log(clickId);
-    // console.log(clickHtml);
 }
 
 
@@ -170,6 +189,6 @@ browseButton.addEventListener('click', toggleBrowse);
 libraryButton.addEventListener('click', toggleLibrary);
 chaptersButton.addEventListener('click', toggleChapters);
 optionsButton.addEventListener('click', toggleOptions);
-searchInput.addEventListener('input', searchFunction);
+searchBar.addEventListener('input', searchFunction);
 fullScreenButton.addEventListener('click', toggleFullScreen);
 window.addEventListener('click', onClick);

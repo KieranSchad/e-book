@@ -126,10 +126,12 @@ a {
     flex-direction: column;
     align-items: center;
 }
-
-#book-cards:hover,
-#book-cards:focus {
+.control-button:hover,
+.nav-button:hover,
+.card:hover,
+.card:focus {
     background: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
 }
 
 .card {
