@@ -79,6 +79,10 @@ a {
     font-size: 0.9rem;
     font-family: 'Roboto', sans-serif;
     color: var(--color-two);
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
 }
 .nav-button {
     color: var(--color-one);
