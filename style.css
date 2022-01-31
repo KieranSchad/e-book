@@ -115,10 +115,6 @@ a {
     outline: none;
 }
 
-#search-bar::-webkit-search-cancel-button{
-    font-size: 1rem;
-    filter: saturate(0%);
-}
 
 #book-cards {
     display: flex;
