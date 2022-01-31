@@ -36,7 +36,7 @@ function searchFunction(e) {
 
 function tagSearch(inputValue) {
     displayBooks = [];
-    searchBar.value = "Tag: " + inputValue;
+    searchBar.value = "";
     browserPanel.scrollTo(0, 0);
     for (let j = 0; j < database.length && displayBooks.length < 20; j++) {
         if (database[j].Subjects.toLowerCase().includes(inputValue.toLowerCase()) || database[j].Bookshelves.toLowerCase().includes(inputValue.toLowerCase())) {
