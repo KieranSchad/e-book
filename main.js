@@ -160,7 +160,7 @@ function tabClick(id) {
     document.getElementById(id.replace("tab", "panel")).classList.add("active");
 }
 
-//Unploader
+//Uploader
 
 function handleFileSelect(event) {
     const reader = new FileReader()
