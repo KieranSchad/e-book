@@ -16,7 +16,7 @@
     background: linear-gradient(180deg, var(--color-one) 0%, var(--color-two) 100%);
   }
 
-body {
+.wrapper {
     width: 100%;
     height: 100vh;
     height: calc(var(--vh, 1vh) * 100);
@@ -58,9 +58,13 @@ h3 {
 }
 
 a {
-    font-size: 0.9rem;
-    font-family: 'Roboto', sans-serif;
-    color: #555;
+    all: unset;
+    display: block;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .nav-bar,
@@ -86,6 +90,7 @@ a {
 }
 .button {
     color: var(--color-two);
+    font-size: 1.25rem;
 }
 
 

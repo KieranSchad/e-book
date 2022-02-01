@@ -17,8 +17,6 @@ function resizeHeight() {
 }
 
 
-
-
 // ---------  Upload  ------------
 
 let library = [];
@@ -33,7 +31,11 @@ function handleFileSelect(event) {
     library.push(event.target.result);
   }
 
+// ---------  Show Book  ------------
 
+function loadBook() {
+    
+}
 
 
 
@@ -198,10 +200,10 @@ function tabClick(id) {
 // ---------  User Inputs  ------------
 
 const eventMap = {
-    tag: { click: tagSearch},
-    author: { click: authorSearch},
-    clear: { click: clearSearch},
-    tab: { click: tabClick }
+    tag: { mousedown: tagSearch},
+    author: { mousedown: authorSearch},
+    clear: { mousedown: clearSearch},
+    tab: { mousedown: tabClick }
 }
 
 function eventHandler(ev) {
@@ -214,8 +216,8 @@ function eventHandler(ev) {
     }
 }
 
-['click', 'keydown', 'keyup'].forEach((eventType) => {
-    window.addEventListener(eventType, eventHandler);
+['mousedown', 'keydown', 'keyup'].forEach((eventType) => {
+    document.body.addEventListener(eventType, eventHandler);
 })
 
 searchBar.addEventListener('input', searchWithDelay);

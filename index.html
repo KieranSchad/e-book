@@ -6,7 +6,7 @@
     <meta http-equiv='cache-control' content='no-cache'> 
     <meta http-equiv='expires' content='0'> 
     <meta http-equiv='pragma' content='no-cache'>
-    
+
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>e reader</title>
@@ -18,52 +18,57 @@
     <script async type="module" src="main.js"></script>
 </head>
 <body>
-    <div class="nav-bar">
-        <button type="button" type="button" class="tab active" id="browse-tab">BROWSE</button>
-        <button type="button" class="tab" id="library-tab">LIBRARY</button>
-        <button type="button" class="tab" id="book-tab">BOOK</button>
-        <button type="button" class="tab" id="options-tab">OPTIONS</button>
-    </div>
-    <div class="panel" id="book-panel">
-        <div class="page">
+    <div class="wrapper" onclick="void(0);">
+        <div class="nav-bar">
+            <button type="button" type="button" class="tab active" id="browse-tab">BROWSE</button>
+            <button type="button" class="tab" id="library-tab">LIBRARY</button>
+            <button type="button" class="tab" id="book-tab">BOOK</button>
+            <button type="button" class="tab" id="options-tab">OPTIONS</button>
         </div>
-        <div class="control-bar">
-            <button type="button" class="button" id="previous-button">PREVIOUS PAGE</button>
-            <button type="button" class="button" id="full-screen-button">FULL SCREEN</button>
-            <button type="button" class="button" id="chapters-button">CHAPTERS</button>
-            <button type="button" class="button" id="next-button">NEXT PAGE</button>
+        <div class="panel" id="book-panel">
+            <div class="page">
+            </div>
+            <div class="control-bar">
+                <button type="button" class="button" id="previous-button">PREVIOUS PAGE</button>
+                <button type="button" class="button" id="full-screen-button">FULL SCREEN</button>
+                <button type="button" class="button" id="chapters-button">CHAPTERS</button>
+                <button type="button" class="button" id="next-button">NEXT PAGE</button>
+            </div>
         </div>
-    </div>
-    <div class="panel active" id="browse-panel">
-        <div class="search">
-            <input type="text" id="search-bar" placeholder="Search">
-            <button type="button" class="fas fa-times" id="clear"></button>
+        <div class="panel active" id="browse-panel">
+            <div class="search">
+                <input type="text" id="search-bar" placeholder="Search">
+                <button type="button" class="fas fa-times" id="clear"></button>
+            </div>
+            <div id="book-list">
+            </div>
+            <div class="control-bar">
+                <button type="button" class="button fas fa-angle-double-left" id="previous-button"></button>
+                <button type="button" class="button fas fa-expand-arrows-alt" id="full-screen-button">
+                <button type="button" class="button" id="download-button" >
+                    <a href="https://www.gutenberg.org/files/64317/64317-h/64317-h.htm">
+                        <i class="fas fa-download"></i>
+                    </a>
+                </button>
+                <button type="button" class="button fas fa-angle-double-right" id="next-button"></button>
+            </div>
         </div>
-        <div id="book-list">
-        </div>
-        <div class="control-bar">
-            <button type="button" class="button" id="previous-button">PREVIOUS PAGE</button>
-            <button type="button" class="button" id="full-screen-button">FULL SCREEN</button>
-            <button type="button" class="button" id="chapters-button">DOWNLOAD</button>
-            <button type="button" class="button" id="next-button">NEXT PAGE</button>
-        </div>
-    </div>
-    <div class="panel" id="library-panel">
+        <div class="panel" id="library-panel">
 
-        <div class="control-bar">
-            <button type="button" class="button" id="previous-button">PREVIOUS PAGE</button>
-            <button type="button" class="button" id="full-screen-button">FULL SCREEN</button>
-            <label class="button" for="fileInput" id="upload-button">
-                <input id="fileInput" type="file" name="file" />
-                UPLOAD
-            </label>
-            <button type="button" class="button" id="next-button">NEXT PAGE</button>
+            <div class="control-bar">
+                <button type="button" class="button" id="previous-button">PREVIOUS PAGE</button>
+                <button type="button" class="button" id="full-screen-button">FULL SCREEN</button>
+                <label class="button" for="fileInput" id="upload-button">
+                    <input id="fileInput" type="file" name="file" />
+                    UPLOAD
+                </label>
+                <button type="button" class="button" id="next-button">NEXT PAGE</button>
+            </div>
+        </div>
+        <div class="panel" id="chapters-panel">
+        </div>
+        <div class="panel" id="options-panel">
         </div>
     </div>
-    <div class="panel" id="chapters-panel">
-    </div>
-    <div class="panel" id="options-panel">
-    </div>
-
 </body>
 </html>
