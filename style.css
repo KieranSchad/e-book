@@ -78,7 +78,7 @@ a {
 .tab,
 .button {
     flex: 0.25;
-    height: 5rem;
+    height: 3rem;
     background: var(--element-background);
     border-radius: var(--element-border-radius);
     margin: 0.25rem;
@@ -101,7 +101,7 @@ a {
 .panel {
     display: none;
     width: 100%;
-    height: calc(calc(var(--vh, 1vh) * 100) - 6rem);
+    height: calc(calc(var(--vh, 1vh) * 100) - 4rem);
     flex-direction: column;
     align-items: center;
     

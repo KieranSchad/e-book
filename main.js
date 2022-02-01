@@ -11,7 +11,6 @@ const searchBar = document.getElementById("search-bar");
 // ---------  Resize Height  ------------
 
 function resizeHeight() {
-    console.log("resize");
     let vh = window.innerHeight * 0.01;
     document.documentElement.style.setProperty('--vh', `${vh}px`);
 }
@@ -22,13 +21,15 @@ function resizeHeight() {
 let library = [];
 
 function handleFileSelect(event) {
+    console.log(event.target.files[0].name);
     const reader = new FileReader()
     reader.onload = handleFileLoad;
     reader.readAsText(event.target.files[0])
   }
   
   function handleFileLoad(event) {
-    library.push(event.target.result);
+    console.log(event.name);
+    console.log(event.target.result);
   }
 
 // ---------  Show Book  ------------
@@ -45,12 +46,10 @@ let displayBooks = [];
 let timeoutId = 0;
 
 function searchWithDelay(e) {
-    console.log(timeoutId)
     if (timeoutId == 0) {
         timeoutId = setTimeout(searchFunction, 20, e);
     } else {
         clearTimeout(timeoutId);
-        console.log(timeoutId)
         timeoutId = 0;
     }
 }
@@ -181,7 +180,6 @@ function toggleFullScreen() {
 // ---------  Clear Search  ------------
 
 function clearSearch() {
-    console.log("clear search");
     searchBar.value = "";
     searchBar.placeholder = "Search";
     displayBooks = [];
@@ -200,10 +198,10 @@ function tabClick(id) {
 // ---------  User Inputs  ------------
 
 const eventMap = {
-    tag: { mousedown: tagSearch},
-    author: { mousedown: authorSearch},
-    clear: { mousedown: clearSearch},
-    tab: { mousedown: tabClick }
+    tag: { touchstart: tagSearch},
+    author: { touchstart: authorSearch},
+    clear: { touchstart: clearSearch},
+    tab: { touchstart: tabClick }
 }
 
 function eventHandler(ev) {
@@ -216,7 +214,7 @@ function eventHandler(ev) {
     }
 }
 
-['mousedown', 'keydown', 'keyup'].forEach((eventType) => {
+['touchstart', 'keydown', 'keyup'].forEach((eventType) => {
     document.body.addEventListener(eventType, eventHandler);
 })
 
