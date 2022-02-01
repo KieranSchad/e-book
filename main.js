@@ -8,16 +8,20 @@ const bookList = document.getElementById("book-list");
 const html = document.getElementById('html');
 const searchBar = document.getElementById("search-bar");
 
+// ---------  Resize Height  ------------
 
 function resizeHeight() {
+    console.log("resize");
     let vh = window.innerHeight * 0.01;
     document.documentElement.style.setProperty('--vh', `${vh}px`);
 }
 
 
-let library = [];
+
 
 // ---------  Upload  ------------
+
+let library = [];
 
 function handleFileSelect(event) {
     const reader = new FileReader()
@@ -26,16 +30,16 @@ function handleFileSelect(event) {
   }
   
   function handleFileLoad(event) {
-    console.log(event.target.result);
+    library.push(event.target.result);
   }
 
 
 
-let displayBooks = [];
 
 
 // ---------  Search  ------------
 
+let displayBooks = [];
 let timeoutId = 0;
 
 function searchWithDelay(e) {
@@ -216,5 +220,5 @@ function eventHandler(ev) {
 
 searchBar.addEventListener('input', searchWithDelay);
 document.getElementById('fileInput').addEventListener('change', handleFileSelect, false);
-document.addEventListener('load', resizeHeight)
+window.addEventListener('load', resizeHeight)
 window.addEventListener('resize', resizeHeight)
