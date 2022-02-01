@@ -7,9 +7,10 @@
 :root {
     --element-border-radius: 0.5rem;
     --element-background: rgba(255, 255, 255, 0.5);
-    --active-background: rgba(255, 255, 255, 0.8);
+    --active-background: rgba(255, 255, 255, 0.7);
     --color-one: rgba(66,171,201,1);
     --color-two: rgba(27,122,149,1);
+    --text-color: #555;
   }
 
   html {
@@ -26,7 +27,7 @@
     justify-content: space-between;
     align-items: center;
     font-family: 'Roboto', sans-serif;
-    color:#444;
+    color: var(--text-color);
     
 }
 
@@ -88,13 +89,15 @@ a {
     font-family: 'Roboto', sans-serif;
     color: var(--color-one);
 }
-.button {
+
+.control-bar .button {
     color: var(--color-two);
     font-size: 1.25rem;
 }
 
 
-.active.tab {
+.active.tab,
+.active.card {
     background: var(--active-background);
 }
 
@@ -127,7 +130,7 @@ a {
     padding: 1rem;
     font-size: 1rem;
     font-family: 'Roboto', sans-serif;
-    color: #555;
+    color: var(--text-color);
     font-weight: 600;
 }
 
@@ -161,11 +164,6 @@ a {
     width: 0;  /* Remove scrollbar space */
 }
 
-.card:focus {
-    background: var(--active-background);
-    cursor: pointer;
-}
-
 .card {
     width: 100%;
     min-height: 8rem;
@@ -176,8 +174,40 @@ a {
     /* text-align: center; */
 }
 
-.subjects {
+.download-buttons {
+    display: none;
     margin: 0 -0.25rem;
+}
+
+.card.active .download-buttons {
+    display: block;
+}
+
+.issued,
+.sub-title {
+    display: none;
+}
+
+.card.active .issued,
+.card.active .sub-title {
+    display: block;
+}
+
+.download-buttons .button {
+    display: inline-block;
+    width: 3rem;
+    height: 3rem;
+    color: var(--text-color);
+}
+
+.subjects {
+    max-height: 3.25rem;
+    margin: 0 -0.25rem;
+    overflow-y: hidden;
+}
+
+.card.active .subjects {
+    max-height: fit-content;
 }
 
 .tag {

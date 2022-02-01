@@ -4,7 +4,7 @@ const tab = document.getElementsByClassName('tab');
 const button = document.getElementsByClassName('button');
 const panel = document.getElementsByClassName('panel');
 const bookList = document.getElementById("book-list");
-
+const card = document.getElementsByClassName('card');
 const html = document.getElementById('html');
 const searchBar = document.getElementById("search-bar");
 
@@ -18,18 +18,21 @@ function resizeHeight() {
 
 // ---------  Upload  ------------
 
-let library = [];
+let displayLibrary = [];
+let htmlLibrary = [];
 
 function handleFileSelect(event) {
-    console.log(event.target.files[0].name);
+    
+    displayLibrary.push(database[parseInt(event.target.files[0].name.replace("-h.htm", ""), 10) - 1])
     const reader = new FileReader()
     reader.onload = handleFileLoad;
     reader.readAsText(event.target.files[0])
+    console.log(displayLibrary);
   }
   
   function handleFileLoad(event) {
-    console.log(event.name);
-    console.log(event.target.result);
+    htmlLibrary.push(event.target.result);
+    console.log(htmlLibrary);
   }
 
 // ---------  Show Book  ------------
@@ -136,13 +139,32 @@ function toHtml() {
             })
             .join('');                                           //convert array to string
 
+        const bookNumber = Object.values(book)[0]
+        
         return `
-        <div class="card" id="${Object.values(book)[0]}">
+        <div class="card" id="${bookNumber}">
             <h1 class="title">${shortTitle}</h1>
-            <h3 class="subTitle">${subTitle}</h3>
+            <h3 class="sub-title">${subTitle}</h3>
             <h3 class="issued" id="${issued}">${issued}</h3>
             ${author}
             <div class="subjects">${tags}</div>
+            <div class="download-buttons">
+            <button type="button" class="button" id="download-htm" >
+            <a href="https://www.gutenberg.org/files/${bookNumber}/${bookNumber}-h/${bookNumber}-h.htm">
+                <i class="fas fa-download"></i>
+            </a>
+        </button>
+        <button type="button" class="button" id="download-html" >
+            <a href="https://www.gutenberg.org/cache/epub/${bookNumber}/pg${bookNumber}.html">
+                <i class="fas fa-download"></i>
+            </a>
+        </button>
+        <button type="button" class="button" id="download-txt" >
+            <a href="https://www.gutenberg.org/files/${bookNumber}/${bookNumber}.txt">
+                <i class="fas fa-download"></i>
+            </a>
+        </button>
+            </div>
         </div>
         `;
     })
@@ -177,11 +199,20 @@ function toggleFullScreen() {
     }
 }
 
+// ---------  Focus Card  ------------
+
+function focusCard(bookId) {
+    Array.from(card).forEach((item) => {item.classList.remove("active")});
+    document.getElementById(bookId).classList.add("active");
+
+}
+
 // ---------  Clear Search  ------------
 
 function clearSearch() {
     searchBar.value = "";
     searchBar.placeholder = "Search";
+    searchBar.focus();
     displayBooks = [];
     toHtml();
 }
@@ -198,23 +229,30 @@ function tabClick(id) {
 // ---------  User Inputs  ------------
 
 const eventMap = {
-    tag: { touchstart: tagSearch},
-    author: { touchstart: authorSearch},
-    clear: { touchstart: clearSearch},
-    tab: { touchstart: tabClick }
+    tag: { click: tagSearch},
+    author: { click: authorSearch},
+    clear: { click: clearSearch},
+    card: { click: focusCard},
+    tab: { click: tabClick }
 }
 
 function eventHandler(ev) {
+// Check if class is in event map
     if (ev.target.className in eventMap && ev.type in eventMap[ev.target.className]) {
         eventMap[ev.target.className][ev.type](ev.target.id);
+// Check if id is in event map
     } else if (ev.target.id in eventMap && ev.type in eventMap[ev.target.id]) {
         eventMap[ev.target.id][ev.type]();
+// Check if parent's class is in event map
+    } else if (ev.target.parentElement.className in eventMap && ev.type in eventMap[ev.target.parentElement.className]) {
+        eventMap[ev.target.parentElement.className][ev.type](ev.target.parentElement.id);
+// Check if keyboard key is in event map
     } else if (ev.key in eventMap && ev.type in eventMap[ev.key]) {
         eventMap[ev.key][ev.type]();
     }
 }
 
-['touchstart', 'keydown', 'keyup'].forEach((eventType) => {
+['click', 'keydown', 'keyup'].forEach((eventType) => {
     document.body.addEventListener(eventType, eventHandler);
 })
 
