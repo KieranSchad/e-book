@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>e reader</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&family=Roboto&display=swap" rel="stylesheet">    
@@ -13,33 +14,51 @@
 </head>
 <body>
     <div class="nav-bar">
-        <button class="tab active" id="browse-tab">BROWSE</button>
-        <button class="tab" id="library-tab">LIBRARY</button>
-        <button class="tab" id="book-tab">BOOK</button>
-        <button class="tab" id="options-tab">OPTIONS</button>
+        <button type="button" type="button" class="tab active" id="browse-tab">BROWSE</button>
+        <button type="button" class="tab" id="library-tab">LIBRARY</button>
+        <button type="button" class="tab" id="book-tab">BOOK</button>
+        <button type="button" class="tab" id="options-tab">OPTIONS</button>
     </div>
     <div class="panel" id="book-panel">
         <div class="page">
+        </div>
+        <div class="control-bar">
+            <button type="button" class="button" id="previous-button">PREVIOUS PAGE</button>
+            <button type="button" class="button" id="full-screen-button">FULL SCREEN</button>
+            <button type="button" class="button" id="chapters-button">CHAPTERS</button>
+            <button type="button" class="button" id="next-button">NEXT PAGE</button>
         </div>
     </div>
     <div class="panel active" id="browse-panel">
         <div class="search">
             <input type="text" id="search-bar" placeholder="Search">
+            <button type="button" class="fas fa-times" id="clear"></button>
         </div>
         <div id="book-list">
         </div>
+        <div class="control-bar">
+            <button type="button" class="button" id="previous-button">PREVIOUS PAGE</button>
+            <button type="button" class="button" id="full-screen-button">FULL SCREEN</button>
+            <button type="button" class="button" id="chapters-button">DOWNLOAD</button>
+            <button type="button" class="button" id="next-button">NEXT PAGE</button>
+        </div>
     </div>
     <div class="panel" id="library-panel">
+
+        <div class="control-bar">
+            <button type="button" class="button" id="previous-button">PREVIOUS PAGE</button>
+            <button type="button" class="button" id="full-screen-button">FULL SCREEN</button>
+            <label class="button" for="fileInput" id="upload-button">
+                <input id="fileInput" type="file" name="file" />
+                UPLOAD
+            </label>
+            <button type="button" class="button" id="next-button">NEXT PAGE</button>
+        </div>
     </div>
     <div class="panel" id="chapters-panel">
     </div>
     <div class="panel" id="options-panel">
     </div>
-    <div class="control-bar">
-        <button class="button" id="previous-button">PREVIOUS PAGE</button>
-        <button class="button" id="full-screen-button">FULL SCREEN</button>
-        <button class="button" id="chapters-button">CHAPTERS</button>
-        <button class="button" id="next-button">NEXT PAGE</button>
-    </div>
+
 </body>
 </html>
