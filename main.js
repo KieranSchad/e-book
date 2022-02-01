@@ -8,8 +8,33 @@ const bookList = document.getElementById("book-list");
 const html = document.getElementById('html');
 const searchBar = document.getElementById("search-bar");
 
+
+function resizeHeight() {
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+
+let library = [];
+
+// ---------  Upload  ------------
+
+function handleFileSelect(event) {
+    const reader = new FileReader()
+    reader.onload = handleFileLoad;
+    reader.readAsText(event.target.files[0])
+  }
+  
+  function handleFileLoad(event) {
+    console.log(event.target.result);
+  }
+
+
+
 let displayBooks = [];
 
+
+// ---------  Search  ------------
 
 let timeoutId = 0;
 
@@ -67,6 +92,7 @@ function tagSearch(inputValue) {
     toHtml();
 }
 
+// ---------  Display Search Results  ------------
 
 function toHtml() {
     const htmlString = displayBooks.map((book) => {
@@ -120,6 +146,8 @@ function toHtml() {
     bookList.innerHTML = htmlString;
 }
 
+// ---------  Full Screen  ------------
+
 let fullScreen = false;
 
 function toggleFullScreen() {
@@ -144,6 +172,7 @@ function toggleFullScreen() {
     }
 }
 
+// ---------  Clear Search  ------------
 
 function clearSearch() {
     console.log("clear search");
@@ -153,6 +182,8 @@ function clearSearch() {
     toHtml();
 }
 
+// ---------  Panel Navigation  ------------
+
 function tabClick(id) {
     Array.from(tab).forEach((item) => {item.classList.remove("active")});
     Array.from(panel).forEach((item) => {item.classList.remove("active")});
@@ -160,17 +191,7 @@ function tabClick(id) {
     document.getElementById(id.replace("tab", "panel")).classList.add("active");
 }
 
-//Uploader
-
-function handleFileSelect(event) {
-    const reader = new FileReader()
-    reader.onload = handleFileLoad;
-    reader.readAsText(event.target.files[0])
-  }
-  
-  function handleFileLoad(event) {
-    console.log(event.target.result);
-  }
+// ---------  User Inputs  ------------
 
 const eventMap = {
     tag: { click: tagSearch},
@@ -195,4 +216,4 @@ function eventHandler(ev) {
 
 searchBar.addEventListener('input', searchWithDelay);
 document.getElementById('fileInput').addEventListener('change', handleFileSelect, false);
-  
+window.addEventListener('resize', resizeHeight)
