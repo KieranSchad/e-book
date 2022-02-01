@@ -13,21 +13,20 @@
 </head>
 <body>
     <div class="nav-bar">
-        <div class="nav-button active" id="browse-button">BROWSE</div>
-        <div class="nav-button" id="library-button">LIBRARY</div>
-        <div class="nav-button" id="chapters-button">CHAPTERS</div>
-        <div class="nav-button" id="options-button">OPTIONS</div>
+        <button class="tab active" id="browse-tab">BROWSE</button>
+        <button class="tab" id="library-tab">LIBRARY</button>
+        <button class="tab" id="book-tab">BOOK</button>
+        <button class="tab" id="options-tab">OPTIONS</button>
     </div>
     <div class="panel" id="book-panel">
         <div class="page">
-            <iframe id="iframe"></iframe>
         </div>
     </div>
-    <div class="panel active" id="browser-panel">
+    <div class="panel active" id="browse-panel">
         <div class="search">
             <input type="text" id="search-bar" placeholder="Search">
         </div>
-        <div id="book-cards">
+        <div id="book-list">
         </div>
     </div>
     <div class="panel" id="library-panel">
@@ -37,10 +36,10 @@
     <div class="panel" id="options-panel">
     </div>
     <div class="control-bar">
-        <div class="control-button" id="previous-button">PREVIOUS PAGE</div>
-        <div class="control-button" id="full-screen-button">FULL SCREEN</div>
-        <div class="control-button" id="theme-button">CHANGE THEME</div>
-        <div class="control-button" id="next-button">NEXT PAGE</div>
+        <button class="button" id="previous-button">PREVIOUS PAGE</button>
+        <button class="button" id="full-screen-button">FULL SCREEN</button>
+        <button class="button" id="chapters-button">CHAPTERS</button>
+        <button class="button" id="next-button">NEXT PAGE</button>
     </div>
 </body>
 </html>

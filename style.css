@@ -29,6 +29,9 @@ body {
     
 }
 
+button {
+    all: unset;
+}
 
 h1 {
     font-size: 1.2rem;
@@ -63,33 +66,25 @@ a {
     align-items: center;
 }
 
-.nav-button,
-.control-button {
+.tab,
+.button {
     flex: 0.25;
     height: 5rem;
     background: var(--element-background);
+    border-radius: var(--element-border-radius);
     margin: 0.25rem;
     text-align: center;
-    /* border: solid 1px #444; */
-    border-radius: var(--element-border-radius);
-    display: flex;
-    justify-content: center;
-    align-items: center;
     font-weight: 800;
     font-size: 0.9rem;
     font-family: 'Roboto', sans-serif;
-    color: var(--color-two);
-    -webkit-user-select: none; /* Safari */        
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
-}
-.nav-button {
     color: var(--color-one);
 }
+.button {
+    color: var(--color-two);
+}
 
 
-.active.nav-button {
+.active.tab {
     background: var(--active-background);
 }
 
@@ -100,7 +95,7 @@ a {
     padding: 0 0.25rem;
     flex-direction: column;
     align-items: center;
-    overflow-y: scroll;
+    
     
 }
 
@@ -135,10 +130,13 @@ a {
 }
 
 
-#book-cards {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+#book-list {
+    width: 100%;
+    overflow-y: scroll;
+}
+
+#book-list::-webkit-scrollbar {
+    width: 0;  /* Remove scrollbar space */
 }
 
 .card:focus {
@@ -152,7 +150,7 @@ a {
     border-radius: var(--element-border-radius);
     background: var(--element-background);
     padding: 0.5rem;
-    margin: 0.25rem 0;
+    margin: 0.5rem 0;
 }
 
 .subjects {
@@ -172,14 +170,5 @@ a {
     height: 100%;
     background: var(--element-background);
     border-radius: var(--element-border-radius);
-    padding: 1rem;
     overflow-x: hidden;
-}
-
-#iframe {
-    border: none;
-    width: calc(100% + 100px);
-    margin-left: -45px;
-    height: 100%;
-    
 }

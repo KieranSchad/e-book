@@ -1,19 +1,12 @@
 import database from "./pg_caralog_2022_01_28.json" assert { type: "json" };
 
-const browseButton = document.getElementById("browse-button");
-const libraryButton = document.getElementById("library-button");
-const chaptersButton = document.getElementById("chapters-button");
-const optionsButton = document.getElementById("options-button");
-const bookPanel = document.getElementById('book-panel');
-const browserPanel = document.getElementById('browser-panel');
-const libraryPanel = document.getElementById('library-panel');
-const chaptersPanel = document.getElementById('chapters-panel');
-const optionsPanel = document.getElementById('options-panel');
-const iframe = document.getElementById('iframe');
-const fullScreenButton = document.getElementById('full-screen-button');
+const tab = document.getElementsByClassName('tab');
+const button = document.getElementsByClassName('button');
+const panel = document.getElementsByClassName('panel');
+const bookList = document.getElementById("book-list");
+
 const html = document.getElementById('html');
 const searchBar = document.getElementById("search-bar");
-const bookCards = document.getElementById("book-cards");
 
 let displayBooks = [];
 
@@ -24,7 +17,7 @@ function searchFunction(e) {
 
     displayBooks = [];
     for (let i = 0; i < database.length && displayBooks.length < 20; i++) {
-        const bookData = Object.values(database[i]).join(" ").toLocaleLowerCase();
+        const bookData = Object.values(database[i]).join(" ").toLowerCase();
         if (inputValue.every(el => bookData.includes(el))) {
             displayBooks.push({...database[i]});
         } 
@@ -37,7 +30,7 @@ function searchFunction(e) {
 function authorsSearch(inputValue) {
     displayBooks = [];
     searchBar.value = inputValue;
-    browserPanel.scrollTo(0, 0);
+    bookList.scrollTo(0, 0);
     for (let j = 0; j < database.length && displayBooks.length < 20; j++) {
         if (database[j].Authors.toLowerCase().includes(inputValue.toLowerCase())) {
             displayBooks.push({...database[j]});
@@ -48,8 +41,9 @@ function authorsSearch(inputValue) {
 
 function tagSearch(inputValue) {
     displayBooks = [];
-    searchBar.value = inputValue;
-    browserPanel.scrollTo(0, 0);
+    searchBar.value = "";
+    searchBar.placeholder = "Tag: " + inputValue;
+    bookList.scrollTo(0, 0);
     for (let j = 0; j < database.length && displayBooks.length < 20; j++) {
         if (database[j].Subjects.toLowerCase().includes(inputValue.toLowerCase()) || database[j].Bookshelves.toLowerCase().includes(inputValue.toLowerCase())) {
             displayBooks.push({...database[j]});
@@ -65,7 +59,7 @@ function toHtml() {
             .split(/;\s*|\s*--\s*|\.\s+|\,\s+/ig))]              //split into array based on regex
             .filter(item => item)                                //filter out empty strings
             .map((tag) => {                                      //asign html to each array item
-                return `<a class="tag" id="tag${tag}">${tag}</a>`;          
+                return `<button class="tag" id="${tag}">${tag}</button>`;          
             })
             .join('');                                           //convert array to string
         return `
@@ -79,82 +73,7 @@ function toHtml() {
     })
     .join('');
 
-    bookCards.innerHTML = htmlString;
-}
-
-
-
-
-function toggleBrowse() {
-    if (browserPanel.classList.contains("active")) {
-        bookPanel.classList.add("active");
-        browserPanel.classList.remove("active");
-        browseButton.classList.remove("active");
-    } else {
-        bookPanel.classList.remove("active");
-        browserPanel.classList.add("active");
-        browseButton.classList.add("active");
-        libraryPanel.classList.remove("active");
-        libraryButton.classList.remove("active");
-        chaptersPanel.classList.remove("active");
-        chaptersButton.classList.remove("active");
-        optionsPanel.classList.remove("active");
-        optionsButton.classList.remove("active");
-    }
-}
-
-function toggleLibrary() {
-    if (libraryPanel.classList.contains("active")) {
-        bookPanel.classList.add("active");
-        libraryPanel.classList.remove("active");
-        libraryButton.classList.remove("active");
-    } else {
-        bookPanel.classList.remove("active");
-        browserPanel.classList.remove("active");
-        browseButton.classList.remove("active");
-        libraryPanel.classList.add("active");
-        libraryButton.classList.add("active");
-        chaptersPanel.classList.remove("active");
-        chaptersButton.classList.remove("active");
-        optionsPanel.classList.remove("active");
-        optionsButton.classList.remove("active");
-    }
-}
-
-function toggleChapters() {
-    if (chaptersPanel.classList.contains("active")) {
-        bookPanel.classList.add("active");
-        chaptersPanel.classList.remove("active");
-        chaptersButton.classList.remove("active");
-    } else {
-        bookPanel.classList.remove("active");
-        browserPanel.classList.remove("active");
-        browseButton.classList.remove("active");
-        libraryPanel.classList.remove("active");
-        libraryButton.classList.remove("active");
-        chaptersPanel.classList.add("active");
-        chaptersButton.classList.add("active");
-        optionsPanel.classList.remove("active");
-        optionsButton.classList.remove("active");
-    }
-}
-
-function toggleOptions() {
-    if (optionsPanel.classList.contains("active")) {
-        bookPanel.classList.add("active");
-        optionsPanel.classList.remove("active");
-        optionsButton.classList.remove("active");
-    } else {
-        bookPanel.classList.remove("active");
-        browserPanel.classList.remove("active");
-        browseButton.classList.remove("active");
-        libraryPanel.classList.remove("active");
-        libraryButton.classList.remove("active");
-        chaptersPanel.classList.remove("active");
-        chaptersButton.classList.remove("active");
-        optionsPanel.classList.add("active");
-        optionsButton.classList.add("active");
-    }
+    bookList.innerHTML = htmlString;
 }
 
 let fullScreen = false;
@@ -181,27 +100,28 @@ function toggleFullScreen() {
     }
 }
 
-function onClick(event) {
-    const clickParentId = event.target.parentNode.id;
-    const clickId = event.target.id;
-    
-     if (clickId.length > 0) {
-        if (/^tag/.test(clickId)) {
-            tagSearch(clickId.slice(3));
-        } else if (/^aut/.test(clickId)) {
-            authorsSearch(clickId.slice(3));
-        }
-    } else if (clickParentId > 0) {
-        iframe.src = `https://www.gutenberg.org/files/${clickParentId}/${clickParentId}-h/${clickParentId}-h.htm`
-        toggleBrowse();
+function tabClick(id) {
+    Array.from(tab).forEach((item) => {item.classList.remove("active")});
+    Array.from(panel).forEach((item) => {item.classList.remove("active")});
+    document.getElementById(id).classList.add("active");
+    document.getElementById(id.replace("tab", "panel")).classList.add("active");
+}
+
+const eventMap = {
+    tag: { mousedown: tagSearch},
+    tab: { mousedown: tabClick }
+}
+
+function eventHandler(ev) {
+    if (ev.target.className in eventMap && ev.type in eventMap[ev.target.className]) {
+        eventMap[ev.target.className][ev.type](ev.target.id);
+    } else if (ev.key in eventMap && ev.type in eventMap[ev.key]) {
+        eventMap[ev.key][ev.type]();
     }
 }
 
+['mousedown', 'mouseup', 'keydown', 'keyup'].forEach((eventType) => {
+    window.addEventListener(eventType, eventHandler);
+})
 
-browseButton.addEventListener('click', toggleBrowse);
-libraryButton.addEventListener('click', toggleLibrary);
-chaptersButton.addEventListener('click', toggleChapters);
-optionsButton.addEventListener('click', toggleOptions);
 searchBar.addEventListener('input', searchFunction);
-fullScreenButton.addEventListener('click', toggleFullScreen);
-window.addEventListener('click', onClick);
