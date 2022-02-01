@@ -216,4 +216,5 @@ function eventHandler(ev) {
 
 searchBar.addEventListener('input', searchWithDelay);
 document.getElementById('fileInput').addEventListener('change', handleFileSelect, false);
+document.addEventListener('load', resizeHeight)
 window.addEventListener('resize', resizeHeight)
