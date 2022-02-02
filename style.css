@@ -68,12 +68,23 @@ a {
     align-items: center;
 }
 
+#chapters-panel h1, 
+#chapters-panel h2,
+#chapters-panel h3,
+#chapters-panel .chapters-buttons {
+    padding: 0.5rem 0;
+}
+
 .nav-bar,
 .control-bar {
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.control-bar {
+    width: calc(100% + 0.5rem);
 }
 
 .tab,
@@ -95,9 +106,7 @@ a {
     font-size: 1.25rem;
 }
 
-
-.active.tab,
-.active.card {
+.active.tab {
     background: var(--active-background);
 }
 
@@ -107,7 +116,7 @@ a {
     height: calc(calc(var(--vh, 1vh) * 100) - 4rem);
     flex-direction: column;
     align-items: center;
-    
+    padding: 0 0.25rem;
     
 }
 
@@ -136,6 +145,7 @@ a {
 
 #search-bar::placeholder {
     color: var(--color-one);
+    max-width: 80vw;
 }
 
 #search-bar:focus {
@@ -152,7 +162,8 @@ a {
     font-size: 1.5rem;
 }
 
-
+#chapter-list,
+#library-list,
 #book-list {
     width: 100%;
     height: 100%;
@@ -171,16 +182,29 @@ a {
     background: var(--element-background);
     padding: 0.5rem;
     margin-bottom: 0.5rem;
-    /* text-align: center; */
 }
 
+#chapters-panel .card {
+    /* text-align: center; */
+    min-height: 100%;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.chapters-buttons,
+.library-buttons,
 .download-buttons {
     display: none;
     margin: 0 -0.25rem;
+
 }
 
-.card.active .download-buttons {
-    display: block;
+.chapters-buttons,
+.card.active .download-buttons,
+.card.active .library-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .issued,
@@ -188,16 +212,23 @@ a {
     display: none;
 }
 
+#chapters-panel .issued,
+#chapters-panel .sub-title,
 .card.active .issued,
 .card.active .sub-title {
     display: block;
 }
 
+.chapters-buttons .button,
+.library-buttons .button,
 .download-buttons .button {
     display: inline-block;
     width: 3rem;
     height: 3rem;
     color: var(--text-color);
+    font-size: 1.25rem;
+    line-height: 3rem;
+    flex: 1;
 }
 
 .subjects {
@@ -206,6 +237,7 @@ a {
     overflow-y: hidden;
 }
 
+#chapters-panel .subjects,
 .card.active .subjects {
     max-height: fit-content;
 }
@@ -216,6 +248,17 @@ a {
     background: var(--element-background);
     margin: 0.15rem 0.25rem;
     padding: 0.1rem 0.25rem;
+}
+
+.chapterButton {
+    display: block;
+    width: calc(100% - 1.5rem);
+    padding: 0.5rem;
+    margin: 0.5rem 0.25rem;
+    font-family: 'Libre Baskerville', serif;
+    background: var(--element-background);
+    border-radius: var(--element-border-radius);
+    font-size: 1.125rem;
 }
 
 .page {

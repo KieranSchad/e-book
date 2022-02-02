@@ -1,9 +1,13 @@
 import database from "./pg_caralog_2022_01_28.json" assert { type: "json" };
 
+
+
 const tab = document.getElementsByClassName('tab');
 const button = document.getElementsByClassName('button');
 const panel = document.getElementsByClassName('panel');
 const bookList = document.getElementById("book-list");
+const libraryList = document.getElementById("library-list");
+const chapterList = document.getElementById("chapter-list");
 const card = document.getElementsByClassName('card');
 const html = document.getElementById('html');
 const searchBar = document.getElementById("search-bar");
@@ -18,34 +22,77 @@ function resizeHeight() {
 
 // ---------  Upload  ------------
 
-let displayLibrary = [];
+let displayLibrary = [ {
+    "Text#": 12,
+    "Type": "Text",
+    "Issued": "2008-06-25",
+    "Title": "Through the Looking-Glass",
+    "Language": "en",
+    "Authors": "Carroll, Lewis, 1832-1898",
+    "Subjects": "Fantasy fiction; Children's stories; Imaginary places -- Juvenile fiction; Alice (Fictitious character from Carroll) -- Juvenile fiction",
+    "LoCC": "PR; PZ",
+    "Bookshelves": "Best Books Ever Listings; Children's Literature"
+  } ];
 let htmlLibrary = [];
 
+fetch('./library/12-h.htm', {mode: 'no-cors'})
+    .then(response => response.text())
+    .then(data=> htmlLibrary.push(data))
+    .catch(error => console.error(error));
+
 function handleFileSelect(event) {
-    
-    displayLibrary.push(database[parseInt(event.target.files[0].name.replace("-h.htm", ""), 10) - 1])
-    const reader = new FileReader()
+    const bookId = parseInt(event.target.files[0].name.replace("-h.htm", ""), 10)
+    const bookIndex = database.map((book) => parseInt(Object.values(book)[0], 10)).indexOf(bookId);
+    displayLibrary.push(database[bookIndex]);
+    const reader = new FileReader();
     reader.onload = handleFileLoad;
     reader.readAsText(event.target.files[0])
-    console.log(displayLibrary);
   }
   
   function handleFileLoad(event) {
     htmlLibrary.push(event.target.result);
+    console.log(displayLibrary);
     console.log(htmlLibrary);
+    showLibrary();;
   }
+function showLibrary() {
+    toHtml(displayLibrary, libraryList);
+}
 
-// ---------  Show Book  ------------
+// ---------  Find book for Chapters  ------------
 
-function loadBook() {
+function findChapters(e) {
+    const bookId = parseInt(e.target.parentElement.parentElement.id, 10);
+    const bookIndex = displayLibrary.map((book) => parseInt(Object.values(book)[0], 10)).indexOf(bookId);
+    loadChapters(bookIndex);
+}
+
+// ---------  Load Chapters  ------------
+
+function loadChapters(bookIndex) {
+    const bookHtml = htmlLibrary[bookIndex];
+    let chapters;
+    if (/href="#/.test(bookHtml)) {
+        chapters = bookHtml
+            .match(/href="#.[^n](.|[\s\S])+?(?=\s*<)/g)
+            .map((item => item.split(/>\s*/)))
+            .filter((pair) => pair[1].length > 0);
+    } else {
+        chapters = bookHtml
+            .match(/<h2>.+(?=<\/h2>)/g)
+            .map((item => item.split(/>/)));
+            console.log(chapters)
+    }
     
+    toHtml([displayLibrary[bookIndex]], chapterList, chapters)
+    console.log(chapters);
+    tabClick("chapters-tab");
 }
 
 
 
 // ---------  Search  ------------
 
-let displayBooks = [];
 let timeoutId = 0;
 
 function searchWithDelay(e) {
@@ -61,49 +108,50 @@ function searchFunction(e) {
     const inputValue = e.target.value
         .toLowerCase().split(" ")
         .filter(item => item) ;
-    displayBooks = [];
-    for (let i = 0; i < database.length && displayBooks.length < 100; i++) {
+    let searchResult = [];
+    for (let i = 0; i < database.length && searchResult.length < 100; i++) {
         const bookData = Object.values(database[i]).join(" ").toLowerCase();
         if (inputValue.every(el => bookData.includes(el))) {
-            displayBooks.push({...database[i]});
+            searchResult.push({...database[i]});
             
         } 
     }
     timeoutId = 0;
-    toHtml();
+    toHtml(searchResult, bookList);
 
 }
 
 function authorSearch(inputValue) {
-    displayBooks = [];
+    let authorSearchResult = [];
     searchBar.value = "";
     searchBar.placeholder = "Author: " + inputValue;
     bookList.scrollTo(0, 0);
-    for (let j = 0; j < database.length && displayBooks.length < 100; j++) {
+    for (let j = 0; j < database.length && authorSearchResult.length < 100; j++) {
         if (database[j].Authors.toLowerCase().includes(inputValue.toLowerCase())) {
-            displayBooks.push({...database[j]});
+            authorSearchResult.push({...database[j]});
         } 
     }
-    toHtml();
+    toHtml(authorSearchResult, bookList);
 }
 
 function tagSearch(inputValue) {
-    displayBooks = [];
+    let tagSearchResult = [];
     searchBar.value = "";
     searchBar.placeholder = "Tag: " + inputValue;
     bookList.scrollTo(0, 0);
-    for (let j = 0; j < database.length && displayBooks.length < 100; j++) {
-        if (database[j].Subjects.toLowerCase().includes(inputValue.toLowerCase()) || database[j].Bookshelves.toLowerCase().includes(inputValue.toLowerCase())) {
-            displayBooks.push({...database[j]});
+    for (let j = 0; j < database.length && tagSearchResult.length < 100; j++) {
+        if (database[j].Subjects.toLowerCase().includes(inputValue.toLowerCase()) 
+            || database[j].Bookshelves.toLowerCase().includes(inputValue.toLowerCase())) {
+            tagSearchResult.push({...database[j]});
         } 
     }
-    toHtml();
+    toHtml(tagSearchResult, bookList);
 }
 
 // ---------  Display Search Results  ------------
 
-function toHtml() {
-    const htmlString = displayBooks.map((book) => {
+function toHtml(bookArray, location, chapterArr) {
+    const htmlString = bookArray.map((book) => {
 
         const shortTitle = book.Title.split("\n")[0];
         let subTitle = "";
@@ -130,7 +178,7 @@ function toHtml() {
             })
             .join(''); 
         
-        const tags = [...new Set(book.Subjects
+        let tags = [...new Set(book.Subjects
             .concat(';', book.Bookshelves)                       //join subjects and bookshelves to one string
             .split(/;\s*|\s*--\s*|\.\s+|\,\s+/ig))]              //split into array based on regex
             .filter(item => item)                                //filter out empty strings
@@ -139,7 +187,35 @@ function toHtml() {
             })
             .join('');                                           //convert array to string
 
-        const bookNumber = Object.values(book)[0]
+        let chapters = ``;
+        const chapterRegex = /(?<!\s(mr)|(ms)|(mrs)|(dr)|(sr)|(jr))\.\s+/i
+        const bookNumber = Object.values(book)[0];
+        let buttonHtml;
+        if (location == bookList) {
+            buttonHtml = `
+                <div class="download-buttons">
+                    <a class="button fas fa-download" id="download-htm" href="https://www.gutenberg.org/files/${bookNumber}/${bookNumber}-h/${bookNumber}-h.htm"></a>
+                    <a class="button fas fa-download" id="download-html" href="https://www.gutenberg.org/cache/epub/${bookNumber}/pg${bookNumber}.html"></a>
+                    <a class="button fas fa-download" id="download-txt" href="https://www.gutenberg.org/files/${bookNumber}/${bookNumber}.txt"></a>
+                </div>`
+        } else if (location == libraryList) {
+            buttonHtml = `
+                <div class="library-buttons">
+                    <a type="button" class="button fas fa-book-open" id="readButton" ></a>
+                    <a type="button" class="button fas fa-trash-alt" id="deleteButton" ></a>
+                </div>`
+        } else if (location == chapterList) {
+            tags = ``;
+            chapters = chapterArr.map((chapter) => {
+                return `
+                    <button type="button" class="chapterButton" id="${chapter[0]}">${chapter[1].replace(chapterRegex, "<br>")}</button>`
+            }).join("");
+            buttonHtml = `
+                <div class="chapters-buttons">
+                    <a type="button" class="button fas fa-redo-alt" id="restartButton" ></a>
+                    <a type="button" class="button fas fa-bookmark" id="bookmarkButton" ></a>
+                </div>`
+        }
         
         return `
         <div class="card" id="${bookNumber}">
@@ -148,29 +224,14 @@ function toHtml() {
             <h3 class="issued" id="${issued}">${issued}</h3>
             ${author}
             <div class="subjects">${tags}</div>
-            <div class="download-buttons">
-            <button type="button" class="button" id="download-htm" >
-            <a href="https://www.gutenberg.org/files/${bookNumber}/${bookNumber}-h/${bookNumber}-h.htm">
-                <i class="fas fa-download"></i>
-            </a>
-        </button>
-        <button type="button" class="button" id="download-html" >
-            <a href="https://www.gutenberg.org/cache/epub/${bookNumber}/pg${bookNumber}.html">
-                <i class="fas fa-download"></i>
-            </a>
-        </button>
-        <button type="button" class="button" id="download-txt" >
-            <a href="https://www.gutenberg.org/files/${bookNumber}/${bookNumber}.txt">
-                <i class="fas fa-download"></i>
-            </a>
-        </button>
-            </div>
+            ${buttonHtml}
+            <div class="subjects">${chapters}</div>
         </div>
         `;
     })
     .join('');
 
-    bookList.innerHTML = htmlString;
+    location.innerHTML = htmlString;
 }
 
 // ---------  Full Screen  ------------
@@ -204,7 +265,6 @@ function toggleFullScreen() {
 function focusCard(bookId) {
     Array.from(card).forEach((item) => {item.classList.remove("active")});
     document.getElementById(bookId).classList.add("active");
-
 }
 
 // ---------  Clear Search  ------------
@@ -213,8 +273,11 @@ function clearSearch() {
     searchBar.value = "";
     searchBar.placeholder = "Search";
     searchBar.focus();
-    displayBooks = [];
-    toHtml();
+    toHtml([], bookList);
+}
+
+function deleteBook() {
+    console.log("delete book");
 }
 
 // ---------  Panel Navigation  ------------
@@ -229,10 +292,12 @@ function tabClick(id) {
 // ---------  User Inputs  ------------
 
 const eventMap = {
-    tag: { click: tagSearch},
-    author: { click: authorSearch},
-    clear: { click: clearSearch},
-    card: { click: focusCard},
+    tag: { click: tagSearch },
+    author: { click: authorSearch },
+    clear: { click: clearSearch },
+    card: { click: focusCard },
+    readButton: { click: findChapters },
+    deleteButton: { click: deleteBook },
     tab: { click: tabClick }
 }
 
@@ -242,7 +307,7 @@ function eventHandler(ev) {
         eventMap[ev.target.className][ev.type](ev.target.id);
 // Check if id is in event map
     } else if (ev.target.id in eventMap && ev.type in eventMap[ev.target.id]) {
-        eventMap[ev.target.id][ev.type]();
+        eventMap[ev.target.id][ev.type](ev);
 // Check if parent's class is in event map
     } else if (ev.target.parentElement.className in eventMap && ev.type in eventMap[ev.target.parentElement.className]) {
         eventMap[ev.target.parentElement.className][ev.type](ev.target.parentElement.id);
@@ -258,5 +323,6 @@ function eventHandler(ev) {
 
 searchBar.addEventListener('input', searchWithDelay);
 document.getElementById('fileInput').addEventListener('change', handleFileSelect, false);
-window.addEventListener('load', resizeHeight)
-window.addEventListener('resize', resizeHeight)
+window.addEventListener('load', resizeHeight);
+window.addEventListener('load', showLibrary);
+window.addEventListener('resize', resizeHeight);

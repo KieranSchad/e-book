@@ -22,18 +22,8 @@
         <div class="nav-bar">
             <button type="button" type="button" class="tab active" id="browse-tab">BROWSE</button>
             <button type="button" class="tab" id="library-tab">LIBRARY</button>
+            <button type="button" class="tab" id="chapters-tab">CHAPTERS</button>
             <button type="button" class="tab" id="book-tab">BOOK</button>
-            <button type="button" class="tab" id="options-tab">OPTIONS</button>
-        </div>
-        <div class="panel" id="book-panel">
-            <div class="page">
-            </div>
-            <div class="control-bar">
-                <button type="button" class="button" id="previous-button">PREVIOUS PAGE</button>
-                <button type="button" class="button" id="full-screen-button">FULL SCREEN</button>
-                <button type="button" class="button" id="chapters-button">CHAPTERS</button>
-                <button type="button" class="button" id="next-button">NEXT PAGE</button>
-            </div>
         </div>
         <div class="panel active" id="browse-panel">
             <div class="search">
@@ -44,27 +34,47 @@
             </div>
             <div class="control-bar">
                 <button type="button" class="button fas fa-angle-double-left" id="previous-button"></button>
-                <button type="button" class="button fas fa-expand-arrows-alt" id="full-screen-button"></button>
+                <button type="button" class="button fas fa-tags" id="all-tags-button"></button>
                 <button type="button" class="button fas fa-cog" id="settings-button"></button>
                 <button type="button" class="button fas fa-angle-double-right" id="next-button"></button>
             </div>
         </div>
         <div class="panel" id="library-panel">
-            <div id="book-list">
+            <!-- <div class="search">
+                <input type="text" id="search-bar" placeholder="Search">
+                <button type="button" class="fas fa-times" id="clear"></button>
+            </div> -->
+            <div id="library-list">
             </div>
             <div class="control-bar">
                 <button type="button" class="button fas fa-angle-double-left" id="previous-button"></button>
-                <button type="button" class="button fas fa-expand-arrows-alt" id="full-screen-button"></button>
                 <label class="button" for="fileInput" id="upload-button">
                     <input id="fileInput" type="file" name="file" />
                     <i class="fas fa-upload"></i>
                 </label>
+                <button type="button" class="button fas fa-cog" id="settings-button"></button>
                 <button type="button" class="button fas fa-angle-double-right" id="next-button"></button>
             </div>
         </div>
         <div class="panel" id="chapters-panel">
+            <div id="chapter-list">
+            </div>
+            <div class="control-bar">
+                <button type="button" class="button fas fa-angle-double-left" id="previous-button"></button>
+                <button type="button" class="button fas fa-play" id="full-screen-button"></button>
+                <button type="button" class="button fas fa-cog" id="settings-button"></button>
+                <button type="button" class="button fas fa-angle-double-right" id="next-button"></button>
+            </div>
         </div>
-        <div class="panel" id="options-panel">
+        <div class="panel" id="book-panel">
+            <div class="page">
+            </div>
+            <div class="control-bar">
+                <button type="button" class="button fas fa-angle-double-left" id="previous-button"></button>
+                <button type="button" class="button fas fa-expand-arrows-alt" id="full-screen-button"></button>
+                <button type="button" class="button fas fa-cog" id="settings-button"></button>
+                <button type="button" class="button fas fa-angle-double-right" id="next-button"></button>
+            </div>
         </div>
     </div>
 </body>
