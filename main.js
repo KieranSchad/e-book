@@ -1,4 +1,4 @@
-import database from "./pg_caralog_2022_01_28.json" assert { type: "json" };
+// import database from "./pg_caralog_2022_01_28.json" assert { type: "json" };
 
 
 
@@ -41,7 +41,8 @@ fetch('./library/12-h.htm', {mode: 'no-cors'})
     .catch(error => console.error(error));
 
 function handleFileSelect(event) {
-    const bookId = parseInt(event.target.files[0].name.replace("-h.htm", ""), 10)
+    const bookId = parseInt(event.target.files[0].name.match(/\d+(?=((-\w)*\.(htm|txt)))/i), 10)   //match number in filename, lookahead to extension
+    console.log(bookId);
     const bookIndex = database.map((book) => parseInt(Object.values(book)[0], 10)).indexOf(bookId);
     displayLibrary.push(database[bookIndex]);
     const reader = new FileReader();
@@ -74,12 +75,22 @@ function loadChapters(bookIndex) {
     let chapters;
     if (/href="#/.test(bookHtml)) {
         chapters = bookHtml
-            .match(/href="#.[^n](.|[\s\S])+?(?=\s*<)/g)
+            .match(/href="#.[^n](.|[\s\S])+?(?=\s*<)/g)             // match any links
             .map((item => item.split(/>\s*/)))
             .filter((pair) => pair[1].length > 0);
+    } else if (/(Chapter|CHAPTER)\s+(1|I)/.test(bookHtml)) {
+        chapters = bookHtml
+            .match(/(Chapter|CHAPTER)\s+((\d)+|(|I|V|X|C|L)+)/g)             // match chapter + number or roman numeral
+            .map((item => item.split(/>/)));
+            console.log(chapters)            
+    } else if (/<h2>/.test(bookHtml)) {
+        chapters = bookHtml
+            .match(/<h2>.+(?=<\/h2>)/g)                              // match anything in an h2 tag
+            .map((item => item.split(/>/)));
+            console.log(chapters)
     } else {
         chapters = bookHtml
-            .match(/<h2>.+(?=<\/h2>)/g)
+            .match(/(([A-Z]\s[A-Z]+|[A-Z][A-Z]+)\s*)+/g)                            // match any capiptal word string
             .map((item => item.split(/>/)));
             console.log(chapters)
     }
