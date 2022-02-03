@@ -1,14 +1,14 @@
-// import database from "./pg_caralog_2022_01_28.json" assert { type: "json" };
+import database from "./pg_caralog_2022_01_28.json" assert { type: "json" };
 
 
 
 const tab = document.getElementsByClassName('tab');
-const button = document.getElementsByClassName('button');
 const panel = document.getElementsByClassName('panel');
 const bookList = document.getElementById("book-list");
 const libraryList = document.getElementById("library-list");
 const chapterList = document.getElementById("chapter-list");
-const card = document.getElementsByClassName('card');
+let card = document.getElementsByClassName('card');
+const page = document.getElementById('page');
 const html = document.getElementById('html');
 const searchBar = document.getElementById("search-bar");
 
@@ -48,6 +48,7 @@ function handleFileSelect(event) {
     const reader = new FileReader();
     reader.onload = handleFileLoad;
     reader.readAsText(event.target.files[0])
+    card = document.getElementsByClassName('card');
   }
   
   function handleFileLoad(event) {
@@ -62,36 +63,48 @@ function showLibrary() {
 
 // ---------  Find book for Chapters  ------------
 
-function findChapters(e) {
-    const bookId = parseInt(e.target.parentElement.parentElement.id, 10);
+function findLibraryIndex(e) {
+    const bookId = parseInt(e.target.parentElement.parentElement.id.slice(7), 10);
     const bookIndex = displayLibrary.map((book) => parseInt(Object.values(book)[0], 10)).indexOf(bookId);
-    loadChapters(bookIndex);
+    return [bookId, bookIndex];
 }
 
 // ---------  Load Chapters  ------------
 
-function loadChapters(bookIndex) {
-    const bookHtml = htmlLibrary[bookIndex];
+function loadChapters(e) {
+    let bookIndex = findLibraryIndex(e)[1];
+    const bookData = htmlLibrary[bookIndex];
     let chapters;
-    if (/href="#/.test(bookHtml)) {
-        chapters = bookHtml
+    if (/href="#/.test(bookData) && /<hr\s*\/>/.test(bookData)) {
+        chapters = bookData
+            .replace(/[\s\S]*?<hr\s*\/>/, "")                      // remove everything before first hr tag
+            .replace(/<hr\s*\/>[\s\S]*/, "")                       //remove everything after second hr tag
             .match(/href="#.[^n](.|[\s\S])+?(?=\s*<)/g)             // match any links
-            .map((item => item.split(/>\s*/)))
+            .map((item, index) => [...item.split(/>\s*/), index])
             .filter((pair) => pair[1].length > 0);
-    } else if (/(Chapter|CHAPTER)\s+(1|I)/.test(bookHtml)) {
-        chapters = bookHtml
-            .match(/(Chapter|CHAPTER)\s+((\d)+|(|I|V|X|C|L)+)/g)             // match chapter + number or roman numeral
-            .map((item => item.split(/>/)));
+    } else if (/(Chapter|CHAPTER)\s+(1|I)/.test(bookData)) {
+        chapters = bookData
+            .replace(/[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?\*/, "")         // remove everything before first hr tag
+            .replace(/END\sOF\sTH..?\sPROJECT\sGUTENBERG[\s\S]*/, "")              //remove everything after second hr tag
+            .match(/(Chapter|CHAPTER)\s+((\d)+|(|I|V|X|C|L)+)/g)                   // match chapter + number or roman numeral
+            .map((item, index) => ["chapter", item, index]);
             console.log(chapters)            
-    } else if (/<h2>/.test(bookHtml)) {
-        chapters = bookHtml
-            .match(/<h2>.+(?=<\/h2>)/g)                              // match anything in an h2 tag
-            .map((item => item.split(/>/)));
+    } else if (/<h2>/.test(bookData)) {
+        chapters = bookData
+            .replace(/[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?\*/, "")         // remove everything before first hr tag
+            .replace(/END\sOF\sTH..?\sPROJECT\sGUTENBERG[\s\S]*/, "")              //remove everything after second hr tag
+            .match(/(?<=<h2>).+(?=<\/h2>)/g)                              // match anything in an h2 tag
+            .map((item, index) => ["h2", item, index]);
             console.log(chapters)
     } else {
-        chapters = bookHtml
-            .match(/(([A-Z]\s[A-Z]+|[A-Z][A-Z]+)\s*)+/g)                            // match any capiptal word string
-            .map((item => item.split(/>/)));
+        chapters = bookData
+            .replace(/[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?\*/, "")      // remove everything before first hr tag
+            .replace(/END\sOF\sTH..?\sPROJECT\sGUTENBERG[\s\S]*/, "")              // remove everything after second hr tag
+            .split(/\n/g)                                                          // split book into lines
+            .filter((line) => {                                                    // only keep lines that pass the test
+                return (!(line.match(/[a-z]+/g)) && line.match(/[A-Z]/g))           
+                })
+            .map((item, index) => ["capital", item, index]);
             console.log(chapters)
     }
     
@@ -101,6 +114,22 @@ function loadChapters(bookIndex) {
 }
 
 
+// ---------  Load Book  ------------
+
+function loadBook(e) {
+    const bookId = findLibraryIndex(e)[0]
+    const bookIndex = findLibraryIndex(e)[1];
+    const bookData = htmlLibrary[bookIndex];
+    const bookHtml = bookData
+        .replace(/<pre/g, "<div")
+        .replace(/<\/pre>/g, "<\/div>")
+        .replace(/<style[\s\S]*?<\/style>/g, "")                   // delete inline styling
+        .replace(/style=('|")[\s\S]*?>/g, ">")                     // delete style attributes
+        .replace(/src="images/gi, `src="https://www.gutenberg.org/files/${bookId}/${bookId}-h/images`)    // image links
+    page.innerHTML = bookHtml;
+    tabClick("book-tab");
+    page.scrollTo(0, 0);
+}
 
 // ---------  Search  ------------
 
@@ -143,6 +172,7 @@ function authorSearch(inputValue) {
         } 
     }
     toHtml(authorSearchResult, bookList);
+    tabClick("browse-tab");
 }
 
 function tagSearch(inputValue) {
@@ -157,6 +187,7 @@ function tagSearch(inputValue) {
         } 
     }
     toHtml(tagSearchResult, bookList);
+    tabClick("browse-tab");
 }
 
 // ---------  Display Search Results  ------------
@@ -175,7 +206,8 @@ function toHtml(bookArray, location, chapterArr) {
         }
 
         const date = book.Issued.split("-").map((item) => item.replace(/^0+/, ''));
-        const issued = [date[1], date[2], date[0]].join("-");
+        let issued = [date[1], date[2], date[0]].join("-");
+        let issuedHtml = "";
 
         const author = book.Authors
             .split(/;\s*/g).map((item) => item.split(/,s*/g))
@@ -200,7 +232,7 @@ function toHtml(bookArray, location, chapterArr) {
 
         let chapters = ``;
         const chapterRegex = /(?<!\s(mr)|(ms)|(mrs)|(dr)|(sr)|(jr))\.\s+/i
-        const bookNumber = Object.values(book)[0];
+        let bookNumber = Object.values(book)[0];
         let buttonHtml;
         if (location == bookList) {
             buttonHtml = `
@@ -210,12 +242,15 @@ function toHtml(bookArray, location, chapterArr) {
                     <a class="button fas fa-download" id="download-txt" href="https://www.gutenberg.org/files/${bookNumber}/${bookNumber}.txt"></a>
                 </div>`
         } else if (location == libraryList) {
+            bookNumber = "library" + bookNumber;
             buttonHtml = `
                 <div class="library-buttons">
                     <a type="button" class="button fas fa-book-open" id="readButton" ></a>
                     <a type="button" class="button fas fa-trash-alt" id="deleteButton" ></a>
                 </div>`
         } else if (location == chapterList) {
+            issuedHtml = `<h3 class="issued">Issued as an eBook on ${issued}</h3>`
+            bookNumber = "chapter" + bookNumber;
             tags = ``;
             chapters = chapterArr.map((chapter) => {
                 return `
@@ -232,7 +267,7 @@ function toHtml(bookArray, location, chapterArr) {
         <div class="card" id="${bookNumber}">
             <h1 class="title">${shortTitle}</h1>
             <h3 class="sub-title">${subTitle}</h3>
-            <h3 class="issued" id="${issued}">${issued}</h3>
+            ${issuedHtml}
             ${author}
             <div class="subjects">${tags}</div>
             ${buttonHtml}
@@ -247,35 +282,28 @@ function toHtml(bookArray, location, chapterArr) {
 
 // ---------  Full Screen  ------------
 
-let fullScreen = false;
 
-function toggleFullScreen() {
-    if (fullScreen == true) {
-        fullScreen = false;
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-          } else if (document.webkitExitFullscreen) { /* Safari */
-            document.webkitExitFullscreen();
-          } else if (document.msExitFullscreen) { /* IE11 */
-            document.msExitFullscreen();
-          }
-    } else {
-        fullScreen = true;
-        if (html.requestFullscreen) {
-            html.requestFullscreen();
-        } else if (elem.webkitRequestFullscreen) { /* Safari */
-            html.webkitRequestFullscreen();
-        } else if (elem.msRequestFullscreen) { /* IE11 */
-            html.msRequestFullscreen();
-        }
+function enterFullScreen() {
+    console.log("trying full screeen")
+    if (page.requestFullscreen) {
+        page.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) { /* Safari */
+        page.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) { /* IE11 */
+        page.msRequestFullscreen();
     }
 }
 
 // ---------  Focus Card  ------------
 
 function focusCard(bookId) {
-    Array.from(card).forEach((item) => {item.classList.remove("active")});
-    document.getElementById(bookId).classList.add("active");
+    if (document.getElementById(bookId).classList.contains("active")) {
+        document.getElementById(bookId).classList.remove("active");
+    } else {
+        Array.from(card).forEach((item) => {item.classList.remove("active")});
+        document.getElementById(bookId).classList.add("active");
+    }
+
 }
 
 // ---------  Clear Search  ------------
@@ -307,8 +335,11 @@ const eventMap = {
     author: { click: authorSearch },
     clear: { click: clearSearch },
     card: { click: focusCard },
-    readButton: { click: findChapters },
+    "card active": { click: focusCard },
+    readButton: { click: loadChapters },
     deleteButton: { click: deleteBook },
+    restartButton: { click: loadBook },
+    "full-screen-button": { click: enterFullScreen },
     tab: { click: tabClick }
 }
 

@@ -8,9 +8,12 @@
     --element-border-radius: 0.5rem;
     --element-background: rgba(255, 255, 255, 0.5);
     --active-background: rgba(255, 255, 255, 0.7);
+    --fullscreen-background: #ddd;
     --color-one: rgba(66,171,201,1);
     --color-two: rgba(27,122,149,1);
     --text-color: #555;
+    --print-font: 'Libre Baskerville', serif;
+    --control-font: 'Roboto', sans-serif;
   }
 
   html {
@@ -26,13 +29,14 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    font-family: 'Roboto', sans-serif;
+    font-family: var(--print-font);
     color: var(--text-color);
     
 }
 
 button {
     all: unset;
+    font-family: var(--control-font);
 }
 
 label {
@@ -41,20 +45,20 @@ label {
 
 h1 {
     font-size: 1.2rem;
-    font-family: 'Libre Baskerville', serif;
+    font-family: var(--print-font);
     margin: 0.5rem 0.25rem;
 }
 
 h2 {
     font-size: 1rem;
-    font-family: 'Libre Baskerville', serif;
+    font-family: var(--print-font);
     margin: 0.5rem 0.25rem;
 }
 
 h3 {
     font-size: 1rem;
     font-weight: 400;
-    font-family: 'Libre Baskerville', serif;
+    font-family: var(--print-font);
     margin: 0.25rem 0.25rem;
 }
 
@@ -97,7 +101,7 @@ a {
     text-align: center;
     font-weight: 800;
     font-size: 0.9rem;
-    font-family: 'Roboto', sans-serif;
+    font-family: var(--control-font);
     color: var(--color-one);
 }
 
@@ -138,7 +142,7 @@ a {
     margin: 0.25rem 0;
     padding: 1rem;
     font-size: 1rem;
-    font-family: 'Roboto', sans-serif;
+    font-family: var(--control-font);
     color: var(--text-color);
     font-weight: 600;
 }
@@ -255,16 +259,18 @@ a {
     width: calc(100% - 1.5rem);
     padding: 0.5rem;
     margin: 0.5rem 0.25rem;
-    font-family: 'Libre Baskerville', serif;
+    font-family: var(--print-font);
     background: var(--element-background);
     border-radius: var(--element-border-radius);
-    font-size: 1.125rem;
+    font-size: 1rem;
+    line-height: 1.5;
 }
 
-.page {
+#page {
     width: calc(100% - 0.5rem);
     height: 100%;
     margin: 0.25rem 0;
+    padding: 1rem;
     background: var(--element-background);
     border-radius: var(--element-border-radius);
     overflow-x: hidden;
@@ -278,4 +284,53 @@ a {
 
 #fileInput {
     display: none;
+}
+
+#page .center,
+#page h1,
+#page h2,
+#page h3,
+#page h4 {
+    text-align: center;
+    padding: 1em 0;
+}
+
+#page div {
+    width: 100%;
+    padding: 1em 0;
+}
+
+#page pre {
+    width: 100%;
+    padding: 1em 0;
+}
+
+#page img {
+    width: 100%;
+    border-radius: var(--element-border-radius);
+}
+
+#page hr {
+    all: unset;
+    display: block;
+    height: 5em;
+}
+
+#page p {
+    line-height: 1.5rem;
+}
+
+#page:-webkit-full-screen {
+    background: var(--fullscreen-background);
+    border-radius: 0;
+}
+
+#page:-ms-fullscreen {
+    background: var(--fullscreen-background);
+    border-radius: 0;
+}
+
+#page:fullscreen {
+    background: var(--fullscreen-background);
+    border-radius: 0;
 }
