@@ -152,12 +152,20 @@ function loadBook(e) {
     const bookId = findLibraryIndex(e)[0]
     const bookIndex = findLibraryIndex(e)[1];
     const bookData = htmlLibrary[bookIndex];
-    const bookHtml = bookData
-        // .replace(/<pre/g, "<div")
-        // .replace(/<\/pre>/g, "<\/div>")
-        .replace(/<style[\s\S]*?<\/style>/g, "")                   // delete inline styling
-        .replace(/style=('|")[\s\S]*?>/g, ">")                     // delete style attributes
-        .replace(/src="images/gi, `src="https://www.gutenberg.org/files/${bookId}/${bookId}-h/images`)    // image links
+    let bookHtml;
+    if (/<!DOCTYPE\s+?html/.test(bookData)) {
+        bookHtml = bookData
+            .replace(/<style[\s\S]*?<\/style>/g, "")                   // delete inline styling
+            .replace(/style=('|")[\s\S]*?>/g, ">")                     // delete style attributes
+            .replace(/src="images/gi, `src="https://www.gutenberg.org/files/${bookId}/${bookId}-h/images`) 
+    } else {
+        bookHtml = bookData
+            .replace(/\n\s\n/g, "<br><br>")
+            .replace(/^/, "<i>")
+            .replace(/(?<=[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?)\*\*\*/, "***</i>")         // remove everything before first hr tag
+            .replace(/END(?=\sOF\sTH..?\sPROJECT\sGUTENBERG[\s\S]*)/, "<i>END")              //remove everything after second hr tag
+            .replace(/$/, "</i>")
+    }
     page.innerHTML = bookHtml;
     tabClick("book-tab");
     page.scrollTo(0, 0);
@@ -290,7 +298,7 @@ function toHtml(bookArray, location, chapterArr) {
             }).join("");
             buttonHtml = `
                 <div class="chapters-buttons">
-                    <a type="button" class="button fas fa-redo-alt" id="restartButton" ></a>
+                    <a type="button" class="button fas fa-play" id="starttButton" ></a>
                     <a type="button" class="button fas fa-bookmark" id="bookmarkButton" ></a>
                 </div>`
         }

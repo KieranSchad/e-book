@@ -267,13 +267,14 @@ a {
 }
 
 #page {
-    width: calc(100% - 0.5rem);
+    width: 100%;
     height: 100%;
     margin: 0.25rem 0;
     padding: 1rem;
     background: var(--element-background);
     border-radius: var(--element-border-radius);
     overflow-x: hidden;
+    white-space:normal;
 }
 
 .control-bar label {
@@ -303,11 +304,22 @@ a {
 #page pre {
     padding: 1em 0;
     white-space:pre-line;
+    font-family: var(--print-font);
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+#page i {
+    padding: 1em 0;
+    font-family: var(--print-font);
+    font-style: italic;
+    font-size: 0.9rem;
 }
 
 #page img {
     width: 100%;
     border-radius: var(--element-border-radius);
+    margin: 1rem 0;
 }
 
 #page hr {
@@ -319,6 +331,11 @@ a {
 #page p {
     line-height: 1.5rem;
 }
+
+#page a {
+    text-align: center;
+}
+
 
 #page:-webkit-full-screen {
     background: var(--fullscreen-background);
