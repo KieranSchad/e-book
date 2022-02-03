@@ -298,7 +298,7 @@ function toHtml(bookArray, location, chapterArr) {
             }).join("");
             buttonHtml = `
                 <div class="chapters-buttons">
-                    <a type="button" class="button fas fa-play" id="starttButton" ></a>
+                    <a type="button" class="button fas fa-play" id="startButton" ></a>
                     <a type="button" class="button fas fa-bookmark" id="bookmarkButton" ></a>
                 </div>`
         }
@@ -378,7 +378,7 @@ const eventMap = {
     "card active": { click: focusCard },
     readButton: { click: loadChapters },
     deleteButton: { click: deleteBook },
-    restartButton: { click: loadBook },
+    startButton: { click: loadBook },
     "full-screen-button": { click: enterFullScreen },
     tab: { click: tabClick }
 }
