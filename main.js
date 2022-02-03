@@ -1,6 +1,9 @@
+
+// ---------  Get Gutenberg Project catalog  ------------
+
 import database from "./pg_caralog_2022_01_28.json" assert { type: "json" };
 
-
+// ---------  Get frequently used elements  ------------
 
 const tab = document.getElementsByClassName('tab');
 const panel = document.getElementsByClassName('panel');
@@ -15,85 +18,104 @@ const searchBar = document.getElementById("search-bar");
 // ---------  Resize Height  ------------
 
 function resizeHeight() {
-    let vh = window.innerHeight * 0.01;
+    let vh = window.innerHeight * 0.01 - 0.001;
     document.documentElement.style.setProperty('--vh', `${vh}px`);
 }
 
+// ---------  library  ------------
+
+let displayLibrary = [];
+let htmlLibrary = [];
+
+// ---------  Get local library  ------------
+
+if (localStorage.getItem("displayLibrary") && localStorage.getItem("htmlLibrary")) {
+      displayLibrary = JSON.parse(localStorage.getItem("displayLibrary"));
+      htmlLibrary = JSON.parse(localStorage.getItem("htmlLibrary"));
+
+  } else {
+    fetch('./library/12-h.htm', {mode: 'no-cors'})
+        .then(response => response.text())
+        .then(data=> htmlLibrary[0] = data)
+        .catch(error => console.error(error));
+        
+    fetch('./library/61.txt', {mode: 'no-cors'})
+        .then(response => response.text())
+        .then(data=> htmlLibrary[1] = data)
+        .catch(error => console.error(error));
+
+    fetch('./library/76-h.htm', {mode: 'no-cors'})
+        .then(response => response.text())
+        .then(data=> htmlLibrary[2] = data)
+        .catch(error => console.error(error));
+
+    displayLibrary = [ {
+        "Text#": 12,
+        "Type": "Text",
+        "Issued": "2008-06-25",
+        "Title": "Through the Looking-Glass",
+        "Language": "en",
+        "Authors": "Carroll, Lewis, 1832-1898",
+        "Subjects": "Fantasy fiction; Children's stories; Imaginary places -- Juvenile fiction; Alice (Fictitious character from Carroll) -- Juvenile fiction",
+        "LoCC": "PR; PZ",
+        "Bookshelves": "Best Books Ever Listings; Children's Literature"
+        },
+        {
+        "Text#": 61,
+        "Type": "Text",
+        "Issued": "2005-01-25",
+        "Title": "The Communist Manifesto",
+        "Language": "en",
+        "Authors": "Engels, Friedrich, 1820-1895; Marx, Karl, 1818-1883",
+        "Subjects": "Socialism; Communism",
+        "LoCC": "HX",
+        "Bookshelves": "Politics; Philosophy; Banned Books from Anne Haight's list"
+        },
+        {
+        "Text#": 76,
+        "Type": "Text",
+        "Issued": "2004-06-29",
+        "Title": "Adventures of Huckleberry Finn",
+        "Language": "en",
+        "Authors": "Twain, Mark, 1835-1910; Kemble, E. W. (Edward Windsor), 1861-1933 [Illustrator]",
+        "Subjects": "Humorous stories; Bildungsromans; Boys -- Fiction; Male friendship -- Fiction; Adventure stories; Missouri -- Fiction; Race relations -- Fiction; Runaway children -- Fiction; Finn, Huckleberry (Fictitious character) -- Fiction; Fugitive slaves -- Fiction; Mississippi River -- Fiction",
+        "LoCC": "PS",
+        "Bookshelves": "Best Books Ever Listings; Banned Books from Anne Haight's list; Banned Books List from the American Library Association"
+        } ];
+  }
+console.log(displayLibrary);
+console.log(htmlLibrary);
 
 // ---------  Upload  ------------
 
-let displayLibrary = [ {
-    "Text#": 12,
-    "Type": "Text",
-    "Issued": "2008-06-25",
-    "Title": "Through the Looking-Glass",
-    "Language": "en",
-    "Authors": "Carroll, Lewis, 1832-1898",
-    "Subjects": "Fantasy fiction; Children's stories; Imaginary places -- Juvenile fiction; Alice (Fictitious character from Carroll) -- Juvenile fiction",
-    "LoCC": "PR; PZ",
-    "Bookshelves": "Best Books Ever Listings; Children's Literature"
-  },
-  {
-    "Text#": 61,
-    "Type": "Text",
-    "Issued": "2005-01-25",
-    "Title": "The Communist Manifesto",
-    "Language": "en",
-    "Authors": "Engels, Friedrich, 1820-1895; Marx, Karl, 1818-1883",
-    "Subjects": "Socialism; Communism",
-    "LoCC": "HX",
-    "Bookshelves": "Politics; Philosophy; Banned Books from Anne Haight's list"
-  },
-  {
-    "Text#": 76,
-    "Type": "Text",
-    "Issued": "2004-06-29",
-    "Title": "Adventures of Huckleberry Finn",
-    "Language": "en",
-    "Authors": "Twain, Mark, 1835-1910; Kemble, E. W. (Edward Windsor), 1861-1933 [Illustrator]",
-    "Subjects": "Humorous stories; Bildungsromans; Boys -- Fiction; Male friendship -- Fiction; Adventure stories; Missouri -- Fiction; Race relations -- Fiction; Runaway children -- Fiction; Finn, Huckleberry (Fictitious character) -- Fiction; Fugitive slaves -- Fiction; Mississippi River -- Fiction",
-    "LoCC": "PS",
-    "Bookshelves": "Best Books Ever Listings; Banned Books from Anne Haight's list; Banned Books List from the American Library Association"
-  } ];
-let htmlLibrary = [];
-
-fetch('./library/12-h.htm', {mode: 'no-cors'})
-    .then(response => response.text())
-    .then(data=> htmlLibrary[0] = data)
-    .catch(error => console.error(error));
-    
-fetch('./library/61.txt', {mode: 'no-cors'})
-    .then(response => response.text())
-    .then(data=> htmlLibrary[1] = data)
-    .catch(error => console.error(error));
-
-fetch('./library/76-h.htm', {mode: 'no-cors'})
-    .then(response => response.text())
-    .then(data=> htmlLibrary[2] = data)
-    .catch(error => console.error(error));
-
 function handleFileSelect(event) {
     const bookId = parseInt(event.target.files[0].name.match(/\d+(?=((-\w)*\.(htm|txt)))/i), 10)   //match number in filename, lookahead to extension
-    console.log(bookId);
-    const bookIndex = database.map((book) => parseInt(Object.values(book)[0], 10)).indexOf(bookId);
-    displayLibrary.push(database[bookIndex]);
-    const reader = new FileReader();
-    reader.onload = handleFileLoad;
-    reader.readAsText(event.target.files[0])
-    card = document.getElementsByClassName('card');
+    if (database.some((book) => Object.values(book)[0] == bookId)) {
+        const bookIndex = database.map((book) => parseInt(Object.values(book)[0], 10)).indexOf(bookId);
+        displayLibrary.push(database[bookIndex]);
+        const reader = new FileReader();
+        reader.onload = handleFileLoad;
+        reader.readAsText(event.target.files[0])
+        card = document.getElementsByClassName('card');
+    } else {
+        alert("File does not match any books in the database")
+    }
+
   }
   
   function handleFileLoad(event) {
     htmlLibrary.push(event.target.result);
-    console.log(displayLibrary);
-    console.log(htmlLibrary);
+    localStorage.setItem("displayLibrary", JSON.stringify(displayLibrary))
+    localStorage.setItem("htmlLibrary", JSON.stringify(htmlLibrary));
+    console.log(localStorage.getItem("displayLibrary"));
+    console.log(localStorage.getItem("htmlLibrary"));
     showLibrary();;
   }
 function showLibrary() {
     toHtml(displayLibrary, libraryList);
 }
 
-// ---------  Find book for Chapters  ------------
+// ---------  Find book Id and Index for selected book  ------------
 
 function findLibraryIndex(e) {
     const bookId = parseInt(e.target.parentElement.parentElement.id.slice(7), 10);
@@ -101,10 +123,15 @@ function findLibraryIndex(e) {
     return [bookId, bookIndex];
 }
 
-// ---------  Load Chapters  ------------
+// ---------  Load Book  ------------
 
-function loadChapters(e) {
-    let bookIndex = findLibraryIndex(e)[1];
+let currentBook = 0;
+
+function loadBook(e, bookIndex) {
+    if (e) {
+        bookIndex = findLibraryIndex(e)[1];
+    }
+    currentBook = bookIndex;
     const bookData = htmlLibrary[bookIndex];
     let chapters;
     if (/href="#/.test(bookData) && /<hr\s*\/>/.test(bookData)) {
@@ -141,13 +168,13 @@ function loadChapters(e) {
     }
     
     toHtml([displayLibrary[bookIndex]], chapterList, chapters)
-    tabClick("chapters-tab");
+    tabClick("book-tab");
 }
 
 
-// ---------  Load Book  ------------
+// ---------  Load Page  ------------
 
-function loadBook(e) {
+function loadPage(e) {
     const bookId = findLibraryIndex(e)[0]
     const bookIndex = findLibraryIndex(e)[1];
     const bookData = htmlLibrary[bookIndex];
@@ -166,7 +193,7 @@ function loadBook(e) {
             .replace(/$/, "</i>")
     }
     page.innerHTML = bookHtml;
-    tabClick("book-tab");
+    tabClick("page-tab");
     page.scrollTo(0, 0);
 }
 
@@ -279,13 +306,18 @@ function toHtml(bookArray, location, chapterArr) {
                     <a class="button fas fa-download" id="download-htm" href="https://www.gutenberg.org/files/${bookNumber}/${bookNumber}-h/${bookNumber}-h.htm"></a>
                     <a class="button fas fa-download" id="download-html" href="https://www.gutenberg.org/cache/epub/${bookNumber}/pg${bookNumber}.html"></a>
                     <a class="button fas fa-download" id="download-txt" href="https://www.gutenberg.org/files/${bookNumber}/${bookNumber}.txt"></a>
+                </div>
+                <div class ="download-buttons">
+                    <a>${bookNumber}-h.htm</a>
+                    <a>pg${bookNumber}.html</a>
+                    <a>${bookNumber}.txt</a>
                 </div>`
         } else if (location == libraryList) {
             bookNumber = "library" + bookNumber;
             buttonHtml = `
                 <div class="library-buttons">
-                    <a type="button" class="button fas fa-book-open" id="readButton" ></a>
-                    <a type="button" class="button fas fa-trash-alt" id="deleteButton" ></a>
+                    <a class="button fas fa-book-open" id="read-button" ></a>
+                    <a class="button fas fa-trash-alt" id="delete-button" ></a>
                 </div>`
         } else if (location == chapterList) {
             issuedHtml = `<h3 class="issued">Issued as an eBook on ${issued}</h3>`
@@ -296,9 +328,9 @@ function toHtml(bookArray, location, chapterArr) {
                     <button type="button" class="chapterButton" id="${chapter[0]}">${chapter[1].replace(chapterRegex, "<br>")}</button>`
             }).join("");
             buttonHtml = `
-                <div class="chapters-buttons">
-                    <a type="button" class="button fas fa-play" id="startButton" ></a>
-                    <a type="button" class="button fas fa-bookmark" id="bookmarkButton" ></a>
+                <div class="book-buttons">
+                    <a class="button fas fa-play" id="start-button" ></a>
+                    <a class="button fas fa-bookmark" id="bookmark-button" ></a>
                 </div>`
         }
         
@@ -354,8 +386,17 @@ function clearSearch() {
     toHtml([], bookList);
 }
 
-function deleteBook() {
-    console.log("delete book");
+// ---------  Delete Book  ------------
+
+function deleteBook(e) {
+    let bookIndex = findLibraryIndex(e)[1];
+    displayLibrary.splice(bookIndex, 1);
+    htmlLibrary.splice(bookIndex, 1);
+    toHtml(displayLibrary, libraryList);
+    localStorage.setItem("displayLibrary", JSON.stringify(displayLibrary));
+    localStorage.setItem("htmlLibrary", JSON.stringify(htmlLibrary));
+    console.log(displayLibrary);
+    console.log(htmlLibrary);
 }
 
 // ---------  Panel Navigation  ------------
@@ -367,6 +408,22 @@ function tabClick(id) {
     document.getElementById(id.replace("tab", "panel")).classList.add("active");
 }
 
+// ---------  Book Navigation  ------------
+
+function previousBook() {
+    if (currentBook == 0) {
+        currentBook = displayLibrary.length;
+    }
+    loadBook(false, currentBook -1);
+}
+
+function nextBook() {
+    if (currentBook == displayLibrary.length - 1) {
+        currentBook = -1;
+    }
+    loadBook(false, currentBook + 1);
+}
+
 // ---------  User Inputs  ------------
 
 const eventMap = {
@@ -375,10 +432,12 @@ const eventMap = {
     clear: { click: clearSearch },
     card: { click: focusCard },
     "card active": { click: focusCard },
-    readButton: { click: loadChapters },
-    deleteButton: { click: deleteBook },
-    startButton: { click: loadBook },
+    "read-button": { click: loadBook },
+    "delete-button": { click: deleteBook },
+    "start-button": { click: loadPage },
     "full-screen-button": { click: enterFullScreen },
+    "previous-book-button": { click: previousBook },
+    "next-book-button": { click: nextBook },
     tab: { click: tabClick }
 }
 

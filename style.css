@@ -18,13 +18,14 @@
 
   html {
     background: linear-gradient(180deg, var(--color-one) 0%, var(--color-two) 100%);
+    font-size: 16px;
   }
 
 .wrapper {
     width: 100%;
     height: 100vh;
     height: calc(var(--vh, 1vh) * 100);
-    padding: 0.25rem;
+    padding: 4px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -74,10 +75,10 @@ a {
     cursor: pointer;
 }
 
-#chapters-panel h1, 
-#chapters-panel h2,
-#chapters-panel h3,
-#chapters-panel .chapters-buttons {
+#book-panel h1, 
+#book-panel h2,
+#book-panel h3,
+#book-panel .chapters-buttons {
     padding: 0.5rem 0;
 }
 
@@ -90,26 +91,26 @@ a {
 }
 
 .control-bar {
-    width: calc(100% + 0.5rem);
+    width: calc(100% + 8px);
 }
 
 .tab,
 .button {
     flex: 0.25;
-    height: 3rem;
+    height: 48px;
     background: var(--element-background);
     border-radius: var(--element-border-radius);
-    margin: 0.25rem;
+    margin: 4px;
     text-align: center;
     font-weight: 800;
-    font-size: 0.9rem;
+    font-size: 16px;
     font-family: var(--control-font);
     color: var(--color-one);
 }
 
 .control-bar .button {
     color: var(--color-two);
-    font-size: 1.25rem;
+    font-size: 20px;
     cursor: pointer;
 }
 
@@ -120,10 +121,10 @@ a {
 .panel {
     display: none;
     width: 100%;
-    height: calc(calc(var(--vh, 1vh) * 100) - 4rem);
+    height: calc(calc(var(--vh, 1vh) * 100) - 64px);
     flex-direction: column;
     align-items: center;
-    padding: 0 0.25rem;
+    padding: 0 4px;
     
 }
 
@@ -174,7 +175,7 @@ a {
 #book-list {
     width: 100%;
     height: 100%;
-    margin: 0.25rem 0;
+    margin: 4px 0;
     overflow-y: scroll;
 }
 
@@ -191,14 +192,14 @@ a {
     margin-bottom: 0.5rem;
 }
 
-#chapters-panel .card {
+#book-panel .card {
     /* text-align: center; */
     min-height: 100%;
     margin-bottom: 0;
     padding-bottom: 0;
 }
 
-.chapters-buttons,
+.book-buttons,
 .library-buttons,
 .download-buttons {
     display: none;
@@ -206,7 +207,7 @@ a {
 
 }
 
-.chapters-buttons,
+.book-buttons,
 .card.active .download-buttons,
 .card.active .library-buttons {
     display: flex;
@@ -219,22 +220,22 @@ a {
     display: none;
 }
 
-#chapters-panel .issued,
-#chapters-panel .sub-title,
+#book-panel .issued,
+#book-panel .sub-title,
 .card.active .issued,
 .card.active .sub-title {
     display: block;
 }
 
-.chapters-buttons .button,
+.book-buttons .button,
 .library-buttons .button,
 .download-buttons .button {
     display: inline-block;
     width: 3rem;
-    height: 3rem;
+    height: 50px;
     color: var(--text-color);
-    font-size: 1.25rem;
-    line-height: 3rem;
+    font-size: 20px;
+    line-height: 50px;
     flex: 1;
 }
 
@@ -248,7 +249,7 @@ a {
     overflow-y: hidden;
 }
 
-#chapters-panel .subjects,
+#book-panel .subjects,
 .card.active .subjects {
     max-height: fit-content;
 }
@@ -269,19 +270,21 @@ a {
     font-family: var(--print-font);
     background: var(--element-background);
     border-radius: var(--element-border-radius);
-    font-size: 1rem;
-    line-height: 1.5;
+    font-size: 1.1rem;
+    line-height: 1.9;
 }
 
 #page {
     width: 100%;
     height: 100%;
-    margin: 0.25rem 0;
+    margin: 4px 0;
     padding: 1rem;
     background: var(--element-background);
     border-radius: var(--element-border-radius);
     overflow-x: hidden;
     white-space:normal;
+    font-size: 1.1rem;
+    line-height: 1.9rem;
 }
 
 .control-bar label {
@@ -300,27 +303,25 @@ a {
 #page h3,
 #page h4 {
     text-align: center;
-    padding: 1em 0;
+    padding: 1rem 0;
 }
 
 #page div {
     width: 100%;
-    padding: 1em 0;
+    padding: 1rem 0;
 }
 
 #page pre {
-    padding: 1em 0;
+    padding: 1rem 0;
     white-space:pre-line;
     font-family: var(--print-font);
     font-style: italic;
-    font-size: 0.9rem;
 }
 
 #page i {
-    padding: 1em 0;
+    padding: 1rem 0;
     font-family: var(--print-font);
     font-style: italic;
-    font-size: 0.9rem;
 }
 
 #page img {
@@ -332,11 +333,7 @@ a {
 #page hr {
     all: unset;
     display: block;
-    height: 5em;
-}
-
-#page p {
-    line-height: 1.5rem;
+    height: 5rem;
 }
 
 #page a {
