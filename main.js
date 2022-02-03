@@ -59,17 +59,17 @@ let htmlLibrary = [];
 
 fetch('./library/12-h.htm', {mode: 'no-cors'})
     .then(response => response.text())
-    .then(data=> htmlLibrary.push(data))
+    .then(data=> htmlLibrary[0] = data)
     .catch(error => console.error(error));
     
 fetch('./library/61.txt', {mode: 'no-cors'})
     .then(response => response.text())
-    .then(data=> htmlLibrary.push(data))
+    .then(data=> htmlLibrary[1] = data)
     .catch(error => console.error(error));
 
 fetch('./library/76-h.htm', {mode: 'no-cors'})
     .then(response => response.text())
-    .then(data=> htmlLibrary.push(data))
+    .then(data=> htmlLibrary[2] = data)
     .catch(error => console.error(error));
 
 function handleFileSelect(event) {
@@ -141,7 +141,6 @@ function loadChapters(e) {
     }
     
     toHtml([displayLibrary[bookIndex]], chapterList, chapters)
-    console.log(chapters);
     tabClick("chapters-tab");
 }
 

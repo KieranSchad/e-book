@@ -37,6 +37,7 @@
 button {
     all: unset;
     font-family: var(--control-font);
+    cursor: pointer;
 }
 
 label {
@@ -70,6 +71,7 @@ a {
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
 }
 
 #chapters-panel h1, 
@@ -108,6 +110,7 @@ a {
 .control-bar .button {
     color: var(--color-two);
     font-size: 1.25rem;
+    cursor: pointer;
 }
 
 .active.tab {
@@ -233,6 +236,10 @@ a {
     font-size: 1.25rem;
     line-height: 3rem;
     flex: 1;
+}
+
+.author {
+    cursor: pointer;
 }
 
 .subjects {
