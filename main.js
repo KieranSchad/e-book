@@ -32,10 +32,42 @@ let displayLibrary = [ {
     "Subjects": "Fantasy fiction; Children's stories; Imaginary places -- Juvenile fiction; Alice (Fictitious character from Carroll) -- Juvenile fiction",
     "LoCC": "PR; PZ",
     "Bookshelves": "Best Books Ever Listings; Children's Literature"
+  },
+  {
+    "Text#": 61,
+    "Type": "Text",
+    "Issued": "2005-01-25",
+    "Title": "The Communist Manifesto",
+    "Language": "en",
+    "Authors": "Engels, Friedrich, 1820-1895; Marx, Karl, 1818-1883",
+    "Subjects": "Socialism; Communism",
+    "LoCC": "HX",
+    "Bookshelves": "Politics; Philosophy; Banned Books from Anne Haight's list"
+  },
+  {
+    "Text#": 76,
+    "Type": "Text",
+    "Issued": "2004-06-29",
+    "Title": "Adventures of Huckleberry Finn",
+    "Language": "en",
+    "Authors": "Twain, Mark, 1835-1910; Kemble, E. W. (Edward Windsor), 1861-1933 [Illustrator]",
+    "Subjects": "Humorous stories; Bildungsromans; Boys -- Fiction; Male friendship -- Fiction; Adventure stories; Missouri -- Fiction; Race relations -- Fiction; Runaway children -- Fiction; Finn, Huckleberry (Fictitious character) -- Fiction; Fugitive slaves -- Fiction; Mississippi River -- Fiction",
+    "LoCC": "PS",
+    "Bookshelves": "Best Books Ever Listings; Banned Books from Anne Haight's list; Banned Books List from the American Library Association"
   } ];
 let htmlLibrary = [];
 
 fetch('./library/12-h.htm', {mode: 'no-cors'})
+    .then(response => response.text())
+    .then(data=> htmlLibrary.push(data))
+    .catch(error => console.error(error));
+    
+fetch('./library/61.txt', {mode: 'no-cors'})
+    .then(response => response.text())
+    .then(data=> htmlLibrary.push(data))
+    .catch(error => console.error(error));
+
+fetch('./library/76-h.htm', {mode: 'no-cors'})
     .then(response => response.text())
     .then(data=> htmlLibrary.push(data))
     .catch(error => console.error(error));
@@ -121,8 +153,8 @@ function loadBook(e) {
     const bookIndex = findLibraryIndex(e)[1];
     const bookData = htmlLibrary[bookIndex];
     const bookHtml = bookData
-        .replace(/<pre/g, "<div")
-        .replace(/<\/pre>/g, "<\/div>")
+        // .replace(/<pre/g, "<div")
+        // .replace(/<\/pre>/g, "<\/div>")
         .replace(/<style[\s\S]*?<\/style>/g, "")                   // delete inline styling
         .replace(/style=('|")[\s\S]*?>/g, ">")                     // delete style attributes
         .replace(/src="images/gi, `src="https://www.gutenberg.org/files/${bookId}/${bookId}-h/images`)    // image links

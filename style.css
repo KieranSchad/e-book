@@ -301,8 +301,8 @@ a {
 }
 
 #page pre {
-    width: 100%;
     padding: 1em 0;
+    white-space:pre-line;
 }
 
 #page img {
