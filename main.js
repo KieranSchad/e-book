@@ -22,6 +22,8 @@ function resizeHeight() {
     document.documentElement.style.setProperty('--vh', `${vh}px`);
 }
 
+resizeHeight();
+
 // ---------  library  ------------
 
 let displayLibrary = [];
@@ -29,62 +31,62 @@ let htmlLibrary = [];
 
 // ---------  Get local library  ------------
 
-if (localStorage.getItem("displayLibrary") && localStorage.getItem("htmlLibrary")) {
-      displayLibrary = JSON.parse(localStorage.getItem("displayLibrary"));
-      htmlLibrary = JSON.parse(localStorage.getItem("htmlLibrary"));
+function getLocalLibrary() {
+    if (localStorage.getItem("displayLibrary") && localStorage.getItem("htmlLibrary")) {
+        displayLibrary = JSON.parse(localStorage.getItem("displayLibrary"));
+        htmlLibrary = JSON.parse(localStorage.getItem("htmlLibrary"));
 
-  } else {
-    fetch('./library/12-h.htm', {mode: 'no-cors'})
-        .then(response => response.text())
-        .then(data=> htmlLibrary[0] = data)
-        .catch(error => console.error(error));
-        
-    fetch('./library/61.txt', {mode: 'no-cors'})
-        .then(response => response.text())
-        .then(data=> htmlLibrary[1] = data)
-        .catch(error => console.error(error));
+    } else {
+        fetch('./library/12-h.htm', {mode: 'no-cors'})
+            .then(response => response.text())
+            .then(data=> htmlLibrary[0] = data)
+            .catch(error => console.error(error));
+            
+        fetch('./library/61.txt', {mode: 'no-cors'})
+            .then(response => response.text())
+            .then(data=> htmlLibrary[1] = data)
+            .catch(error => console.error(error));
 
-    fetch('./library/76-h.htm', {mode: 'no-cors'})
-        .then(response => response.text())
-        .then(data=> htmlLibrary[2] = data)
-        .catch(error => console.error(error));
+        fetch('./library/76-h.htm', {mode: 'no-cors'})
+            .then(response => response.text())
+            .then(data=> htmlLibrary[2] = data)
+            .catch(error => console.error(error));
 
-    displayLibrary = [ {
-        "Text#": 12,
-        "Type": "Text",
-        "Issued": "2008-06-25",
-        "Title": "Through the Looking-Glass",
-        "Language": "en",
-        "Authors": "Carroll, Lewis, 1832-1898",
-        "Subjects": "Fantasy fiction; Children's stories; Imaginary places -- Juvenile fiction; Alice (Fictitious character from Carroll) -- Juvenile fiction",
-        "LoCC": "PR; PZ",
-        "Bookshelves": "Best Books Ever Listings; Children's Literature"
-        },
-        {
-        "Text#": 61,
-        "Type": "Text",
-        "Issued": "2005-01-25",
-        "Title": "The Communist Manifesto",
-        "Language": "en",
-        "Authors": "Engels, Friedrich, 1820-1895; Marx, Karl, 1818-1883",
-        "Subjects": "Socialism; Communism",
-        "LoCC": "HX",
-        "Bookshelves": "Politics; Philosophy; Banned Books from Anne Haight's list"
-        },
-        {
-        "Text#": 76,
-        "Type": "Text",
-        "Issued": "2004-06-29",
-        "Title": "Adventures of Huckleberry Finn",
-        "Language": "en",
-        "Authors": "Twain, Mark, 1835-1910; Kemble, E. W. (Edward Windsor), 1861-1933 [Illustrator]",
-        "Subjects": "Humorous stories; Bildungsromans; Boys -- Fiction; Male friendship -- Fiction; Adventure stories; Missouri -- Fiction; Race relations -- Fiction; Runaway children -- Fiction; Finn, Huckleberry (Fictitious character) -- Fiction; Fugitive slaves -- Fiction; Mississippi River -- Fiction",
-        "LoCC": "PS",
-        "Bookshelves": "Best Books Ever Listings; Banned Books from Anne Haight's list; Banned Books List from the American Library Association"
-        } ];
-  }
-console.log(displayLibrary);
-console.log(htmlLibrary);
+        displayLibrary = [ {
+            "Text#": 12,
+            "Type": "Text",
+            "Issued": "2008-06-25",
+            "Title": "Through the Looking-Glass",
+            "Language": "en",
+            "Authors": "Carroll, Lewis, 1832-1898",
+            "Subjects": "Fantasy fiction; Children's stories; Imaginary places -- Juvenile fiction; Alice (Fictitious character from Carroll) -- Juvenile fiction",
+            "LoCC": "PR; PZ",
+            "Bookshelves": "Best Books Ever Listings; Children's Literature"
+            },
+            {
+            "Text#": 61,
+            "Type": "Text",
+            "Issued": "2005-01-25",
+            "Title": "The Communist Manifesto",
+            "Language": "en",
+            "Authors": "Engels, Friedrich, 1820-1895; Marx, Karl, 1818-1883",
+            "Subjects": "Socialism; Communism",
+            "LoCC": "HX",
+            "Bookshelves": "Politics; Philosophy; Banned Books from Anne Haight's list"
+            },
+            {
+            "Text#": 76,
+            "Type": "Text",
+            "Issued": "2004-06-29",
+            "Title": "Adventures of Huckleberry Finn",
+            "Language": "en",
+            "Authors": "Twain, Mark, 1835-1910; Kemble, E. W. (Edward Windsor), 1861-1933 [Illustrator]",
+            "Subjects": "Humorous stories; Bildungsromans; Boys -- Fiction; Male friendship -- Fiction; Adventure stories; Missouri -- Fiction; Race relations -- Fiction; Runaway children -- Fiction; Finn, Huckleberry (Fictitious character) -- Fiction; Fugitive slaves -- Fiction; Mississippi River -- Fiction",
+            "LoCC": "PS",
+            "Bookshelves": "Best Books Ever Listings; Banned Books from Anne Haight's list; Banned Books List from the American Library Association"
+            } ];
+    }
+}
 
 // ---------  Upload  ------------
 
@@ -107,8 +109,6 @@ function handleFileSelect(event) {
     htmlLibrary.push(event.target.result);
     localStorage.setItem("displayLibrary", JSON.stringify(displayLibrary))
     localStorage.setItem("htmlLibrary", JSON.stringify(htmlLibrary));
-    console.log(localStorage.getItem("displayLibrary"));
-    console.log(localStorage.getItem("htmlLibrary"));
     showLibrary();;
   }
 function showLibrary() {
@@ -127,11 +127,16 @@ function findLibraryIndex(e) {
 
 let currentBook = 0;
 
-function loadBook(e, bookIndex) {
+if (localStorage.getItem("currentBook")) {
+    currentBook = localStorage.getItem("currentBook");
+}
+
+function loadBook(e, bookIndex, goToPanel) {
     if (e) {
         bookIndex = findLibraryIndex(e)[1];
     }
     currentBook = bookIndex;
+    localStorage.setItem("currentBook", currentBook);
     const bookData = htmlLibrary[bookIndex];
     let chapters;
     if (/href="#/.test(bookData) && /<hr\s*\/>/.test(bookData)) {
@@ -146,15 +151,13 @@ function loadBook(e, bookIndex) {
             .replace(/[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?\*/, "")         // remove everything before first hr tag
             .replace(/END\sOF\sTH..?\sPROJECT\sGUTENBERG[\s\S]*/, "")              //remove everything after second hr tag
             .match(/(Chapter|CHAPTER)\s+((\d)+|(|I|V|X|C|L)+)/g)                   // match chapter + number or roman numeral
-            .map((item, index) => ["chapter", item, index]);
-            console.log(chapters)            
+            .map((item, index) => ["chapter", item, index]);           
     } else if (/<h2>/.test(bookData)) {
         chapters = bookData
             .replace(/[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?\*/, "")         // remove everything before first hr tag
             .replace(/END\sOF\sTH..?\sPROJECT\sGUTENBERG[\s\S]*/, "")              //remove everything after second hr tag
             .match(/(?<=<h2>).+(?=<\/h2>)/g)                              // match anything in an h2 tag
             .map((item, index) => ["h2", item, index]);
-            console.log(chapters)
     } else {
         chapters = bookData
             .replace(/[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?\*/, "")      // remove everything before first hr tag
@@ -164,19 +167,27 @@ function loadBook(e, bookIndex) {
                 return (!(line.match(/[a-z]+/g)) && line.match(/[A-Z]/g))           
                 })
             .map((item, index) => ["capital", item, index]);
-            console.log(chapters)
     }
     
     toHtml([displayLibrary[bookIndex]], chapterList, chapters)
-    tabClick("book-tab");
+    if (goToPanel !== "stay") {
+        tabClick("book-tab");
+    }
 }
 
+let currentPage = 0;
+
+if (localStorage.getItem("currentPage")) {
+    currentPage = localStorage.getItem("currentPage");
+}
 
 // ---------  Load Page  ------------
 
-function loadPage(e) {
-    const bookId = findLibraryIndex(e)[0]
-    const bookIndex = findLibraryIndex(e)[1];
+function loadPage(e, bookIndex, pageIndex, gotoPanel) {
+    if (e) {
+        bookIndex = findLibraryIndex(e)[1];
+    }
+    const bookId = parseInt(Object.values(displayLibrary[bookIndex])[0], 10);
     const bookData = htmlLibrary[bookIndex];
     let bookHtml;
     if (/<!DOCTYPE\s+?html/.test(bookData)) {
@@ -193,8 +204,10 @@ function loadPage(e) {
             .replace(/$/, "</i>")
     }
     page.innerHTML = bookHtml;
-    tabClick("page-tab");
-    page.scrollTo(0, 0);
+    if (gotoPanel !== "stay") {
+        tabClick("page-tab");
+        page.scrollTo(0, 0);
+    }
 }
 
 // ---------  Search  ------------
@@ -355,7 +368,6 @@ function toHtml(bookArray, location, chapterArr) {
 
 
 function enterFullScreen() {
-    console.log("trying full screeen")
     if (page.requestFullscreen) {
         page.requestFullscreen();
     } else if (elem.webkitRequestFullscreen) { /* Safari */
@@ -395,8 +407,6 @@ function deleteBook(e) {
     toHtml(displayLibrary, libraryList);
     localStorage.setItem("displayLibrary", JSON.stringify(displayLibrary));
     localStorage.setItem("htmlLibrary", JSON.stringify(htmlLibrary));
-    console.log(displayLibrary);
-    console.log(htmlLibrary);
 }
 
 // ---------  Panel Navigation  ------------
@@ -422,6 +432,14 @@ function nextBook() {
         currentBook = -1;
     }
     loadBook(false, currentBook + 1);
+}
+
+// ---------  After Page Load  ------------
+
+function onLoad() {
+    showLibrary();
+    loadBook(false, currentBook, "stay");
+    loadPage(false, currentBook, currentPage, "stay");
 }
 
 // ---------  User Inputs  ------------
@@ -463,6 +481,8 @@ function eventHandler(ev) {
 
 searchBar.addEventListener('input', searchWithDelay);
 document.getElementById('fileInput').addEventListener('change', handleFileSelect, false);
-window.addEventListener('load', resizeHeight);
-window.addEventListener('load', showLibrary);
+window.addEventListener('load', getLocalLibrary);
+window.addEventListener("load", () => setTimeout(function(){
+    onLoad();
+},50));
 window.addEventListener('resize', resizeHeight);
