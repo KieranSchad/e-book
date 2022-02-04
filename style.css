@@ -6,11 +6,12 @@
 
 :root {
     --element-border-radius: 0.5rem;
-    --element-background: rgba(255, 255, 255, 0.5);
-    --active-background: rgba(255, 255, 255, 0.7);
-    --fullscreen-background: #ddd;
-    --color-one: rgba(66,171,201,1);
-    --color-two: rgba(27,122,149,1);
+    --element-background: rgba(255, 255, 255, 0.6);
+    --active-background: rgba(255, 255, 255, 0.8);
+    --fullscreen-background: #c7b294;
+    --fullscreen-text-color: #13253b;
+    --color-one: rgba(219,177,99,1);
+    --color-two: rgba(81,48,21,1);
     --text-color: #555;
     --print-font: 'Libre Baskerville', serif;
     --control-font: 'Roboto', sans-serif;
@@ -343,15 +344,18 @@ a {
 
 #page:-webkit-full-screen {
     background: var(--fullscreen-background);
+    color: var(--fullscreen-text-color);
     border-radius: 0;
 }
 
 #page:-ms-fullscreen {
     background: var(--fullscreen-background);
+    color: var(--fullscreen-text-color);
     border-radius: 0;
 }
 
 #page:fullscreen {
     background: var(--fullscreen-background);
+    color: var(--fullscreen-text-color);
     border-radius: 0;
 }
