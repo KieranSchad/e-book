@@ -1,7 +1,7 @@
 
 // ---------  Get Gutenberg Project catalog  ------------
 
-import database from "./pg_caralog_2022_01_28.json" assert { type: "json" };
+// import database from "./pg_caralog_2022_01_28.json" assert { type: "json" };
 
 // ---------  Get frequently used elements  ------------
 
