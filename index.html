@@ -20,60 +20,60 @@
 <body>
     <div class="wrapper" onclick="void(0);">
         <div class="nav-bar">
-            <a type="a" type="a" class="tab active" id="browse-tab">BROWSE</a>
-            <a type="a" class="tab" id="library-tab">LIBRARY</a>
-            <a type="a" class="tab" id="book-tab">BOOK</a>
-            <a type="a" class="tab" id="page-tab">PAGE</a>
+            <button type="button" type="button" class="tab active" id="browse-tab">BROWSE</button>
+            <button type="button" class="tab" id="library-tab">LIBRARY</button>
+            <button type="button" class="tab" id="book-tab">BOOK</button>
+            <button type="button" class="tab" id="page-tab">PAGE</button>
         </div>
         <div class="panel active" id="browse-panel">
             <div class="search">
                 <input type="text" id="search-bar" placeholder="Search">
-                <a type="a" class="fas fa-times" id="clear"></a>
+                <button type="button" class="fas fa-times" id="clear"></button>
             </div>
             <div id="book-list">
             </div>
             <div class="control-bar">
-                <a type="a" class="a fas fa-angle-double-left" id="previous-a"></a>
-                <a type="a" class="a fas fa-tags" id="all-tags-a"></a>
-                <a type="a" class="a fas fa-cog" id="settings-a"></a>
-                <a type="a" class="a fas fa-angle-double-right" id="next-a"></a>
+                <button type="button" class="button fas fa-angle-double-left" id="previous-button"></button>
+                <button type="button" class="button fas fa-tags" id="all-tags-button"></button>
+                <button type="button" class="button fas fa-cog" id="settings-button"></button>
+                <button type="button" class="button fas fa-angle-double-right" id="next-button"></button>
             </div>
         </div>
         <div class="panel" id="library-panel">
             <!-- <div class="search">
                 <input type="text" id="search-bar" placeholder="Search">
-                <a type="a" class="fas fa-times" id="clear"></a>
+                <button type="button" class="fas fa-times" id="clear"></button>
             </div> -->
             <div id="library-list">
             </div>
             <div class="control-bar">
-                <a type="a" class="a fas fa-angle-double-left" id="previous-a"></a>
-                <label class="a" for="fileInput" id="upload-a">
+                <button type="button" class="button fas fa-angle-double-left" id="previous-button"></button>
+                <label class="button" for="fileInput" id="upload-button">
                     <input id="fileInput" type="file" name="file" />
                     <i class="fas fa-upload"></i>
                 </label>
-                <a type="a" class="a fas fa-cog" id="settings-a"></a>
-                <a type="a" class="a fas fa-angle-double-right" id="next-a"></a>
+                <button type="button" class="button fas fa-cog" id="settings-button"></button>
+                <button type="button" class="button fas fa-angle-double-right" id="next-button"></button>
             </div>
         </div>
         <div class="panel" id="book-panel">
             <div id="chapter-list">
             </div>
             <div class="control-bar">
-                <a type="a" class="a fas fa-angle-double-left" id="previous-book-a"></a>
-                <a type="a" class="a fas fa-play" id="read-a"></a>
-                <a type="a" class="a fas fa-cog" id="settings-a"></a>
-                <a type="a" class="a fas fa-angle-double-right" id="next-book-a"></a>
+                <button type="button" class="button fas fa-angle-double-left" id="previous-book-button"></button>
+                <button type="button" class="button fas fa-play" id="read-button"></button>
+                <button type="button" class="button fas fa-cog" id="settings-button"></button>
+                <button type="button" class="button fas fa-angle-double-right" id="next-book-button"></button>
             </div>
         </div>
         <div class="panel" id="page-panel">
             <div id="page">
             </div>
             <div class="control-bar">
-                <a type="a" class="a fas fa-angle-double-left" id="previous-page-a"></a>
-                <a type="a" class="a fas fa-expand-arrows-alt" id="full-screen-a"></a>
-                <a type="a" class="a fas fa-cog" id="settings-a"></a>
-                <a type="a" class="a fas fa-angle-double-right" id="next-page-a"></a>
+                <button type="button" class="button fas fa-angle-double-left" id="previous-page-button"></button>
+                <button type="button" class="button fas fa-expand-arrows-alt" id="full-screen-button"></button>
+                <button type="button" class="button fas fa-cog" id="settings-button"></button>
+                <button type="button" class="button fas fa-angle-double-right" id="next-page-button"></button>
             </div>
         </div>
     </div>
