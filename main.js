@@ -285,7 +285,7 @@ function nextPage() {
             if (wordIndex == firstWord && /^(<br|<div|<hr|&nbsp)/.test(bookArray[wordIndex])) {
                 wordIndex++;
                 
-            } else if (wordIndex != firstWord && /<h1/.test(bookArray[wordIndex])) {
+            } else if (wordIndex != firstWord && /<h1|class="chapter"/.test(bookArray[wordIndex])) {
                 
                 break;
             } else {
@@ -318,7 +318,7 @@ function paginate() {
             if (wordIndex == firstWord && /^(<br|<div|<hr|&nbsp)/.test(bookArray[wordIndex])) {
                 wordIndex++;
                 
-            } else if (wordIndex != firstWord && /<h1/.test(bookArray[wordIndex])) {
+            } else if (wordIndex != firstWord && /<h1|class="chapter"/.test(bookArray[wordIndex])) {
                 
                 break;
                 
@@ -352,7 +352,7 @@ function previousPage() {
         while (page.scrollHeight <= page.offsetHeight && wordIndex >= 0) {
             if (wordIndex == firstWord && /^(<br|<div|<hr|&nbsp)/.test(bookArray[wordIndex])) {
                 wordIndex--;
-            } else if (/<h1/.test(bookArray[wordIndex])) {
+            } else if (/<h1|class="chapter"/.test(bookArray[wordIndex])) {
                 pageArray.unshift(bookArray[wordIndex]);
                 page.innerHTML = pageArray.join(" ");
                 break;
