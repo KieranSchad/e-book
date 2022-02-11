@@ -543,6 +543,24 @@ function enterFullScreen() {
     }
 }
 
+function exitFullScreen() {
+    let isInFullScreen = (document.fullscreenElement && document.fullscreenElement !== null) ||
+        (document.webkitFullscreenElement && document.webkitFullscreenElement !== null) ||
+        (document.mozFullScreenElement && document.mozFullScreenElement !== null) ||
+        (document.msFullscreenElement && document.msFullscreenElement !== null);
+    if (isInFullScreen) {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+}
+
 // ---------  Focus Card  ------------
 
 function focusCard(bookId) {
@@ -664,17 +682,22 @@ window.addEventListener('resize', resizeHeight);
 
 let touchstartX = 0
 let touchendX = 0
+let touchstartY = 0
+let touchendY = 0
 
 function handleGesture() {
-  if (touchendX < touchstartX) nextPage()
-  if (touchendX > touchstartX) previousPage()
+  if (touchendX < touchstartX - 40 && touchendY - touchstartY < 160) nextPage()
+  if (touchendX > touchstartX + 40 && touchendY - touchstartY < 160) previousPage()
+  if (touchendY > touchstartY + 160 && touchendX - touchstartX < 160) exitFullScreen()
 }
 
 page.addEventListener('touchstart', e => {
   touchstartX = e.changedTouches[0].screenX
+  touchstartY = e.changedTouches[0].screenY
 })
 
 page.addEventListener('touchend', e => {
   touchendX = e.changedTouches[0].screenX
+  touchendY = e.changedTouches[0].screenY
   handleGesture()
 })
