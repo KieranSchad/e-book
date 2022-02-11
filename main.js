@@ -6,6 +6,7 @@ import database from "./pg_caralog_2022_01_28.json" assert { type: "json" };
 // ---------  Get frequently used elements  ------------
 
 const tab = document.getElementsByClassName('tab');
+const pageTab = document.getElementById('page-tab');
 const panel = document.getElementsByClassName('panel');
 const bookList = document.getElementById("book-list");
 const libraryList = document.getElementById("library-list");
@@ -15,11 +16,16 @@ const page = document.getElementById('page');
 const html = document.getElementById('html');
 const searchBar = document.getElementById("search-bar");
 
+
+
 // ---------  Resize Height  ------------
 
 function resizeHeight() {
     let vh = window.innerHeight * 0.01 - 0.001;
     document.documentElement.style.setProperty('--vh', `${vh}px`);
+    if (pageTab.classList.contains("active")) {
+        paginate();
+    }
 }
 
 resizeHeight();
@@ -175,40 +181,176 @@ function loadBook(e, bookIndex, goToPanel) {
     }
 }
 
-let currentPage = 0;
+// ---------  Restart Book  ------------
 
-if (localStorage.getItem("currentPage")) {
-    currentPage = localStorage.getItem("currentPage");
+function restartBook(e) {
+    bookMark = -1;
+    localStorage.setItem("bookMark", bookMark);
+    loadPage(e);
 }
 
-// ---------  Load Page  ------------
+// ---------  Load Text  ------------
 
-function loadPage(e, bookIndex, pageIndex, gotoPanel) {
+let bookArray;
+
+function loadPage(e, bookIndex, gotoPanel) {
     if (e) {
         bookIndex = findLibraryIndex(e)[1];
     }
+    bookArray = [];
     const bookId = parseInt(Object.values(displayLibrary[bookIndex])[0], 10);
     const bookData = htmlLibrary[bookIndex];
-    let bookHtml;
+    
     if (/<!DOCTYPE\s+?html/.test(bookData)) {
-        bookHtml = bookData
+        let tag = "split";
+        bookData
             .replace(/<style[\s\S]*?<\/style>/g, "")                   // delete inline styling
             .replace(/style=('|")[\s\S]*?>/g, ">")                     // delete style attributes
-            .replace(/src="images/gi, `src="https://www.gutenberg.org/files/${bookId}/${bookId}-h/images`) 
+            .replace(/^[\s\S]*?<body>/, "")                            // delete everything before body tag
+            .replace(/<\/body>[\s\S]*?$/, "")                          // delete everything after /body tag
+            .replace(/src="images/gi, `src="https://www.gutenberg.org/files/${bookId}/${bookId}-h/images`)
+            .replace(/<br[\s\S]*?>/ig, "<hr>")
+            .split(/(?=<)|(?<=>)/g)
+            .forEach((item, index) => {
+                if (tag === "split" && !/^</.test(item)) {
+                    bookArray.push(...item.split(/\s|\r|\n/g).filter(item => item))
+                } else if (tag === "split") {
+                    bookArray.push(item)
+                } else {
+                    bookArray[bookArray.length - 1] = bookArray[bookArray.length - 1] + item;
+                }
+                if (tag == "split" && /<a/i.test(item)) {
+                    tag = "a";
+                } else if (tag == "split" && /<img/i.test(item)) {
+                    tag = "img";
+                } else if (tag == "split" && /<i/i.test(item)) {
+                    tag = "i";
+                } else if (tag == "split" && /<h\d/i.test(item)) {
+                    tag = "h";
+                } else if (tag == "split" && /<table/i.test(item)) {
+                    tag = "table";
+                } else if (tag == "a" && /<\/a/i.test(item)) {
+                    tag = "split";
+                } else if (tag == "img") {
+                    tag = "split";
+                } else if (tag == "i" && /<\/i/i.test(item)) {
+                    tag = "split";
+                } else if (tag == "h" && /<\/h\d/i.test(item)) {
+                    tag = "split";
+                } else if (tag == "table" && /<\/table/i.test(item)) {
+                    tag = "split";
+                }
+            })
     } else {
-        bookHtml = bookData
-            .replace(/\n\s\n/g, "<br><br>")
-            .replace(/^/, "<i>")
-            .replace(/(?<=[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?)\*\*\*/, "***</i>")         // remove everything before first hr tag
-            .replace(/END(?=\sOF\sTH..?\sPROJECT\sGUTENBERG[\s\S]*)/, "<i>END")              //remove everything after second hr tag
-            .replace(/$/, "</i>")
+        bookArray = bookData
+            .replace(/\n\s\n/g, " <br><br> ")
+            .split(/\s|\r|\n/g)
+            .filter(item => item);
     }
-    page.innerHTML = bookHtml;
+
     if (gotoPanel !== "stay") {
         tabClick("page-tab");
-        page.scrollTo(0, 0);
+        paginate();
     }
 }
+
+// ---------  Paginate  ------------
+
+let bookMark = 0;
+
+if (localStorage.getItem("bookMark")) {
+    bookMark = localStorage.getItem("bookMark");
+}
+
+
+let firstWord = -1;
+let lastWord = -1;
+let wordIndex = -1;
+let pageArray = [];
+
+function nextPage() {
+    if (wordIndex < bookArray.length) {
+        pageArray = [];
+        firstWord = lastWord + 1;
+        wordIndex = firstWord;
+        while (page.scrollHeight <= page.offsetHeight && wordIndex < bookArray.length) {
+            if (wordIndex == firstWord && bookArray[wordIndex] == "<br><br>") {
+                wordIndex++;
+            } else {
+                pageArray.push(bookArray[wordIndex]);
+                page.innerHTML = pageArray.join(" ");
+                wordIndex++;
+            }
+        }
+        if (wordIndex < bookArray.length - 1 && pageArray.length > 1) {
+            pageArray.pop();
+            wordIndex--;
+        }
+        
+
+
+        page.innerHTML = pageArray.join(" ");
+        lastWord = wordIndex - 1;
+        bookMark = firstWord;
+        localStorage.setItem("bookMark", bookMark);
+    }
+}
+
+function paginate() {
+    if (wordIndex < bookArray.length) {
+        pageArray = [];
+        firstWord = bookMark;
+        wordIndex = firstWord;
+        while (page.scrollHeight <= page.offsetHeight && wordIndex < bookArray.length) {
+            if (wordIndex == firstWord && bookArray[wordIndex] == "<br><br>") {
+                wordIndex++;
+            } else {
+                pageArray.push(bookArray[wordIndex]);
+                page.innerHTML = pageArray.join(" ");
+                wordIndex++;
+            }
+        }
+        if (wordIndex < bookArray.length - 1 && pageArray.length > 1) {
+            pageArray.pop();
+            wordIndex--;
+        }
+        
+
+        page.innerHTML = pageArray.join(" ");
+        lastWord = wordIndex - 1;
+        bookMark = firstWord;
+        localStorage.setItem("bookMark", bookMark);
+    }
+}
+
+function previousPage() {
+    
+    if (wordIndex >= 0) {
+        pageArray = [];
+        lastWord = firstWord - 1;
+        wordIndex = lastWord;
+        while (page.scrollHeight <= page.offsetHeight && wordIndex >= 0) {
+            if (wordIndex == lastWord && bookArray[wordIndex] == "<br><br>") {
+                wordIndex--;
+            } else {
+                pageArray.unshift(bookArray[wordIndex]);
+                page.innerHTML = pageArray.join(" ");
+                wordIndex--;
+            }
+        }
+        if (wordIndex > 0  && pageArray.length > 1) {
+            pageArray.shift();
+            wordIndex += 2;
+        }
+        
+
+        page.innerHTML = pageArray.join(" ");
+        firstWord = wordIndex;
+        bookMark = firstWord;
+        localStorage.setItem("bookMark", bookMark);
+    }
+}
+
 
 // ---------  Search  ------------
 
@@ -416,6 +558,9 @@ function tabClick(id) {
     Array.from(panel).forEach((item) => {item.classList.remove("active")});
     document.getElementById(id).classList.add("active");
     document.getElementById(id.replace("tab", "panel")).classList.add("active");
+    if (id == "page-tab") {
+        paginate();
+    }
 }
 
 // ---------  Book Navigation  ------------
@@ -439,7 +584,7 @@ function nextBook() {
 function onLoad() {
     showLibrary();
     loadBook(false, currentBook, "stay");
-    loadPage(false, currentBook, currentPage, "stay");
+    loadPage(false, currentBook, "stay");
 }
 
 // ---------  User Inputs  ------------
@@ -452,10 +597,13 @@ const eventMap = {
     "card active": { click: focusCard },
     "read-button": { click: loadBook },
     "delete-button": { click: deleteBook },
-    "start-button": { click: loadPage },
+    "start-button": { click: restartBook },
+    "bookmark-button": { click: loadPage },
     "full-screen-button": { click: enterFullScreen },
     "previous-book-button": { click: previousBook },
     "next-book-button": { click: nextBook },
+    "next-page-button": { click: nextPage },
+    "previous-page-button": { click: previousPage },
     tab: { click: tabClick }
 }
 

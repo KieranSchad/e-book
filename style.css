@@ -66,14 +66,16 @@ h3 {
 }
 
 a {
-    all: unset;
+    /* text-decoration: none; */
+    color: var(--text-color);
+    /* all: unset;
     display: block;
     width: 100%;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
+    cursor: pointer; */
 }
 
 #book-panel h1, 
@@ -283,6 +285,7 @@ a {
     background: var(--element-background);
     border-radius: var(--element-border-radius);
     overflow-x: hidden;
+    /* overflow-y: hidden; */
     white-space:normal;
     font-size: 1.1rem;
     line-height: 1.9rem;
@@ -309,7 +312,8 @@ a {
 
 #page div {
     width: 100%;
-    padding: 1rem 0;
+    min-height: 1rem;
+    /* padding: 1rem 0; */
 }
 
 #page pre {
@@ -320,26 +324,29 @@ a {
 }
 
 #page i {
-    padding: 1rem 0;
+    /* padding: 1rem 0; */
     font-family: var(--print-font);
     font-style: italic;
 }
 
 #page img {
+    object-fit: contain;
     width: 100%;
-    border-radius: var(--element-border-radius);
+    height: calc(calc(var(--vh, 1vh) * 100) - 128px - 4.6rem);
+    /* border-radius: var(--element-border-radius); */
     margin: 1rem 0;
 }
 
 #page hr {
     all: unset;
     display: block;
-    height: 5rem;
+    height: 0;
 }
 
-#page a {
+/* #page a {
     text-align: center;
-}
+    height: auto;
+} */
 
 
 #page:-webkit-full-screen {
