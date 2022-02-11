@@ -658,3 +658,23 @@ window.addEventListener("load", () => setTimeout(function(){
     onLoad();
 },50));
 window.addEventListener('resize', resizeHeight);
+
+
+// ---------  Swipe  ------------
+
+let touchstartX = 0
+let touchendX = 0
+
+function handleGesture() {
+  if (touchendX < touchstartX) nextPage()
+  if (touchendX > touchstartX) previousPage()
+}
+
+page.addEventListener('touchstart', e => {
+  touchstartX = e.changedTouches[0].screenX
+})
+
+page.addEventListener('touchend', e => {
+  touchendX = e.changedTouches[0].screenX
+  handleGesture()
+})
