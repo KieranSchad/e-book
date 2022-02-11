@@ -152,6 +152,11 @@ function loadBook(e, bookIndex, goToPanel) {
             .match(/href="#.[^n](.|[\s\S])+?(?=\s*<)/g)             // match any links
             .map((item, index) => [...item.split(/>\s*/), index])
             .filter((pair) => pair[1].length > 0);
+    } else if (/href="#/.test(bookData)) {
+        chapters = bookData
+            .match(/href="#.[^n](.|[\s\S])+?(?=\s*<)/g)             // match any links
+            .map((item, index) => [...item.split(/>\s*/), index])
+            .filter((pair) => pair[1].length > 0);
     } else if (/(Chapter|CHAPTER)\s+(1|I)/.test(bookData)) {
         chapters = bookData
             .replace(/[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?\*/, "")         // remove everything before first hr tag
@@ -162,7 +167,7 @@ function loadBook(e, bookIndex, goToPanel) {
         chapters = bookData
             .replace(/[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?\*/, "")         // remove everything before first hr tag
             .replace(/END\sOF\sTH..?\sPROJECT\sGUTENBERG[\s\S]*/, "")              //remove everything after second hr tag
-            .match(/(?<=<h2>).+(?=<\/h2>)/g)                              // match anything in an h2 tag
+            .match(/(?<=<h2>)[\s\S]*?(?=<\/h2>)/g)                              // match anything in an h2 tag
             .map((item, index) => ["h2", item, index]);
     } else {
         chapters = bookData
@@ -211,7 +216,7 @@ function loadPage(e, bookIndex, gotoPanel) {
             .replace(/src="images/gi, `src="https://www.gutenberg.org/files/${bookId}/${bookId}-h/images`)
             .replace(/<br[\s\S]*?>/ig, "<hr>")
             .split(/(?=<)|(?<=>)/g)
-            .forEach((item, index) => {
+            .forEach((item) => {
                 if (tag === "split" && !/^</.test(item)) {
                     bookArray.push(...item.split(/\s|\r|\n/g).filter(item => item))
                 } else if (tag === "split") {
@@ -270,25 +275,32 @@ let pageArray = [];
 
 function nextPage() {
     if (wordIndex < bookArray.length) {
+        
         pageArray = [];
+        page.innerHTML = pageArray;
         firstWord = lastWord + 1;
         wordIndex = firstWord;
         while (page.scrollHeight <= page.offsetHeight && wordIndex < bookArray.length) {
-            if (wordIndex == firstWord && bookArray[wordIndex] == "<br><br>") {
+
+            if (wordIndex == firstWord && /^(<br|<div|<hr|&nbsp)/.test(bookArray[wordIndex])) {
                 wordIndex++;
+                
+            } else if (wordIndex != firstWord && /<h1/.test(bookArray[wordIndex])) {
+                
+                break;
             } else {
                 pageArray.push(bookArray[wordIndex]);
                 page.innerHTML = pageArray.join(" ");
                 wordIndex++;
+                
             }
+            
         }
-        if (wordIndex < bookArray.length - 1 && pageArray.length > 1) {
+        
+        if (page.scrollHeight > page.offsetHeight && pageArray.length > 1) {
             pageArray.pop();
             wordIndex--;
         }
-        
-
-
         page.innerHTML = pageArray.join(" ");
         lastWord = wordIndex - 1;
         bookMark = firstWord;
@@ -299,18 +311,25 @@ function nextPage() {
 function paginate() {
     if (wordIndex < bookArray.length) {
         pageArray = [];
+        page.innerHTML = pageArray;
         firstWord = bookMark;
         wordIndex = firstWord;
         while (page.scrollHeight <= page.offsetHeight && wordIndex < bookArray.length) {
-            if (wordIndex == firstWord && bookArray[wordIndex] == "<br><br>") {
+            if (wordIndex == firstWord && /^(<br|<div|<hr|&nbsp)/.test(bookArray[wordIndex])) {
                 wordIndex++;
+                
+            } else if (wordIndex != firstWord && /<h1/.test(bookArray[wordIndex])) {
+                
+                break;
+                
             } else {
                 pageArray.push(bookArray[wordIndex]);
                 page.innerHTML = pageArray.join(" ");
                 wordIndex++;
+                
             }
         }
-        if (wordIndex < bookArray.length - 1 && pageArray.length > 1) {
+        if (page.scrollHeight > page.offsetHeight && pageArray.length > 1) {
             pageArray.pop();
             wordIndex--;
         }
@@ -327,18 +346,23 @@ function previousPage() {
     
     if (wordIndex >= 0) {
         pageArray = [];
+        page.innerHTML = pageArray;
         lastWord = firstWord - 1;
         wordIndex = lastWord;
         while (page.scrollHeight <= page.offsetHeight && wordIndex >= 0) {
-            if (wordIndex == lastWord && bookArray[wordIndex] == "<br><br>") {
+            if (wordIndex == firstWord && /^(<br|<div|<hr|&nbsp)/.test(bookArray[wordIndex])) {
                 wordIndex--;
+            } else if (/<h1/.test(bookArray[wordIndex])) {
+                pageArray.unshift(bookArray[wordIndex]);
+                page.innerHTML = pageArray.join(" ");
+                break;
             } else {
                 pageArray.unshift(bookArray[wordIndex]);
                 page.innerHTML = pageArray.join(" ");
                 wordIndex--;
             }
         }
-        if (wordIndex > 0  && pageArray.length > 1) {
+        if (page.scrollHeight > page.offsetHeight && pageArray.length > 1) {
             pageArray.shift();
             wordIndex += 2;
         }
