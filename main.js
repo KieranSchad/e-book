@@ -148,14 +148,7 @@ function loadBook(e, bookIndex, goToPanel) {
     localStorage.setItem("currentBook", currentBook);
     const bookData = htmlLibrary[bookIndex];
     let chapters;
-    if (/href="#/.test(bookData) && /<hr\s*\/>/.test(bookData)) {
-        chapters = bookData
-            .replace(/[\s\S]*?<hr\s*\/>/, "")                      // remove everything before first hr tag
-            .replace(/<hr\s*\/>[\s\S]*/, "")                       //remove everything after second hr tag
-            .match(/href="#.[^n](.|[\s\S])+?(?=\s*<)/g)             // match any links
-            .map((item, index) => [...item.split(/>\s*/), index])
-            .filter((pair) => pair[1].length > 0);
-    } else if (/href="#/.test(bookData)) {
+    if (/href="#/.test(bookData)) {
         chapters = bookData
             .match(/href="#.[^n](.|[\s\S])+?(?=\s*<)/g)             // match any links
             .map((item, index) => [...item.split(/>\s*/), index])
@@ -209,15 +202,15 @@ function loadPage(e, bookIndex, gotoPanel) {
     const bookId = parseInt(Object.values(displayLibrary[bookIndex])[0], 10);
     const bookData = htmlLibrary[bookIndex];
     
-    if (/<!DOCTYPE\s+?html/.test(bookData)) {
+    if (/<!DOCTYPE\s+?html/i.test(bookData)) {
         let tag = "split";
         bookData
-            .replace(/<style[\s\S]*?<\/style>/g, "")                   // delete inline styling
-            .replace(/style=('|")[\s\S]*?>/g, ">")                     // delete style attributes
-            .replace(/^[\s\S]*?<body>/, "")                            // delete everything before body tag
-            .replace(/<\/body>[\s\S]*?$/, "")                          // delete everything after /body tag
+            .replace(/<style[\s\S]*?<\/style>/gi, "")                   // delete inline styling
+            .replace(/style=('|")[\s\S]*?>/gi, ">")                     // delete style attributes
+            .replace(/^[\s\S]*?<body>/i, "")                            // delete everything before body tag
+            .replace(/<\/body>[\s\S]*?$/i, "")                          // delete everything after /body tag
             .replace(/src="images/gi, `src="https://www.gutenberg.org/files/${bookId}/${bookId}-h/images`)
-            .replace(/<br[\s\S]*?>/ig, "<hr>")
+            .replace(/<br[\s\S]*?>/gi, "<hr>")
             .split(/(?=<)|(?<=>)/g)
             .forEach((item) => {
                 if (tag === "split" && !/^</.test(item)) {
@@ -255,7 +248,6 @@ function loadPage(e, bookIndex, gotoPanel) {
             .split(/\s|\r|\n/g)
             .filter(item => item);
     }
-
     if (gotoPanel !== "stay") {
         tabClick("page-tab");
         paginate();
@@ -286,10 +278,10 @@ function nextPage() {
             wordIndex = firstWord;
             while (page.scrollHeight <= page.offsetHeight && wordIndex < bookArray.length) {
 
-                if (wordIndex == firstWord && /^(<br|<div|<hr|&nbsp)/.test(bookArray[wordIndex])) {
+                if (wordIndex == firstWord && /^(<br|<div|<hr|&nbsp)/i.test(bookArray[wordIndex])) {
                     wordIndex++;
                     
-                } else if (wordIndex != firstWord && /<h1|class="chapter"/.test(bookArray[wordIndex])) {
+                } else if (wordIndex != firstWord && /<h1|class="chapter"/i.test(bookArray[wordIndex])) {
                     
                     break;
                 } else {
@@ -321,10 +313,10 @@ function paginate() {
             firstWord = bookMark;
             wordIndex = firstWord;
             while (page.scrollHeight <= page.offsetHeight && wordIndex < bookArray.length) {
-                if (wordIndex == firstWord && /^(<br|<div|<hr|&nbsp)/.test(bookArray[wordIndex])) {
+                if (wordIndex == firstWord && /^(<br|<div|<hr|&nbsp)/i.test(bookArray[wordIndex])) {
                     wordIndex++;
                     
-                } else if (wordIndex != firstWord && /<h1|class="chapter"/.test(bookArray[wordIndex])) {
+                } else if (wordIndex != firstWord && /<h1|class="chapter"/i.test(bookArray[wordIndex])) {
                     
                     break;
                     
@@ -357,9 +349,9 @@ function previousPage() {
             lastWord = firstWord - 1;
             wordIndex = lastWord;
             while (page.scrollHeight <= page.offsetHeight && wordIndex >= 0) {
-                if (wordIndex == firstWord && /^(<br|<div|<hr|&nbsp)/.test(bookArray[wordIndex])) {
+                if (wordIndex == firstWord && /^(<br|<div|<hr|&nbsp)/i.test(bookArray[wordIndex])) {
                     wordIndex--;
-                } else if (/<h1|class="chapter"/.test(bookArray[wordIndex])) {
+                } else if (/<h1|class="chapter"/i.test(bookArray[wordIndex])) {
                     pageArray.unshift(bookArray[wordIndex]);
                     page.innerHTML = pageArray.join(" ");
                     break;

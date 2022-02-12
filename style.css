@@ -395,9 +395,9 @@ a {
 #page img {
     object-fit: contain;
     width: calc(100% + 2rem);
-    height: calc(100% + 2rem);
+    height: calc(100% - 2.6rem);
     /* border-radius: var(--element-border-radius); */
-    margin: -1rem -1rem;
+    margin: 1rem -1rem;
 }
 
 #page hr {
