@@ -8,8 +8,8 @@
     --element-border-radius: 0.5rem;
     --element-background: rgba(var(--bw, 255), var(--bw, 255), var(--bw, 255), var(--opE, 0.47));
     --active-background: rgba(var(--bw, 255), var(--bw, 255), var(--bw, 255), var(--opA, 0.6278));
-    --fullscreen-background: hsla(var(--hue, 200), var(--saturation1, 50%), 50%, var(--opE, 0.47));
-    --fullscreen-text-color: rgb(var(--txt, 63), var(--txt, 63), var(--txt, 63));
+    --fullscreen-background: hsl(var(--hue, 200), var(--saturation3, 25%), var(--lit, 10%));
+    --fullscreen-text-color: hsl(var(--hue, 200), var(--saturation1, 50%), var(--txt, 28.5%));
     --color-one: hsl(var(--hue, 200), var(--saturation1, 50%), 50%);
     --color-two: hsl(var(--hue, 200), var(--saturation2, 100%), 30%);
     --text-color: hsl(var(--hue, 200), var(--saturation1, 50%), var(--txt, 28.5%));

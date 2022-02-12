@@ -14,7 +14,6 @@ const libraryList = document.getElementById("library-list");
 const chapterList = document.getElementById("chapter-list");
 let card = document.getElementsByClassName('card');
 const page = document.getElementById('page');
-const pageBackground = document.getElementById('page-background');
 const html = document.getElementById('html');
 const searchBar = document.getElementById("search-bar");
 const fontSlider = document.getElementById("font-slider");
@@ -534,12 +533,12 @@ function toHtml(bookArray, location, chapterArr) {
 
 
 function enterFullScreen() {
-    if (pageBackground.requestFullscreen) {
-        pageBackground.requestFullscreen();
+    if (page.requestFullscreen) {
+        page.requestFullscreen();
     } else if (elem.webkitRequestFullscreen) { /* Safari */
-        pageBackground.webkitRequestFullscreen();
+        page.webkitRequestFullscreen();
     } else if (elem.msRequestFullscreen) { /* IE11 */
-        pageBackground.msRequestFullscreen();
+        page.msRequestFullscreen();
     }
 }
 
@@ -652,33 +651,39 @@ function color(e) {
         saturation1 = e.target.value;
     }
     let saturation2 = saturation1 * 2;
+    let saturation3 = saturation1 * 2;
     document.documentElement.style.setProperty('--hue', hue);
     document.documentElement.style.setProperty('--saturation1', `${saturation1}%`);
     document.documentElement.style.setProperty('--saturation2', `${saturation2}%`);
+    document.documentElement.style.setProperty('--saturation3', `${saturation3}%`);
 }
 
 function brightness(e) {
     let slider = e.target.value;
-    let bw = 0;
+    let bw;
     let opA;
     let opE;
-    let txt = 255;
+    let txt;
+    let lit;
     if (slider > 128) {
         bw = 255;
         opA = slider / 255
         opE = opA * 0.75
         txt = (255 - slider) * 0.3;
+        lit = slider / 3 + 15;
     } else {
         bw = 0;
         opA = 1 - slider / 255
         opE = opA * 0.75
         txt = (slider / 2) + 36;
+        lit = slider / 4;
     }
 
     document.documentElement.style.setProperty('--bw', bw);
     document.documentElement.style.setProperty('--opA', opA);
     document.documentElement.style.setProperty('--opE', opE);
     document.documentElement.style.setProperty('--txt', `${txt}%`);
+    document.documentElement.style.setProperty('--lit', `${lit}%`);
 }
 
 // ---------  After Page Load  ------------
