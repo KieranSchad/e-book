@@ -1,10 +1,7 @@
 
-// ---------  Get Gutenberg Project catalog  ------------
-
-import database from "./pg_caralog_2022_01_28.json" assert { type: "json" };
 
 // ---------  Get frequently used elements  ------------
-
+let database;
 const tab = document.getElementsByClassName('tab');
 const pageTab = document.getElementById('page-tab');
 const panel = document.getElementsByClassName('panel');
@@ -21,6 +18,14 @@ const colorSlider = document.getElementById("color-slider");
 const brightnessSlider = document.getElementById("brightness-slider");
 
 
+// ---------  Get Gutenberg Project catalog  ------------
+
+// import database from "./pg_caralog_2022_01_28.json" assert { type: "json" };
+
+fetch("https://kieranschad.github.io/e-book/pg_caralog_2022_01_28.json")
+    .then(res => (res.json())
+    .then(data => database = data))
+
 
 // ---------  Resize Height  ------------
 
@@ -34,118 +39,165 @@ resizeHeight();
 
 // ---------  library  ------------
 
-let displayLibrary = [];
-let htmlLibrary = [];
+// let displayLibrary = [];
+// let htmlLibrary = [];
 
 // ---------  Get local library  ------------
 
-function getLocalLibrary() {
-    if (localStorage.getItem("displayLibrary") && localStorage.getItem("htmlLibrary")) {
-        displayLibrary = JSON.parse(localStorage.getItem("displayLibrary"));
-        htmlLibrary = JSON.parse(localStorage.getItem("htmlLibrary"));
+// function getLocalLibrary() {
+//     if (localStorage.getItem("displayLibrary") && localStorage.getItem("htmlLibrary")) {
+//         displayLibrary = JSON.parse(localStorage.getItem("displayLibrary"));
+//         htmlLibrary = JSON.parse(localStorage.getItem("htmlLibrary"));
 
-    } else {
-        fetch('./library/12-h.htm', {mode: 'no-cors'})
-            .then(response => response.text())
-            .then(data=> htmlLibrary[0] = data)
-            .catch(error => console.error(error));
+//     } else {
+//         fetch('./library/12-h.htm', {mode: 'no-cors'})
+//             .then(response => response.text())
+//             .then(data=> htmlLibrary[0] = data)
+//             .catch(error => console.error(error));
             
-        fetch('./library/61.txt', {mode: 'no-cors'})
-            .then(response => response.text())
-            .then(data=> htmlLibrary[1] = data)
-            .catch(error => console.error(error));
+//         fetch('./library/61.txt', {mode: 'no-cors'})
+//             .then(response => response.text())
+//             .then(data=> htmlLibrary[1] = data)
+//             .catch(error => console.error(error));
 
-        fetch('./library/76-h.htm', {mode: 'no-cors'})
-            .then(response => response.text())
-            .then(data=> htmlLibrary[2] = data)
-            .catch(error => console.error(error));
+//         fetch('./library/76-h.htm', {mode: 'no-cors'})
+//             .then(response => response.text())
+//             .then(data=> htmlLibrary[2] = data)
+//             .catch(error => console.error(error));
 
-        displayLibrary = [ {
-            "Text#": 12,
-            "Type": "Text",
-            "Issued": "2008-06-25",
-            "Title": "Through the Looking-Glass",
-            "Language": "en",
-            "Authors": "Carroll, Lewis, 1832-1898",
-            "Subjects": "Fantasy fiction; Children's stories; Imaginary places -- Juvenile fiction; Alice (Fictitious character from Carroll) -- Juvenile fiction",
-            "LoCC": "PR; PZ",
-            "Bookshelves": "Best Books Ever Listings; Children's Literature"
-            },
-            {
-            "Text#": 61,
-            "Type": "Text",
-            "Issued": "2005-01-25",
-            "Title": "The Communist Manifesto",
-            "Language": "en",
-            "Authors": "Engels, Friedrich, 1820-1895; Marx, Karl, 1818-1883",
-            "Subjects": "Socialism; Communism",
-            "LoCC": "HX",
-            "Bookshelves": "Politics; Philosophy; Banned Books from Anne Haight's list"
-            },
-            {
-            "Text#": 76,
-            "Type": "Text",
-            "Issued": "2004-06-29",
-            "Title": "Adventures of Huckleberry Finn",
-            "Language": "en",
-            "Authors": "Twain, Mark, 1835-1910; Kemble, E. W. (Edward Windsor), 1861-1933 [Illustrator]",
-            "Subjects": "Humorous stories; Bildungsromans; Boys -- Fiction; Male friendship -- Fiction; Adventure stories; Missouri -- Fiction; Race relations -- Fiction; Runaway children -- Fiction; Finn, Huckleberry (Fictitious character) -- Fiction; Fugitive slaves -- Fiction; Mississippi River -- Fiction",
-            "LoCC": "PS",
-            "Bookshelves": "Best Books Ever Listings; Banned Books from Anne Haight's list; Banned Books List from the American Library Association"
-            } ];
-    }
-}
+//         displayLibrary = [ {
+//             "Text#": 12,
+//             "Type": "Text",
+//             "Issued": "2008-06-25",
+//             "Title": "Through the Looking-Glass",
+//             "Language": "en",
+//             "Authors": "Carroll, Lewis, 1832-1898",
+//             "Subjects": "Fantasy fiction; Children's stories; Imaginary places -- Juvenile fiction; Alice (Fictitious character from Carroll) -- Juvenile fiction",
+//             "LoCC": "PR; PZ",
+//             "Bookshelves": "Best Books Ever Listings; Children's Literature"
+//             },
+//             {
+//             "Text#": 61,
+//             "Type": "Text",
+//             "Issued": "2005-01-25",
+//             "Title": "The Communist Manifesto",
+//             "Language": "en",
+//             "Authors": "Engels, Friedrich, 1820-1895; Marx, Karl, 1818-1883",
+//             "Subjects": "Socialism; Communism",
+//             "LoCC": "HX",
+//             "Bookshelves": "Politics; Philosophy; Banned Books from Anne Haight's list"
+//             },
+//             {
+//             "Text#": 76,
+//             "Type": "Text",
+//             "Issued": "2004-06-29",
+//             "Title": "Adventures of Huckleberry Finn",
+//             "Language": "en",
+//             "Authors": "Twain, Mark, 1835-1910; Kemble, E. W. (Edward Windsor), 1861-1933 [Illustrator]",
+//             "Subjects": "Humorous stories; Bildungsromans; Boys -- Fiction; Male friendship -- Fiction; Adventure stories; Missouri -- Fiction; Race relations -- Fiction; Runaway children -- Fiction; Finn, Huckleberry (Fictitious character) -- Fiction; Fugitive slaves -- Fiction; Mississippi River -- Fiction",
+//             "LoCC": "PS",
+//             "Bookshelves": "Best Books Ever Listings; Banned Books from Anne Haight's list; Banned Books List from the American Library Association"
+//             } ];
+//     }
+// }
 
 // ---------  Upload  ------------
 
-function handleFileSelect(event) {
-    const bookId = parseInt(event.target.files[0].name.match(/\d+(?=((-\w)*\.(htm|txt)))/i), 10)   //match number in filename, lookahead to extension
-    if (database.some((book) => Object.values(book)[0] == bookId)) {
-        const bookIndex = database.map((book) => parseInt(Object.values(book)[0], 10)).indexOf(bookId);
-        displayLibrary.push(database[bookIndex]);
-        const reader = new FileReader();
-        reader.onload = handleFileLoad;
-        reader.readAsText(event.target.files[0])
-        card = document.getElementsByClassName('card');
-    } else {
-        alert("File does not match any books in the database")
-    }
+// function handleFileSelect(event) {
+//     const bookId = parseInt(event.target.files[0].name.match(/\d+(?=((-\w)*\.(htm|txt)))/i), 10)   //match number in filename, lookahead to extension
+//     if (database.some((book) => Object.values(book)[0] == bookId)) {
+//         const bookIndex = database.map((book) => parseInt(Object.values(book)[0], 10)).indexOf(bookId);
+//         displayLibrary.push(database[bookIndex]);
+//         const reader = new FileReader();
+//         reader.onload = handleFileLoad;
+//         reader.readAsText(event.target.files[0])
+//         card = document.getElementsByClassName('card');
+//     } else {
+//         alert("File does not match any books in the database")
+//     }
 
-  }
+//   }
   
-  function handleFileLoad(event) {
-    htmlLibrary.push(event.target.result);
-    localStorage.setItem("displayLibrary", JSON.stringify(displayLibrary))
-    localStorage.setItem("htmlLibrary", JSON.stringify(htmlLibrary));
-    showLibrary();;
-  }
+//   function handleFileLoad(event) {
+//     htmlLibrary.push(event.target.result);
+//     localStorage.setItem("displayLibrary", JSON.stringify(displayLibrary))
+//     localStorage.setItem("htmlLibrary", JSON.stringify(htmlLibrary));
+//     showLibrary();;
+//   }
+
+let libraryArray = [11, 60, 75];
+
 function showLibrary() {
-    toHtml(displayLibrary, libraryList);
+    let libraryObjectArray = libraryArray.map(id => database[id])
+    toHtml(libraryObjectArray, libraryList);
 }
 
-// ---------  Find book Id and Index for selected book  ------------
 
-function findLibraryIndex(e) {
-    const bookId = parseInt(e.target.parentElement.parentElement.id.slice(7), 10);
-    const bookIndex = displayLibrary.map((book) => parseInt(Object.values(book)[0], 10)).indexOf(bookId);
-    return [bookId, bookIndex];
-}
-
-// ---------  Load Book  ------------
+// ---------  Get Book  ------------
 
 let currentBook = 0;
-
+let bookData;
 if (localStorage.getItem("currentBook")) {
     currentBook = localStorage.getItem("currentBook");
 }
 
-function loadBook(e, bookIndex, goToPanel) {
+
+function getBook(e, bookId, goToPanel) {
     if (e) {
-        bookIndex = findLibraryIndex(e)[1];
+        bookId = parseInt(e.target.parentElement.parentElement.id.slice(7), 10);             // ID = gutenberg book identication number - for links
     }
-    currentBook = bookIndex;
+    let bookIndex = database.map((book) => parseInt(Object.values(book)[0], 10)).indexOf(parseInt(bookId, 10));
+    currentBook = bookId;
     localStorage.setItem("currentBook", currentBook);
-    const bookData = htmlLibrary[bookIndex];
+
+    fetch(`https://kieranschad.github.io/e-book/library/${bookId}-h.htm`)
+        .then(res => {
+            if (res.ok) {
+                res.text()
+                    .then((data) => {
+                        bookData = data;
+                        loadBook(bookIndex, goToPanel);
+                        // loadPage(false, currentBook, "stay");
+                    })
+            } else {
+                fetch(`https://kieranschad.github.io/e-book/library/${bookId}.html`)
+                    .then(res => {
+                        if (res.ok) {
+                            res.text()
+                                .then((data) => {
+                                    bookData = data;
+                                    loadBook(bookIndex, goToPanel);
+                                    // loadPage(false, currentBook, "stay");
+                                })
+                        } else {
+                            fetch(`https://kieranschad.github.io/e-book/library/${bookId}.txt`)
+                                .then(res => {
+                                    if (res.ok) {
+                                        res.text()
+                                            .then((data) => {
+                                                bookData = data;
+                                                loadBook(bookIndex, goToPanel);
+                                                // loadPage(false, currentBook, "stay");
+                                            })
+                                    } else {
+                                        alert("Book Not Found");
+                                    }
+                                })
+                        }
+                    })
+            }
+        })
+        // .then(res => (res.text())
+        // .then((data) => {
+        //     bookData = data;
+        //     loadBook(bookIndex, goToPanel);
+        //     // loadPage(false, currentBook, "stay");
+        // }))
+}
+
+// ---------  Load Book  ------------
+
+function loadBook(bookIndex, goToPanel) {
     let chapters;
     if (/href="#/.test(bookData)) {
         chapters = bookData
@@ -174,8 +226,7 @@ function loadBook(e, bookIndex, goToPanel) {
                 })
             .map((item, index) => ["capital", item, index]);
     }
-    
-    toHtml([displayLibrary[bookIndex]], chapterList, chapters)
+    toHtml([database[bookIndex]], chapterList, chapters)
     if (goToPanel !== "stay") {
         tabClick("book-tab");
     }
@@ -193,13 +244,12 @@ function restartBook(e) {
 
 let bookArray;
 
-function loadPage(e, bookIndex, gotoPanel) {
+function loadPage(e, bookId, gotoPanel) {
+
     if (e) {
-        bookIndex = findLibraryIndex(e)[1];
+        bookId = parseInt(e.target.parentElement.parentElement.id.slice(7), 10);
     }
     bookArray = [];
-    const bookId = parseInt(Object.values(displayLibrary[bookIndex])[0], 10);
-    const bookData = htmlLibrary[bookIndex];
     
     if (/<!DOCTYPE\s+?html/i.test(bookData)) {
         let tag = "split";
@@ -437,8 +487,8 @@ function tagSearch(inputValue) {
 // ---------  Display Search Results  ------------
 
 function toHtml(bookArray, location, chapterArr) {
+    
     const htmlString = bookArray.map((book) => {
-
         const shortTitle = book.Title.split("\n")[0];
         let subTitle = "";
         if (book.Title.split("\n").length > 1) {
@@ -476,22 +526,16 @@ function toHtml(bookArray, location, chapterArr) {
 
         let chapters = ``;
         const chapterRegex = /(?<!\s(mr)|(ms)|(mrs)|(dr)|(sr)|(jr))\.\s+/i
-        let bookNumber = Object.values(book)[0];
+        let bookId = Object.values(book)[0];
         let buttonHtml;
         if (location == bookList) {
             buttonHtml = `
-                <div class="download-buttons">
-                    <a class="button fas fa-download" id="download-htm" href="https://www.gutenberg.org/files/${bookNumber}/${bookNumber}-h/${bookNumber}-h.htm"></a>
-                    <a class="button fas fa-download" id="download-html" href="https://www.gutenberg.org/cache/epub/${bookNumber}/pg${bookNumber}.html"></a>
-                    <a class="button fas fa-download" id="download-txt" href="https://www.gutenberg.org/files/${bookNumber}/${bookNumber}.txt"></a>
-                </div>
-                <div class ="download-buttons">
-                    <a>${bookNumber}-h.htm</a>
-                    <a>pg${bookNumber}.html</a>
-                    <a>${bookNumber}.txt</a>
-                </div>`
+            <div class="library-buttons">
+                <a class="button fas fa-book-open" id="read-button" ></a>
+                <a class="button fas fa-book-medical" id="add-button" ></a>
+            </div>`
         } else if (location == libraryList) {
-            bookNumber = "library" + bookNumber;
+            bookId = "library" + bookId;
             buttonHtml = `
                 <div class="library-buttons">
                     <a class="button fas fa-book-open" id="read-button" ></a>
@@ -499,7 +543,7 @@ function toHtml(bookArray, location, chapterArr) {
                 </div>`
         } else if (location == chapterList) {
             issuedHtml = `<h3 class="issued">Issued as an eBook on ${issued}</h3>`
-            bookNumber = "chapter" + bookNumber;
+            bookId = "chapter" + bookId;
             tags = ``;
             chapters = chapterArr.map((chapter) => {
                 return `
@@ -513,7 +557,7 @@ function toHtml(bookArray, location, chapterArr) {
         }
         
         return `
-        <div class="card" id="${bookNumber}">
+        <div class="card" id="${bookId}">
             <h1 class="title">${shortTitle}</h1>
             <h3 class="sub-title">${subTitle}</h3>
             ${issuedHtml}
@@ -525,7 +569,6 @@ function toHtml(bookArray, location, chapterArr) {
         `;
     })
     .join('');
-
     location.innerHTML = htmlString;
 }
 
@@ -584,12 +627,22 @@ function clearSearch() {
 // ---------  Delete Book  ------------
 
 function deleteBook(e) {
-    let bookIndex = findLibraryIndex(e)[1];
-    displayLibrary.splice(bookIndex, 1);
-    htmlLibrary.splice(bookIndex, 1);
-    toHtml(displayLibrary, libraryList);
-    localStorage.setItem("displayLibrary", JSON.stringify(displayLibrary));
-    localStorage.setItem("htmlLibrary", JSON.stringify(htmlLibrary));
+    let bookId = parseInt(e.target.parentElement.parentElement.id.slice(7), 10);
+    let bookIndex = database.map((book) => parseInt(Object.values(book)[0], 10)).indexOf(parseInt(bookId, 10));
+    libraryArray.splice(libraryArray.indexOf(bookIndex), 1);
+    showLibrary();
+    console.log(bookIndex)
+}
+
+
+// ---------  Add Book  ------------
+
+function addBook(e) {
+    let bookId = parseInt(e.target.parentElement.parentElement.id, 10);
+    let bookIndex = database.map((book) => parseInt(Object.values(book)[0], 10)).indexOf(parseInt(bookId, 10));
+    libraryArray.unshift(bookIndex);
+    showLibrary();
+    tabClick("library-tab")
 }
 
 // ---------  Panel Navigation  ------------
@@ -599,7 +652,8 @@ function tabClick(id) {
     Array.from(panel).forEach((item) => {item.classList.remove("active")});
     document.getElementById(id).classList.add("active");
     document.getElementById(id.replace("tab", "panel")).classList.add("active");
-    if (id == "page-tab") {
+    if (id == "page-tab" && currentBook > 0) {
+        loadPage(false, currentBook, "stay");
         paginate();
     }
 }
@@ -608,16 +662,16 @@ function tabClick(id) {
 
 function previousBook() {
     if (currentBook == 0) {
-        currentBook = displayLibrary.length;
+        currentBook = libraryArray.length;
     }
-    loadBook(false, currentBook -1);
+    getBook(false, currentBook -1);
 }
 
 function nextBook() {
-    if (currentBook == displayLibrary.length - 1) {
+    if (currentBook == libraryArray.length - 1) {
         currentBook = -1;
     }
-    loadBook(false, currentBook + 1);
+    getBook(false, currentBook + 1);
 }
 
 // ---------  Settings Panel  ------------
@@ -690,8 +744,9 @@ function brightness(e) {
 
 function onLoad() {
     showLibrary();
-    loadBook(false, currentBook, "stay");
-    loadPage(false, currentBook, "stay");
+    if (currentBook > 0) {
+        getBook(false, currentBook, "stay");
+    }
 }
 
 // ---------  User Inputs  ------------
@@ -702,8 +757,9 @@ const eventMap = {
     clear: { click: clearSearch },
     card: { click: focusCard },
     "card active": { click: focusCard },
-    "read-button": { click: loadBook },
+    "read-button": { click: getBook },
     "delete-button": { click: deleteBook },
+    "add-button": { click: addBook },
     "start-button": { click: restartBook },
     "bookmark-button": { click: loadPage },
     "full-screen-button": { click: enterFullScreen },
@@ -739,8 +795,8 @@ searchBar.addEventListener('input', searchWithDelay);
 fontSlider.addEventListener('input', fontSize);
 colorSlider.addEventListener('input', color);
 brightnessSlider.addEventListener('input', brightness);
-document.getElementById('fileInput').addEventListener('change', handleFileSelect, false);
-window.addEventListener('load', getLocalLibrary);
+// document.getElementById('fileInput').addEventListener('change', handleFileSelect, false);
+// window.addEventListener('load', getLocalLibrary);
 window.addEventListener("load", () => setTimeout(function(){
     onLoad();
 },50));
