@@ -11,6 +11,7 @@ const libraryList = document.getElementById("library-list");
 const chapterList = document.getElementById("chapter-list");
 let card = document.getElementsByClassName('card');
 const page = document.getElementById('page');
+const fullscreenWrapper = document.getElementById('fullscreen-wrapper');
 const html = document.getElementById('html');
 const searchBar = document.getElementById("search-bar");
 const fontSlider = document.getElementById("font-slider");
@@ -24,7 +25,10 @@ const brightnessSlider = document.getElementById("brightness-slider");
 
 fetch("https://kieranschad.github.io/e-book/pg_caralog_2022_01_28.json")
     .then(res => (res.json())
-    .then(data => database = data))
+    .then(data => {
+        database = data
+        onLoad();
+    }))
 
 
 // ---------  Resize Height  ------------
@@ -125,7 +129,13 @@ resizeHeight();
 //     showLibrary();;
 //   }
 
+// ---------  Get Library  ------------
+
 let libraryArray = [11, 60, 75];
+
+if (localStorage.getItem("libraryArray")) {
+    libraryArray = JSON.parse(localStorage.getItem("libraryArray"));
+}
 
 function showLibrary() {
     let libraryObjectArray = libraryArray.map(id => database[id])
@@ -501,7 +511,7 @@ function toHtml(bookArray, location, chapterArr) {
 
         const date = book.Issued.split("-").map((item) => item.replace(/^0+/, ''));
         let issued = [date[1], date[2], date[0]].join("-");
-        let issuedHtml = "";
+        // let issuedHtml = "";
 
         const author = book.Authors
             .split(/;\s*/g).map((item) => item.split(/,s*/g))
@@ -542,7 +552,7 @@ function toHtml(bookArray, location, chapterArr) {
                     <a class="button fas fa-trash-alt" id="delete-button" ></a>
                 </div>`
         } else if (location == chapterList) {
-            issuedHtml = `<h3 class="issued">Issued as an eBook on ${issued}</h3>`
+            // issuedHtml = `<h3 class="issued">Issued as an eBook on ${issued}</h3>`
             bookId = "chapter" + bookId;
             tags = ``;
             chapters = chapterArr.map((chapter) => {
@@ -560,7 +570,6 @@ function toHtml(bookArray, location, chapterArr) {
         <div class="card" id="${bookId}">
             <h1 class="title">${shortTitle}</h1>
             <h3 class="sub-title">${subTitle}</h3>
-            ${issuedHtml}
             ${author}
             <div class="subjects">${tags}</div>
             ${buttonHtml}
@@ -576,12 +585,12 @@ function toHtml(bookArray, location, chapterArr) {
 
 
 function enterFullScreen() {
-    if (page.requestFullscreen) {
-        page.requestFullscreen();
+    if (fullscreenWrapper.requestFullscreen) {
+        fullscreenWrapper.requestFullscreen();
     } else if (elem.webkitRequestFullscreen) { /* Safari */
-        page.webkitRequestFullscreen();
+        fullscreenWrapper.webkitRequestFullscreen();
     } else if (elem.msRequestFullscreen) { /* IE11 */
-        page.msRequestFullscreen();
+        fullscreenWrapper.msRequestFullscreen();
     }
 }
 
@@ -629,10 +638,14 @@ function clearSearch() {
 function deleteBook(e) {
     let bookId = parseInt(e.target.parentElement.parentElement.id.slice(7), 10);
     let bookIndex = database.map((book) => parseInt(Object.values(book)[0], 10)).indexOf(parseInt(bookId, 10));
-    libraryArray.splice(libraryArray.indexOf(bookIndex), 1);
-    showLibrary();
-    console.log(bookIndex)
-}
+    let bookTitle = database[bookIndex].Title;
+    if (confirm(`Remove ${bookTitle} from Your Library?`)) {
+        libraryArray.splice(libraryArray.indexOf(bookIndex), 1);
+        showLibrary();
+        localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
+    }
+    }
+
 
 
 // ---------  Add Book  ------------
@@ -643,6 +656,7 @@ function addBook(e) {
     libraryArray.unshift(bookIndex);
     showLibrary();
     tabClick("library-tab")
+    localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
 }
 
 // ---------  Panel Navigation  ------------
@@ -679,11 +693,11 @@ function nextBook() {
 function toggleSettings() {
  if (settingsPanel.classList.contains("active")) {
     settingsPanel.classList.remove("active");
-    document.documentElement.style.setProperty('--settings-height', "0px");
+    document.documentElement.style.setProperty('--settings-height', "8px");
     paginate();
  } else {
      settingsPanel.classList.add("active");
-     document.documentElement.style.setProperty('--settings-height', "208px");
+     document.documentElement.style.setProperty('--settings-height', "216px");
      paginate();
     }
 }
@@ -692,7 +706,9 @@ let timeout;
 
 function fontSize(e) {
     let fontSize = e.target.value / 10;
+    let controlSize = 12 + e.target.value / 40;
     document.documentElement.style.setProperty('--font-size', `${fontSize}px`);
+    document.documentElement.style.setProperty('--control-size', `${controlSize}px`);
     
     clearTimeout(timeout)
     timeout = setTimeout(paginate, 100);
@@ -797,9 +813,9 @@ colorSlider.addEventListener('input', color);
 brightnessSlider.addEventListener('input', brightness);
 // document.getElementById('fileInput').addEventListener('change', handleFileSelect, false);
 // window.addEventListener('load', getLocalLibrary);
-window.addEventListener("load", () => setTimeout(function(){
-    onLoad();
-},50));
+// window.addEventListener("load", () => setTimeout(function(){
+//     onLoad();
+// },50));
 window.addEventListener('resize', resizeHeight);
 
 
@@ -811,9 +827,22 @@ let touchstartY = 0
 let touchendY = 0
 
 function handleGesture() {
-  if (touchendX < touchstartX - 40 && touchendY - touchstartY < 160) nextPage()
-  if (touchendX > touchstartX + 40 && touchendY - touchstartY < 160) previousPage()
-  if (touchendY > touchstartY + 160 && touchendX - touchstartX < 160) exitFullScreen()
+    if (touchendX < touchstartX - 40 && touchendY - touchstartY < 160) nextPage()
+    if (touchendX > touchstartX + 40 && touchendY - touchstartY < 160) previousPage()
+    if (touchendY > touchstartY + 160 && touchendX - touchstartX < 160) {
+    if (settingsPanel.classList.contains("active")) {
+        toggleSettings();
+    } else {
+        exitFullScreen();
+        }
+    }
+    if (touchendY < touchstartY - 160 && touchendX - touchstartX < 160) {
+        if (settingsPanel.classList.contains("active")) {
+            enterFullScreen();
+        } else {
+            toggleSettings();
+        }
+    }
 }
 
 page.addEventListener('touchstart', e => {
