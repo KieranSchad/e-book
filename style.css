@@ -421,6 +421,7 @@ a {
     display: none;
 }
 
+/* Progress Bar */
 
 #page::after {
     display: block;
@@ -430,7 +431,7 @@ a {
     border-radius: calc(var(--element-border-radius) / 2);
     width: calc(var(--progress, 1) * calc(calc(100% - 2rem) / 1));
     height: var(--element-border-radius);
-    background-color: var(--color-two);
+    background-color: var(--text-color);
 }
 
 /* #page span {

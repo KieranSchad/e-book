@@ -932,16 +932,16 @@ let touchstartY = 0
 let touchendY = 0
 
 function handleGesture() {
-    if (touchendX < touchstartX - 40 && touchendY - touchstartY < 160) nextPage()
-    if (touchendX > touchstartX + 40 && touchendY - touchstartY < 160) previousPage()
-    if (touchendY > touchstartY + 160 && touchendX - touchstartX < 160) {
+    if (touchendX < touchstartX - 40 && touchendY - touchstartY < 80) nextPage()
+    if (touchendX > touchstartX + 40 && touchendY - touchstartY < 80) previousPage()
+    if (touchendY > touchstartY + 80 && touchendX - touchstartX < 80) {
     if (settingsPanel.classList.contains("active")) {
         toggleSettings();
     } else {
         exitFullScreen();
         }
     }
-    if (touchendY < touchstartY - 160 && touchendX - touchstartX < 160) {
+    if (touchendY < touchstartY - 80 && touchendX - touchstartX < 80) {
         if (!settingsPanel.classList.contains("active")) {
             toggleSettings();
         }
