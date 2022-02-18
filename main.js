@@ -373,12 +373,14 @@ function nextPage() {
             page.innerHTML = pageArray;
             firstWord = lastWord + 1;
             wordIndex = firstWord;
+            let skipGaps = true;
             while (page.scrollHeight <= page.offsetHeight && wordIndex < bookArray.length) {
-                let skipGaps = true;
+                console.log(bookArray[wordIndex])
+                console.log(skipGaps)
                 if (skipGaps && /^(<br|<div|<hr|&nbsp)/i.test(bookArray[wordIndex])) {
                     wordIndex++;
                     
-                } else if (wordIndex != firstWord && /<h1|<img|class="chapter"/i.test(bookArray[wordIndex])) {
+                } else if (!skipGaps && /<h1|<img|class="chapter"/i.test(bookArray[wordIndex])) {
                     break;
                 } else {
                     pageArray.push(bookArray[wordIndex]);
@@ -415,14 +417,14 @@ function paginate() {
             } else {
                 firstWord = 0;
             }
-            
+            let skipGaps = true;
             wordIndex = firstWord;
             while (page.scrollHeight <= page.offsetHeight && wordIndex < bookArray.length) {
-                let skipGaps = true;
+                
                 if (skipGaps && /^(<br|<div|<hr|&nbsp)/i.test(bookArray[wordIndex])) {
                     wordIndex++;
                     
-                } else if (wordIndex != firstWord && /<h1|<img|class="chapter"/i.test(bookArray[wordIndex])) {
+                } else if (!skipGaps && /<h1|<img|class="chapter"/i.test(bookArray[wordIndex])) {
                     
                     break;
                     
@@ -457,8 +459,9 @@ function previousPage() {
             page.innerHTML = pageArray;
             lastWord = firstWord - 1;
             wordIndex = lastWord;
+            let skipGaps = true;
             while (page.scrollHeight <= page.offsetHeight && wordIndex >= 0) {
-                let skipGaps = true;
+                
                 if (skipGaps && /^(<br|<div|<hr|&nbsp)/i.test(bookArray[wordIndex])) {
                     wordIndex--;
                 } else if (/<h1|<img|class="chapter"/i.test(bookArray[wordIndex])) {
