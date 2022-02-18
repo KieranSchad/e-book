@@ -499,8 +499,14 @@ function previousPage() {
 // ---------  Progress  ------------
 
 function getProgress() {
-    let progress = bookMark / bookArray.length * 100;
-    document.documentElement.style.setProperty('--progress', `${progress}%`);
+    let progress = bookMark / bookArray.length;
+    if (progress < 0.01) {
+        progress = 0.01;
+    } else if (progress > 1) {
+        progress = 1;
+    }
+    console.log(progress)
+    document.documentElement.style.setProperty('--progress', `${progress}`);
 }
 
 
@@ -726,7 +732,7 @@ function deleteBook(e) {
     let bookNumber = parseInt(e.target.parentElement.parentElement.id.slice(7), 10);
     let bookIndex = getIndexFromNumber(bookNumber);
     let bookTitle = database[bookIndex].Title;
-    if (confirm(`Remove "${bookTitle}" from Your Library?`)) {
+    if (confirm(`Remove "${bookTitle}" from your library?`)) {
         libraryArray.splice(libraryArray.map(obj => obj.number).indexOf(bookNumber), 1);
         toHtml(lastSearch, bookList);
         if (bookNumber = currentBook) {
@@ -879,7 +885,11 @@ const eventMap = {
     "next-page-button": { click: nextPage },
     "previous-page-button": { click: previousPage },
     "settings-button": { click: toggleSettings },
-    tab: { click: tabClick }
+    tab: { click: tabClick },
+    ArrowLeft: { keydown: previousPage },
+    ArrowRight: { keydown: nextPage },
+    ArrowUp: { keydown: toggleSettings },
+    ArrowDown: { keydown: toggleSettings }
 }
 
 function eventHandler(ev) {

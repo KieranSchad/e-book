@@ -421,13 +421,14 @@ a {
     display: none;
 }
 
+
 #page::after {
     display: block;
     content: "";
     position: absolute;
     bottom: calc(var(--element-border-radius));
     border-radius: calc(var(--element-border-radius) / 2);
-    width: calc(var(--progress, 1%) - 2rem);
+    width: calc(var(--progress, 1) * calc(calc(100% - 2rem) / 1));
     height: var(--element-border-radius);
     background-color: var(--color-two);
 }
@@ -496,17 +497,17 @@ a {
 #fullscreen-wrapper:-webkit-full-screen #page::after {
     margin-left: -1rem;
     border-radius: 0;
-    width: var(--progress, 1%);
+    width: calc(var(--progress, 0.01) * 100%);
 }
 
 #fullscreen-wrapper:-ms-fullscreen #page::after {
     margin-left: -1rem;
     border-radius: 0;
-    width: var(--progress, 1%);
+    width: calc(var(--progress, 0.01) * 100%);
 }
 
 #fullscreen-wrapper:fullscreen #page::after {
     margin-left: -1rem;
     border-radius: 0;
-    width: var(--progress, 1%);
+    width: calc(var(--progress, 0.01) * 100%);
 }
