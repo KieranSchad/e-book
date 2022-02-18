@@ -139,6 +139,7 @@ a {
 #fullscreen-wrapper {
     width: 100%;
     height: 100%;
+    position: relative;
     /* height: calc(var(--vh, 1vh) * 100 - 120px); */
 }
 
@@ -353,6 +354,7 @@ a {
     height: calc(var(--vh, 1vh) * 100 - 120px - var(--settings-height, 8px));
     margin: 4px 0;
     padding: 1rem;
+    padding-bottom: 1.5rem;
     background: var(--active-background);
     border-radius: var(--element-border-radius);
     overflow-x: hidden;
@@ -360,6 +362,7 @@ a {
     white-space:normal;
     font-size: 1.1rem;
     line-height: 1.9rem;
+    position: relative;
 }
 
 .control-bar label {
@@ -416,6 +419,17 @@ a {
 
 #page .pagenum {
     display: none;
+}
+
+#page::after {
+    display: block;
+    content: "";
+    position: absolute;
+    bottom: calc(var(--element-border-radius));
+    border-radius: calc(var(--element-border-radius) / 2);
+    width: calc(var(--progress, 1%) - 2rem);
+    height: var(--element-border-radius);
+    background-color: var(--color-two);
 }
 
 /* #page span {
@@ -477,4 +491,22 @@ a {
 #fullscreen-wrapper:fullscreen #settings-panel {
     margin-top: 0px;
     border-radius: 0;
+}
+
+#fullscreen-wrapper:-webkit-full-screen #page::after {
+    margin-left: -1rem;
+    border-radius: 0;
+    width: var(--progress, 1%);
+}
+
+#fullscreen-wrapper:-ms-fullscreen #page::after {
+    margin-left: -1rem;
+    border-radius: 0;
+    width: var(--progress, 1%);
+}
+
+#fullscreen-wrapper:fullscreen #page::after {
+    margin-left: -1rem;
+    border-radius: 0;
+    width: var(--progress, 1%);
 }

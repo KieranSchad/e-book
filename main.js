@@ -375,8 +375,6 @@ function nextPage() {
             wordIndex = firstWord;
             let skipGaps = true;
             while (page.scrollHeight <= page.offsetHeight && wordIndex < bookArray.length) {
-                console.log(bookArray[wordIndex])
-                console.log(skipGaps)
                 if (skipGaps && /^(<br|<div|<hr|&nbsp)/i.test(bookArray[wordIndex])) {
                     wordIndex++;
                     
@@ -403,6 +401,8 @@ function nextPage() {
                 libraryArray[libraryIndex].bookMark = bookMark;
                 localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
             }
+
+            getProgress();
         }
     }
 }
@@ -448,6 +448,8 @@ function paginate() {
                 libraryArray[libraryIndex].bookMark = bookMark;
                 localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
             }
+
+            getProgress();
         }
     }
 }
@@ -488,8 +490,17 @@ function previousPage() {
                 libraryArray[libraryIndex].bookMark = bookMark;
                 localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
             }
+
+            getProgress();
         }
     }
+}
+
+// ---------  Progress  ------------
+
+function getProgress() {
+    let progress = bookMark / bookArray.length * 100;
+    document.documentElement.style.setProperty('--progress', `${progress}%`);
 }
 
 
@@ -684,6 +695,7 @@ function exitFullScreen() {
         } else if (document.msExitFullscreen) {
             document.msExitFullscreen();
         }
+        setTimeout(resizeHeight, 100);   
     }
 }
 
