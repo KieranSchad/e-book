@@ -31,7 +31,6 @@ const brightnessSlider = document.getElementById("brightness-slider");
 fetch("https://oldbookreader.com/library/pg_caralog_2022_01_28.json",  {
     method: 'GET',
     mode: 'cors',
-    credentials: 'include',
     headers: {
         Origin: 'https://kieranschad.github.io/e-book/'
     }
