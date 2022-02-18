@@ -117,7 +117,8 @@ a {
     cursor: pointer;
 }
 
-.active.tab {
+.active.tab,
+.active.button {
     background: var(--active-background);
 }
 

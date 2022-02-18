@@ -6,6 +6,7 @@ const tab = document.getElementsByClassName('tab');
 const pageTab = document.getElementById('page-tab');
 const panel = document.getElementsByClassName('panel');
 const settingsPanel = document.getElementById('settings-panel');
+const settingsButton = document.getElementById('settings-button');
 const bookList = document.getElementById("book-list");
 const libraryList = document.getElementById("library-list");
 const chapterList = document.getElementById("chapter-list");
@@ -129,38 +130,57 @@ resizeHeight();
 //     showLibrary();;
 //   }
 
+
+// ---------  Get Index from Number  ------------
+
+function getIndexFromNumber(number) {
+    return database.map((book) => parseInt(Object.values(book)[0], 10)).indexOf(parseInt(number, 10));
+}
+
+// ---------  Get Number from Index  ------------
+
+function getNumberFromIndex(index) {
+    return Object.values(database[index])[0];
+}
+
 // ---------  Get Library  ------------
 
-let libraryArray = [11, 60, 75];
+let libraryArray = [{number: 12, bookMark: 0}, {number: 61, bookMark: 0}, {number: 76, bookMark: 0}];
 
 if (localStorage.getItem("libraryArray")) {
     libraryArray = JSON.parse(localStorage.getItem("libraryArray"));
 }
 
 function showLibrary() {
-    let libraryObjectArray = libraryArray.map(id => database[id])
+    let libraryObjectArray = libraryArray.map(obj => database[getIndexFromNumber(obj.number)])
     toHtml(libraryObjectArray, libraryList);
 }
 
 
 // ---------  Get Book  ------------
 
-let currentBook = 0;
+let currentBook = -1;
+let libraryIndex;
 let bookData;
 if (localStorage.getItem("currentBook")) {
     currentBook = localStorage.getItem("currentBook");
+    libraryIndex = getLibraryIndex(currentBook);
 }
 
 
-function getBook(e, bookId, goToPanel) {
+
+
+function getBook(e, bookNumber, goToPanel) {
     if (e) {
-        bookId = parseInt(e.target.parentElement.parentElement.id.slice(7), 10);             // ID = gutenberg book identication number - for links
+        bookNumber = parseInt(e.target.parentElement.parentElement.id.slice(7), 10);
     }
-    let bookIndex = database.map((book) => parseInt(Object.values(book)[0], 10)).indexOf(parseInt(bookId, 10));
-    currentBook = bookId;
+    let bookIndex = getIndexFromNumber(bookNumber);
+    currentBook = bookNumber;
+    libraryIndex = getLibraryIndex(currentBook);
+    bookMark = libraryArray[libraryIndex].bookMark;
     localStorage.setItem("currentBook", currentBook);
 
-    fetch(`https://kieranschad.github.io/e-book/library/${bookId}-h.htm`)
+    fetch(`https://kieranschad.github.io/e-book/library/${bookNumber}-h.htm`)
         .then(res => {
             if (res.ok) {
                 res.text()
@@ -170,7 +190,7 @@ function getBook(e, bookId, goToPanel) {
                         // loadPage(false, currentBook, "stay");
                     })
             } else {
-                fetch(`https://kieranschad.github.io/e-book/library/${bookId}.html`)
+                fetch(`https://kieranschad.github.io/e-book/library/${bookNumber}.html`)
                     .then(res => {
                         if (res.ok) {
                             res.text()
@@ -180,7 +200,7 @@ function getBook(e, bookId, goToPanel) {
                                     // loadPage(false, currentBook, "stay");
                                 })
                         } else {
-                            fetch(`https://kieranschad.github.io/e-book/library/${bookId}.txt`)
+                            fetch(`https://kieranschad.github.io/e-book/library/${bookNumber}.txt`)
                                 .then(res => {
                                     if (res.ok) {
                                         res.text()
@@ -244,20 +264,20 @@ function loadBook(bookIndex, goToPanel) {
 
 // ---------  Restart Book  ------------
 
-function restartBook(e) {
-    bookMark = -1;
-    localStorage.setItem("bookMark", bookMark);
-    loadPage(e);
-}
+// function restartBook(e) {
+//     bookMark = -1;
+//     localStorage.setItem("bookMark", bookMark);
+//     loadPage(e);
+// }
 
 // ---------  Load Text  ------------
 
 let bookArray;
 
-function loadPage(e, bookId, gotoPanel) {
+function loadPage(e, bookNumber, gotoPanel) {
 
     if (e) {
-        bookId = parseInt(e.target.parentElement.parentElement.id.slice(7), 10);
+        bookNumber = parseInt(e.target.parentElement.parentElement.id.slice(7), 10);
     }
     bookArray = [];
     
@@ -268,7 +288,7 @@ function loadPage(e, bookId, gotoPanel) {
             .replace(/style=('|")[\s\S]*?>/gi, ">")                     // delete style attributes
             .replace(/^[\s\S]*?<body>/i, "")                            // delete everything before body tag
             .replace(/<\/body>[\s\S]*?$/i, "")                          // delete everything after /body tag
-            .replace(/src="images/gi, `src="https://www.gutenberg.org/files/${bookId}/${bookId}-h/images`)
+            .replace(/src="images/gi, `src="https://www.gutenberg.org/files/${bookNumber}/${bookNumber}-h/images`)
             .replace(/<br[\s\S]*?>/gi, "<hr>")
             .split(/(?=<)|(?<=>)/g)
             .forEach((item) => {
@@ -311,14 +331,21 @@ function loadPage(e, bookId, gotoPanel) {
         tabClick("page-tab");
         paginate();
     }
+    currentBook = bookNumber;
+    libraryIndex = getLibraryIndex(currentBook);
+    bookMark = libraryArray[libraryIndex].bookMark;
+    localStorage.setItem("currentBook", currentBook);
 }
 
 // ---------  Paginate  ------------
 
 let bookMark = 0;
 
-if (localStorage.getItem("bookMark")) {
-    bookMark = localStorage.getItem("bookMark");
+if (libraryIndex >= 0) {
+    bookMark = libraryArray[libraryIndex].bookMark;
+}
+function getLibraryIndex(number) {
+    return libraryArray.map((obj) => parseInt(obj.number, 10)).indexOf(parseInt(number, 10));
 }
 
 
@@ -359,7 +386,8 @@ function nextPage() {
             page.innerHTML = pageArray.join(" ");
             lastWord = wordIndex - 1;
             bookMark = firstWord;
-            localStorage.setItem("bookMark", bookMark);
+            libraryArray[libraryIndex].bookMark = bookMark;
+            localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
         }
     }
 }
@@ -395,7 +423,9 @@ function paginate() {
             page.innerHTML = pageArray.join(" ");
             lastWord = wordIndex - 1;
             bookMark = firstWord;
-            localStorage.setItem("bookMark", bookMark);
+
+            libraryArray[libraryIndex].bookMark = bookMark;
+            localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
         }
     }
 }
@@ -429,7 +459,8 @@ function previousPage() {
             page.innerHTML = pageArray.join(" ");
             firstWord = wordIndex;
             bookMark = firstWord;
-            localStorage.setItem("bookMark", bookMark);
+            libraryArray[libraryIndex].bookMark = bookMark;
+            localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
         }
     }
 }
@@ -536,7 +567,7 @@ function toHtml(bookArray, location, chapterArr) {
 
         let chapters = ``;
         const chapterRegex = /(?<!\s(mr)|(ms)|(mrs)|(dr)|(sr)|(jr))\.\s+/i
-        let bookId = Object.values(book)[0];
+        let bookNumber = Object.values(book)[0];
         let buttonHtml;
         if (location == bookList) {
             buttonHtml = `
@@ -545,7 +576,7 @@ function toHtml(bookArray, location, chapterArr) {
                 <a class="button fas fa-book-medical" id="add-button" ></a>
             </div>`
         } else if (location == libraryList) {
-            bookId = "library" + bookId;
+            bookNumber = "library" + bookNumber;
             buttonHtml = `
                 <div class="library-buttons">
                     <a class="button fas fa-book-open" id="read-button" ></a>
@@ -553,7 +584,7 @@ function toHtml(bookArray, location, chapterArr) {
                 </div>`
         } else if (location == chapterList) {
             // issuedHtml = `<h3 class="issued">Issued as an eBook on ${issued}</h3>`
-            bookId = "chapter" + bookId;
+            bookNumber = "chapter" + bookNumber;
             tags = ``;
             chapters = chapterArr.map((chapter) => {
                 return `
@@ -567,7 +598,7 @@ function toHtml(bookArray, location, chapterArr) {
         }
         
         return `
-        <div class="card" id="${bookId}">
+        <div class="card" id="${bookNumber}">
             <h1 class="title">${shortTitle}</h1>
             <h3 class="sub-title">${subTitle}</h3>
             ${author}
@@ -614,12 +645,12 @@ function exitFullScreen() {
 
 // ---------  Focus Card  ------------
 
-function focusCard(bookId) {
-    if (document.getElementById(bookId).classList.contains("active")) {
-        document.getElementById(bookId).classList.remove("active");
+function focusCard(bookNumber) {
+    if (document.getElementById(bookNumber).classList.contains("active")) {
+        document.getElementById(bookNumber).classList.remove("active");
     } else {
         Array.from(card).forEach((item) => {item.classList.remove("active")});
-        document.getElementById(bookId).classList.add("active");
+        document.getElementById(bookNumber).classList.add("active");
     }
 
 }
@@ -636,24 +667,22 @@ function clearSearch() {
 // ---------  Delete Book  ------------
 
 function deleteBook(e) {
-    let bookId = parseInt(e.target.parentElement.parentElement.id.slice(7), 10);
-    let bookIndex = database.map((book) => parseInt(Object.values(book)[0], 10)).indexOf(parseInt(bookId, 10));
+    let bookNumber = parseInt(e.target.parentElement.parentElement.id.slice(7), 10);
+    let bookIndex = getIndexFromNumber(bookNumber);
     let bookTitle = database[bookIndex].Title;
-    if (confirm(`Remove ${bookTitle} from Your Library?`)) {
-        libraryArray.splice(libraryArray.indexOf(bookIndex), 1);
+    if (confirm(`Remove "${bookTitle}" from Your Library?`)) {
+        libraryArray.splice(libraryArray.map(obj => obj.number).indexOf(bookNumber), 1);
         showLibrary();
         localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
     }
     }
 
 
-
 // ---------  Add Book  ------------
 
 function addBook(e) {
-    let bookId = parseInt(e.target.parentElement.parentElement.id, 10);
-    let bookIndex = database.map((book) => parseInt(Object.values(book)[0], 10)).indexOf(parseInt(bookId, 10));
-    libraryArray.unshift(bookIndex);
+    let bookNumber = parseInt(e.target.parentElement.parentElement.id, 10);
+    libraryArray.unshift({number: bookNumber, bookMark: 0});
     showLibrary();
     tabClick("library-tab")
     localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
@@ -666,7 +695,7 @@ function tabClick(id) {
     Array.from(panel).forEach((item) => {item.classList.remove("active")});
     document.getElementById(id).classList.add("active");
     document.getElementById(id.replace("tab", "panel")).classList.add("active");
-    if (id == "page-tab" && currentBook > 0) {
+    if (id == "page-tab" && currentBook >= 0) {
         loadPage(false, currentBook, "stay");
         paginate();
     }
@@ -674,29 +703,31 @@ function tabClick(id) {
 
 // ---------  Book Navigation  ------------
 
-function previousBook() {
-    if (currentBook == 0) {
-        currentBook = libraryArray.length;
-    }
-    getBook(false, currentBook -1);
-}
+// function previousBook() {
+//     if (currentBook == 0) {
+//         currentBook = libraryArray.length;
+//     }
+//     getBook(false, currentBook -1);
+// }
 
-function nextBook() {
-    if (currentBook == libraryArray.length - 1) {
-        currentBook = -1;
-    }
-    getBook(false, currentBook + 1);
-}
+// function nextBook() {
+//     if (currentBook == libraryArray.length - 1) {
+//         currentBook = -1;
+//     }
+//     getBook(false, currentBook + 1);
+// }
 
 // ---------  Settings Panel  ------------
 
 function toggleSettings() {
  if (settingsPanel.classList.contains("active")) {
     settingsPanel.classList.remove("active");
+    settingsButton.classList.remove("active");
     document.documentElement.style.setProperty('--settings-height', "8px");
     paginate();
  } else {
      settingsPanel.classList.add("active");
+     settingsButton.classList.add("active");
      document.documentElement.style.setProperty('--settings-height', "216px");
      paginate();
     }
@@ -760,7 +791,7 @@ function brightness(e) {
 
 function onLoad() {
     showLibrary();
-    if (currentBook > 0) {
+    if (currentBook >= 0) {
         getBook(false, currentBook, "stay");
     }
 }
@@ -776,11 +807,11 @@ const eventMap = {
     "read-button": { click: getBook },
     "delete-button": { click: deleteBook },
     "add-button": { click: addBook },
-    "start-button": { click: restartBook },
+    // "start-button": { click: restartBook },
     "bookmark-button": { click: loadPage },
     "full-screen-button": { click: enterFullScreen },
-    "previous-book-button": { click: previousBook },
-    "next-book-button": { click: nextBook },
+    // "previous-book-button": { click: previousBook },
+    // "next-book-button": { click: nextBook },
     "next-page-button": { click: nextPage },
     "previous-page-button": { click: previousPage },
     "settings-button": { click: toggleSettings },
@@ -837,9 +868,7 @@ function handleGesture() {
         }
     }
     if (touchendY < touchstartY - 160 && touchendX - touchstartX < 160) {
-        if (settingsPanel.classList.contains("active")) {
-            enterFullScreen();
-        } else {
+        if (!settingsPanel.classList.contains("active")) {
             toggleSettings();
         }
     }
