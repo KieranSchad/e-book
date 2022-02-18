@@ -176,9 +176,12 @@ function getBook(e, bookNumber, goToPanel) {
     }
     let bookIndex = getIndexFromNumber(bookNumber);
     currentBook = bookNumber;
-    libraryIndex = getLibraryIndex(currentBook);
-    bookMark = libraryArray[libraryIndex].bookMark;
     localStorage.setItem("currentBook", currentBook);
+    libraryIndex = getLibraryIndex(currentBook);
+    if (libraryIndex >= 0) {
+        bookMark = libraryArray[libraryIndex].bookMark;
+    }
+
 
     fetch(`https://kieranschad.github.io/e-book/library/${bookNumber}-h.htm`)
         .then(res => {
@@ -211,6 +214,8 @@ function getBook(e, bookNumber, goToPanel) {
                                             })
                                     } else {
                                         alert("Book Not Found");
+                                        currentBook = -1;
+                                        localStorage.setItem("currentBook", currentBook);
                                     }
                                 })
                         }
@@ -332,9 +337,11 @@ function loadPage(e, bookNumber, gotoPanel) {
         paginate();
     }
     currentBook = bookNumber;
-    libraryIndex = getLibraryIndex(currentBook);
-    bookMark = libraryArray[libraryIndex].bookMark;
     localStorage.setItem("currentBook", currentBook);
+    libraryIndex = getLibraryIndex(currentBook);
+    if (libraryIndex >= 0) {
+        bookMark = libraryArray[libraryIndex].bookMark;
+    }
 }
 
 // ---------  Paginate  ------------
@@ -386,8 +393,11 @@ function nextPage() {
             page.innerHTML = pageArray.join(" ");
             lastWord = wordIndex - 1;
             bookMark = firstWord;
-            libraryArray[libraryIndex].bookMark = bookMark;
-            localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
+
+            if (libraryIndex >= 0) {
+                libraryArray[libraryIndex].bookMark = bookMark;
+                localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
+            }
         }
     }
 }
@@ -397,7 +407,12 @@ function paginate() {
         if (wordIndex < bookArray.length) {
             pageArray = [];
             page.innerHTML = pageArray;
-            firstWord = bookMark;
+            if (libraryIndex >= 0) {
+                firstWord = bookMark;
+            } else {
+                firstWord = 0;
+            }
+            
             wordIndex = firstWord;
             while (page.scrollHeight <= page.offsetHeight && wordIndex < bookArray.length) {
                 if (wordIndex == firstWord && /^(<br|<div|<hr|&nbsp)/i.test(bookArray[wordIndex])) {
@@ -423,9 +438,11 @@ function paginate() {
             page.innerHTML = pageArray.join(" ");
             lastWord = wordIndex - 1;
             bookMark = firstWord;
-
-            libraryArray[libraryIndex].bookMark = bookMark;
-            localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
+console.log(libraryIndex)
+            if (libraryIndex >= 0) {
+                libraryArray[libraryIndex].bookMark = bookMark;
+                localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
+            }
         }
     }
 }
@@ -459,8 +476,10 @@ function previousPage() {
             page.innerHTML = pageArray.join(" ");
             firstWord = wordIndex;
             bookMark = firstWord;
-            libraryArray[libraryIndex].bookMark = bookMark;
-            localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
+            if (libraryIndex >= 0) {
+                libraryArray[libraryIndex].bookMark = bookMark;
+                localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
+            }
         }
     }
 }
@@ -469,6 +488,7 @@ function previousPage() {
 // ---------  Search  ------------
 
 let timeoutId = 0;
+let lastSearch = [];
 
 function searchWithDelay(e) {
     if (timeoutId == 0) {
@@ -493,6 +513,7 @@ function searchFunction(e) {
     }
     timeoutId = 0;
     toHtml(searchResult, bookList);
+    lastSearch = searchResult;
 
 }
 
@@ -508,6 +529,7 @@ function authorSearch(inputValue) {
     }
     toHtml(authorSearchResult, bookList);
     tabClick("browse-tab");
+    lastSearch = authorSearchResult;
 }
 
 function tagSearch(inputValue) {
@@ -523,6 +545,7 @@ function tagSearch(inputValue) {
     }
     toHtml(tagSearchResult, bookList);
     tabClick("browse-tab");
+    lastSearch = tagSearchResult;
 }
 
 // ---------  Display Search Results  ------------
@@ -555,6 +578,7 @@ function toHtml(bookArray, location, chapterArr) {
                 }
             })
             .join(''); 
+
         
         let tags = [...new Set(book.Subjects
             .concat(';', book.Bookshelves)                       //join subjects and bookshelves to one string
@@ -568,19 +592,32 @@ function toHtml(bookArray, location, chapterArr) {
         let chapters = ``;
         const chapterRegex = /(?<!\s(mr)|(ms)|(mrs)|(dr)|(sr)|(jr))\.\s+/i
         let bookNumber = Object.values(book)[0];
+
+        let addDeleteId;
+        let addDeleteLabel;
+        console.log(getLibraryIndex(bookNumber))
+        if (getLibraryIndex(bookNumber) < 0) {
+            addDeleteId = "add";
+            addDeleteLabel = "fas fa-plus";
+        } else {
+            addDeleteId = "delete";
+            addDeleteLabel = "fas fa-trash-alt";
+        }
+
         let buttonHtml;
         if (location == bookList) {
+            bookNumber = "results" + bookNumber;
             buttonHtml = `
             <div class="library-buttons">
                 <a class="button fas fa-book-open" id="read-button" ></a>
-                <a class="button fas fa-book-medical" id="add-button" ></a>
+                <a class="button ${addDeleteLabel}" id="${addDeleteId}-button" ></a>
             </div>`
         } else if (location == libraryList) {
             bookNumber = "library" + bookNumber;
             buttonHtml = `
                 <div class="library-buttons">
                     <a class="button fas fa-book-open" id="read-button" ></a>
-                    <a class="button fas fa-trash-alt" id="delete-button" ></a>
+                    <a class="button ${addDeleteLabel}" id="${addDeleteId}-button" ></a>
                 </div>`
         } else if (location == chapterList) {
             // issuedHtml = `<h3 class="issued">Issued as an eBook on ${issued}</h3>`
@@ -593,7 +630,7 @@ function toHtml(bookArray, location, chapterArr) {
             buttonHtml = `
                 <div class="book-buttons">
                     <a class="button fas fa-play" id="start-button" ></a>
-                    <a class="button fas fa-bookmark" id="bookmark-button" ></a>
+                    <a class="button ${addDeleteLabel}" id="${addDeleteId}-button" ></a>
                 </div>`
         }
         
@@ -672,6 +709,10 @@ function deleteBook(e) {
     let bookTitle = database[bookIndex].Title;
     if (confirm(`Remove "${bookTitle}" from Your Library?`)) {
         libraryArray.splice(libraryArray.map(obj => obj.number).indexOf(bookNumber), 1);
+        toHtml(lastSearch, bookList);
+        if (bookNumber = currentBook) {
+            getBook(false, currentBook, "stay");
+        }
         showLibrary();
         localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
     }
@@ -681,8 +722,12 @@ function deleteBook(e) {
 // ---------  Add Book  ------------
 
 function addBook(e) {
-    let bookNumber = parseInt(e.target.parentElement.parentElement.id, 10);
+    let bookNumber = parseInt(e.target.parentElement.parentElement.id.slice(7), 10);
     libraryArray.unshift({number: bookNumber, bookMark: 0});
+    toHtml(lastSearch, bookList);
+    if (bookNumber = currentBook) {
+        getBook(false, currentBook, "stay");
+    }
     showLibrary();
     tabClick("library-tab")
     localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
