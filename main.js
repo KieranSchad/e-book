@@ -24,7 +24,18 @@ const brightnessSlider = document.getElementById("brightness-slider");
 
 // import database from "./pg_caralog_2022_01_28.json" assert { type: "json" };
 
-fetch("https://kieranschad.github.io/e-book/pg_caralog_2022_01_28.json")
+
+// Header always set Access-Control-Allow-Origin "https://kieranschad.github.io/e-book/"
+// Header always set Access-Control-Allow-Origin "*"
+
+fetch("https://oldbookreader.com/library/pg_caralog_2022_01_28.json",  {
+    method: 'GET',
+    mode: 'cors',
+    credentials: 'include',
+    headers: {
+        Origin: 'https://kieranschad.github.io/e-book/'
+    }
+})
     .then(res => (res.json())
     .then(data => {
         database = data
@@ -183,7 +194,7 @@ function getBook(e, bookNumber, goToPanel) {
     }
 
 
-    fetch(`https://kieranschad.github.io/e-book/library/${bookNumber}-h.htm`)
+    fetch(`https://oldbookreader.com/library/${bookNumber}-h.htm`)
         .then(res => {
             if (res.ok) {
                 res.text()
@@ -193,7 +204,7 @@ function getBook(e, bookNumber, goToPanel) {
                         // loadPage(false, currentBook, "stay");
                     })
             } else {
-                fetch(`https://kieranschad.github.io/e-book/library/${bookNumber}.html`)
+                fetch(`https://oldbookreader.com/library/${bookNumber}.html`)
                     .then(res => {
                         if (res.ok) {
                             res.text()
@@ -203,7 +214,7 @@ function getBook(e, bookNumber, goToPanel) {
                                     // loadPage(false, currentBook, "stay");
                                 })
                         } else {
-                            fetch(`https://kieranschad.github.io/e-book/library/${bookNumber}.txt`)
+                            fetch(`https://oldbookreader.com/library/${bookNumber}.txt`)
                                 .then(res => {
                                     if (res.ok) {
                                         res.text()
@@ -754,7 +765,7 @@ function addBook(e) {
         getBook(false, currentBook, "stay");
     }
     showLibrary();
-    tabClick("library-tab")
+    // tabClick("library-tab")
     localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
 }
 
