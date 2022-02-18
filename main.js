@@ -187,7 +187,7 @@ function getBook(e, bookNumber, goToPanel) {
     }
 
 
-    fetch(`https://oldbookreader.com/library/${bookNumber}-h.htm`)
+    fetch(`https://oldbookreader.com/library/htm/${bookNumber}-h.htm`)
         .then(res => {
             if (res.ok) {
                 res.text()
@@ -197,7 +197,7 @@ function getBook(e, bookNumber, goToPanel) {
                         // loadPage(false, currentBook, "stay");
                     })
             } else {
-                fetch(`https://oldbookreader.com/library/${bookNumber}.html`)
+                fetch(`https://oldbookreader.com/library/html/${bookNumber}.html`)
                     .then(res => {
                         if (res.ok) {
                             res.text()
@@ -207,7 +207,7 @@ function getBook(e, bookNumber, goToPanel) {
                                     // loadPage(false, currentBook, "stay");
                                 })
                         } else {
-                            fetch(`https://oldbookreader.com/library/${bookNumber}.txt`)
+                            fetch(`https://oldbookreader.com/library/txt/${bookNumber}.txt`)
                                 .then(res => {
                                     if (res.ok) {
                                         res.text()
