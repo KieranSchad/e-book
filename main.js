@@ -28,13 +28,7 @@ const brightnessSlider = document.getElementById("brightness-slider");
 // Header always set Access-Control-Allow-Origin "https://kieranschad.github.io/e-book/"
 // Header always set Access-Control-Allow-Origin "*"
 
-fetch("https://oldbookreader.com/library/pg_caralog_2022_01_28.json",  {
-    method: 'GET',
-    mode: 'cors',
-    headers: {
-        Origin: 'https://kieranschad.github.io/e-book/'
-    }
-})
+fetch("library/pg_caralog_2022_01_28.json")
     .then(res => (res.json())
     .then(data => {
         database = data
