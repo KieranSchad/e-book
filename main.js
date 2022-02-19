@@ -149,7 +149,14 @@ function getNumberFromIndex(index) {
 
 // ---------  Get Library  ------------
 
-let libraryArray = [{number: 12, bookMark: 0}, {number: 61, bookMark: 0}, {number: 76, bookMark: 0}];
+let libraryArray = [
+    {number: 11, bookMark: 0}, 
+    {number: 2600, bookMark: 0}, 
+    {number: 1399, bookMark: 0},
+    {number: 15, bookMark: 0},
+    {number: 76, bookMark: 0},
+    {number: 24, bookMark: 0}
+];
 
 if (localStorage.getItem("libraryArray")) {
     libraryArray = JSON.parse(localStorage.getItem("libraryArray"));
@@ -187,7 +194,7 @@ function getBook(e, bookNumber, goToPanel) {
     }
 
 
-    fetch(`https://oldbookreader.com/library/htm/${bookNumber}-h.htm`)
+    fetch(`/library/htm/${bookNumber}-h.htm`)
         .then(res => {
             if (res.ok) {
                 res.text()
@@ -197,7 +204,7 @@ function getBook(e, bookNumber, goToPanel) {
                         // loadPage(false, currentBook, "stay");
                     })
             } else {
-                fetch(`https://oldbookreader.com/library/html/${bookNumber}.html`)
+                fetch(`/library/html/${bookNumber}.html`)
                     .then(res => {
                         if (res.ok) {
                             res.text()
@@ -207,7 +214,7 @@ function getBook(e, bookNumber, goToPanel) {
                                     // loadPage(false, currentBook, "stay");
                                 })
                         } else {
-                            fetch(`https://oldbookreader.com/library/txt/${bookNumber}.txt`)
+                            fetch(`/library/txt/${bookNumber}.txt`)
                                 .then(res => {
                                     if (res.ok) {
                                         res.text()
