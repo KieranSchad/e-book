@@ -28,7 +28,7 @@ const brightnessSlider = document.getElementById("brightness-slider");
 // Header always set Access-Control-Allow-Origin "https://kieranschad.github.io/e-book/"
 // Header always set Access-Control-Allow-Origin "*"
 
-fetch("library/pg_caralog_2022_01_28.json")
+fetch("https://kieranschad.github.io/e-book/library/pg_caralog_2022_01_28.json")
     .then(res => (res.json())
     .then(data => {
         database = data
