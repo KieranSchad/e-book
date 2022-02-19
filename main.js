@@ -46,6 +46,8 @@ function resizeHeight() {
 
 resizeHeight();
 
+
+
 // ---------  library  ------------
 
 // let displayLibrary = [];
@@ -172,7 +174,7 @@ function showLibrary() {
 
 let currentBook = -1;
 let libraryIndex;
-let bookData;
+let bookData = "<h2>Loading...</h2>";
 if (localStorage.getItem("currentBook")) {
     currentBook = localStorage.getItem("currentBook");
     libraryIndex = getLibraryIndex(currentBook);
@@ -274,6 +276,7 @@ function loadBook(bookIndex, goToPanel) {
     }
     chapters.unshift(["restart-button", "START. Read from the Beginning"])
     toHtml([database[bookIndex]], chapterList, chapters)
+    loadPage(false, currentBook, "stay")
     if (goToPanel !== "stay") {
         tabClick("book-tab");
     }
@@ -349,8 +352,9 @@ function loadPage(e, bookNumber, gotoPanel) {
     }
     if (gotoPanel !== "stay") {
         tabClick("page-tab");
-        paginate();
+        firstWord = -1;
     }
+    paginate();
     currentBook = bookNumber;
     localStorage.setItem("currentBook", currentBook);
     libraryIndex = getLibraryIndex(currentBook);
@@ -378,7 +382,7 @@ let pageArray = [];
 
 function nextPage() {
     if (pageTab.classList.contains("active")) {
-        if (wordIndex < bookArray.length) {
+        if (currentBook > 0 && wordIndex < bookArray.length) {
             
             pageArray = [];
             page.innerHTML = pageArray;
@@ -420,13 +424,11 @@ function nextPage() {
 
 function paginate() {
     if (pageTab.classList.contains("active")) {
-        if (wordIndex < bookArray.length) {
+        if (currentBook > 0 && wordIndex < bookArray.length) {
             pageArray = [];
             page.innerHTML = pageArray;
             if (libraryIndex >= 0) {
                 firstWord = bookMark;
-            } else {
-                firstWord = 0;
             }
             let skipGaps = true;
             wordIndex = firstWord;
@@ -467,7 +469,7 @@ function paginate() {
 
 function previousPage() {
     if (pageTab.classList.contains("active")) {
-        if (wordIndex >= 0) {
+        if (currentBook > 0 && firstWord > 0) {
             pageArray = [];
             page.innerHTML = pageArray;
             lastWord = firstWord - 1;
@@ -776,9 +778,13 @@ function tabClick(id) {
     Array.from(panel).forEach((item) => {item.classList.remove("active")});
     document.getElementById(id).classList.add("active");
     document.getElementById(id.replace("tab", "panel")).classList.add("active");
+
+    currentTab = id;
+    localStorage.setItem("tab", currentTab);
+
     if (id == "page-tab" && currentBook >= 0) {
         loadPage(false, currentBook, "stay");
-        paginate();
+        // paginate();
     }
 }
 
@@ -805,6 +811,7 @@ function toggleSettings() {
     settingsPanel.classList.remove("active");
     settingsButton.classList.remove("active");
     document.documentElement.style.setProperty('--settings-height', "16px");
+    localStorage.setItem("settings", JSON.stringify(settings))
     paginate();
  } else {
      settingsPanel.classList.add("active");
@@ -816,21 +823,41 @@ function toggleSettings() {
 
 let timeout;
 
+let settings = {
+    "fontSlider": 16,
+    "colorSlider": 200,
+    "brightnessSlider": 160
+}
+
 function fontSize(e) {
-    let fontSize = e.target.value / 10;
-    let controlSize = 12 + e.target.value / 40;
+    let sliderValue;
+    if (e) {
+        sliderValue = e.target.value;
+    } else {
+        sliderValue = settings.fontSlider;
+    }
+    let fontSize = sliderValue / 10;
+    let controlSize = 12 + fontSize / 4;
     document.documentElement.style.setProperty('--font-size', `${fontSize}px`);
     document.documentElement.style.setProperty('--control-size', `${controlSize}px`);
     
     clearTimeout(timeout)
     timeout = setTimeout(paginate, 100);
+
+    settings.fontSlider = sliderValue;
 }
 
 function color(e) {
-    let hue = e.target.value;
+    let sliderValue;
+    if (e) {
+        sliderValue = e.target.value;
+    } else {
+        sliderValue = settings.colorSlider;
+    }
+    let hue = sliderValue;
     let saturation1 = 50;
-    if (e.target.value <= 50) {
-        saturation1 = e.target.value;
+    if (sliderValue <= 50) {
+        saturation1 = sliderValue;
     }
     let saturation2 = saturation1 * 2;
     let saturation3 = saturation1 * 2;
@@ -838,27 +865,34 @@ function color(e) {
     document.documentElement.style.setProperty('--saturation1', `${saturation1}%`);
     document.documentElement.style.setProperty('--saturation2', `${saturation2}%`);
     document.documentElement.style.setProperty('--saturation3', `${saturation3}%`);
+
+    settings.colorSlider = sliderValue;
 }
 
 function brightness(e) {
-    let slider = e.target.value;
+    let sliderValue;
+    if (e) {
+        sliderValue = e.target.value;
+    } else {
+        sliderValue = settings.brightnessSlider;
+    }
     let bw;
     let opA;
     let opE;
     let txt;
     let lit;
-    if (slider > 128) {
+    if (sliderValue > 128) {
         bw = 255;
-        opA = slider / 255
+        opA = sliderValue / 255
         opE = opA * 0.75
-        txt = (255 - slider) * 0.3;
-        lit = slider / 3 + 15;
+        txt = (255 - sliderValue) * 0.3;
+        lit = sliderValue / 3 + 15;
     } else {
         bw = 0;
-        opA = 1 - slider / 255
+        opA = 1 - sliderValue / 255
         opE = opA * 0.75
-        txt = (slider / 2) + 36;
-        lit = slider / 4;
+        txt = (sliderValue / 2) + 36;
+        lit = sliderValue / 4;
     }
 
     document.documentElement.style.setProperty('--bw', bw);
@@ -866,6 +900,8 @@ function brightness(e) {
     document.documentElement.style.setProperty('--opE', opE);
     document.documentElement.style.setProperty('--txt', `${txt}%`);
     document.documentElement.style.setProperty('--lit', `${lit}%`);
+
+    settings.brightnessSlider = sliderValue;
 }
 
 // ---------  After Page Load  ------------
@@ -876,6 +912,24 @@ function onLoad() {
         getBook(false, currentBook, "stay");
     }
 }
+
+// ---------  Open Last Tab  ------------
+if (localStorage.getItem("settings")) {
+    settings = JSON.parse(localStorage.getItem("settings"));
+    fontSize();
+    color();
+    brightness();
+}
+
+// ---------  Open Last Tab  ------------
+
+let currentTab;
+
+if (localStorage.getItem("tab")) {
+    currentTab = localStorage.getItem("tab");
+    tabClick(currentTab);
+}
+
 
 // ---------  User Inputs  ------------
 
