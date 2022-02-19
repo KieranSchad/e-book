@@ -272,7 +272,7 @@ function loadBook(bookIndex, goToPanel) {
                 })
             .map((item, index) => ["capital", item, index]);
     }
-    chapters.unshift(["restart-button", "OPENING. Start at the Beginning"])
+    chapters.unshift(["restart-button", "START. Read from the Beginning"])
     toHtml([database[bookIndex]], chapterList, chapters)
     if (goToPanel !== "stay") {
         tabClick("book-tab");
