@@ -429,12 +429,13 @@ a {
     position: absolute;
     bottom: calc(var(--element-border-radius));
     border-radius: calc(var(--element-border-radius) / 2);
+    width: 0;
     width: calc(var(--progress, 1) * calc(calc(100% - 2rem) / 1));
     height: var(--element-border-radius);
     background-color: var(--text-color);
 }
 
-#start-button::after {
+/* #start-button::after {
     display: block;
     content: "";
     position: relative;
@@ -443,7 +444,7 @@ a {
     width: calc(var(--progress, 1) * 100%);
     height: var(--element-border-radius);
     background-color: var(--text-color);
-}
+} */
 
 /* #page span {
     width: 100%;
