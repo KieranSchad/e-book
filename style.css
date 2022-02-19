@@ -511,19 +511,22 @@ a {
     margin-left: -1rem;
     border-radius: 0;
     width: calc(var(--progress, 0.01) * 100%);
-    height: calc(var(--element-border-radius) / 2);
+    height: calc(var(--element-border-radius) / 1.5);
+    bottom: 0;
 }
 
 #fullscreen-wrapper:-ms-fullscreen #page::after {
     margin-left: -1rem;
     border-radius: 0;
     width: calc(var(--progress, 0.01) * 100%);
-    height: calc(var(--element-border-radius) / 2);
+    height: calc(var(--element-border-radius) / 1.5);
+    bottom: 0;
 }
 
 #fullscreen-wrapper:fullscreen #page::after {
     margin-left: -1rem;
     border-radius: 0;
     width: calc(var(--progress, 0.01) * 100%);
-    height: calc(var(--element-border-radius) / 2);
+    height: calc(var(--element-border-radius) / 1.5);
+    bottom: 0;
 }

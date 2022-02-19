@@ -804,7 +804,7 @@ function toggleSettings() {
  if (settingsPanel.classList.contains("active")) {
     settingsPanel.classList.remove("active");
     settingsButton.classList.remove("active");
-    document.documentElement.style.setProperty('--settings-height', "8px");
+    document.documentElement.style.setProperty('--settings-height', "16px");
     paginate();
  } else {
      settingsPanel.classList.add("active");
