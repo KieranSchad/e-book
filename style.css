@@ -430,7 +430,7 @@ a {
     bottom: calc(var(--element-border-radius));
     border-radius: calc(var(--element-border-radius) / 2);
     width: 0;
-    width: calc(var(--progress, 1) * calc(calc(100% - 2rem) / 1));
+    width: calc(var(--progress, 0) * calc(calc(100% - 2rem) / 1));
     height: var(--element-border-radius);
     background-color: var(--text-color);
 }
