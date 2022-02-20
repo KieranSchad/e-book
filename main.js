@@ -208,7 +208,10 @@ function loadBook(bookIndex, goToPanel) {
         //     .map((item, index) => ["capital", item, index]);
     }
     chapters.unshift(["beginning", "START. Read from the Beginning"])
-    bookMark = 0;
+    if (libraryIndex < 0) {
+        bookMark = 0;
+    }
+    
     toHtml([database[bookIndex]], chapterList, chapters)
     loadPage(false, currentBook, "stay")
     if (goToPanel !== "stay") {
