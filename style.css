@@ -148,7 +148,7 @@ a {
 #settings-panel {
     display: none;
     width: 100%;
-    height: 200px;
+    height: calc(var(--settings-heigh, 216px) - 16px);
     margin-top: 8px;
     margin-bottom: 4px;
     padding: 4px;
@@ -339,7 +339,7 @@ a {
     max-height: 1.4rem;
 }
 
-.chapterButton {
+.chapter-button {
     display: block;
     width: calc(100% - 1.5rem);
     padding: 0.5rem;
@@ -411,6 +411,7 @@ a {
     height: calc(100% - 2.6rem);
     /* border-radius: var(--element-border-radius); */
     margin: 1rem -1rem;
+    filter: brightness(var(--pic, 0%)) saturate(var(--saturation2, 100%))
 }
 
 #page hr {
@@ -479,32 +480,35 @@ a {
 }
 
 #fullscreen-wrapper:-webkit-full-screen #page {
-    height: calc(100vh - var(--settings-height, 8px) + 16px);
+    height: calc(100vh - var(--settings-height, 8px) + 8px);
     margin: 0;
     border-radius: 0;
 }
 
 #fullscreen-wrapper:-ms-fullscreen #page {
-    height: calc(100vh - var(--settings-height, 8px) + 16px);
+    height: calc(100vh - var(--settings-height, 8px) + 8px);
     border-radius: 0;
 }
 
 #fullscreen-wrapper:fullscreen #page {
-    height: calc(100vh - var(--settings-height, 8px) + 16px);
+    height: calc(100vh - var(--settings-height, 8px) + 8px);
     border-radius: 0;
 }
 
 #fullscreen-wrapper:-webkit-full-screen #settings-panel {
+    height: calc(var(--settings-heigh, 216px) - 8px);
     margin-top: 0px;
     border-radius: 0;
 }
 
 #fullscreen-wrapper:-ms-fullscreen #settings-panel {
+    height: calc(var(--settings-heigh, 216px) - 8px);
     margin-top: 0px;
     border-radius: 0;
 }
 
 #fullscreen-wrapper:fullscreen #settings-panel {
+    height: calc(var(--settings-heigh, 216px) - 8px);
     margin-top: 0px;
     border-radius: 0;
 }

@@ -177,32 +177,32 @@ function loadBook(bookIndex, goToPanel) {
     let chapters;
     if (/href="#/.test(bookData)) {
         chapters = bookData
-            .match(/href="#.[^n](.|[\s\S])+?(?=\s*<)/g)             // match any links
-            .map((item, index) => [...item.split(/>\s*/), index])
+            .match(/(?<=href="#).[^n](.|[\s\S])+?(?=\s*<)/g)             // match any links
+            .map((item, index) => [...item.split(/">\s*/), index])
             .filter((pair) => pair[1].length > 0);
     } else if (/(Chapter|CHAPTER)\s+(1|I)/.test(bookData)) {
         chapters = bookData
-            .replace(/[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?\*/, "")         // remove everything before first hr tag
-            .replace(/END\sOF\sTH..?\sPROJECT\sGUTENBERG[\s\S]*/, "")              //remove everything after second hr tag
+            .replace(/[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?\*/, "")    
+            .replace(/END\sOF\sTH..?\sPROJECT\sGUTENBERG[\s\S]*/, "")        
             .match(/(Chapter|CHAPTER)\s+((\d)+|(|I|V|X|C|L)+)/g)                   // match chapter + number or roman numeral
             .map((item, index) => ["chapter", item, index]);           
     } else if (/<h2>/.test(bookData)) {
         chapters = bookData
-            .replace(/[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?\*/, "")         // remove everything before first hr tag
-            .replace(/END\sOF\sTH..?\sPROJECT\sGUTENBERG[\s\S]*/, "")              //remove everything after second hr tag
+            .replace(/[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?\*/, "")  
+            .replace(/END\sOF\sTH..?\sPROJECT\sGUTENBERG[\s\S]*/, "")          
             .match(/(?<=<h2>)[\s\S]*?(?=<\/h2>)/g)                              // match anything in an h2 tag
             .map((item, index) => ["h2", item, index]);
     } else {
         chapters = bookData
-            .replace(/[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?\*/, "")      // remove everything before first hr tag
-            .replace(/END\sOF\sTH..?\sPROJECT\sGUTENBERG[\s\S]*/, "")              // remove everything after second hr tag
+            .replace(/[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?\*/, "")    
+            .replace(/END\sOF\sTH..?\sPROJECT\sGUTENBERG[\s\S]*/, "")         
             .split(/\n/g)                                                          // split book into lines
             .filter((line) => {                                                    // only keep lines that pass the test
                 return (!(line.match(/[a-z]+/g)) && line.match(/[A-Z]/g))           
                 })
             .map((item, index) => ["capital", item, index]);
     }
-    chapters.unshift(["restart-button", "START. Read from the Beginning"])
+    chapters.unshift(["beginning", "START. Read from the Beginning"])
     toHtml([database[bookIndex]], chapterList, chapters)
     loadPage(false, currentBook, "stay")
     if (goToPanel !== "stay") {
@@ -219,6 +219,26 @@ function restartBook(e) {
         localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
     }
     loadPage(e);
+}
+
+// ---------  Go To Chapter  ------------
+
+function goToChapter(id) {
+    let link = `id="${id}"`
+    let arrIndex
+    bookArray.forEach((item, index) => {
+        if (item.includes(link)) {
+            arrIndex = index;
+        }
+    })
+
+    bookMark = arrIndex;
+    if (libraryIndex >= 0) {
+        libraryArray[libraryIndex].bookMark = bookMark;
+        localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
+    }
+
+    loadPage(false, currentBook);
 }
 
 // ---------  Load Text  ------------
@@ -278,6 +298,9 @@ function loadPage(e, bookNumber, gotoPanel) {
             .split(/\s|\r|\n/g)
             .filter(item => item);
     }
+
+    bookArray.unshift(`<a id="beginning"></a>`)
+
     if (gotoPanel !== "stay") {
         tabClick("page-tab");
         firstWord = -1;
@@ -440,13 +463,12 @@ function previousPage() {
 // ---------  Progress  ------------
 
 function getProgress() {
-    let progress = bookMark / bookArray.length;
-    if (progress < 0.01) {
-        progress = 0.01;
+    let progress = lastWord / bookArray.length;
+    if (progress < 0.01 || bookArray.length <= 1) {
+        progress = 0;
     } else if (progress > 1) {
         progress = 1;
     }
-    console.log(progress)
     document.documentElement.style.setProperty('--progress', `${progress}`);
 }
 
@@ -555,7 +577,7 @@ function toHtml(bookArray, location, chapterArr) {
         if (book.Subjects) {
             tags = [...new Set(book.Subjects                         //only keep unique tabs
                 .concat(';', book.Bookshelves)                       //join subjects and bookshelves to one string
-                .split(/;\s*|\s*--\s*|\.\s+|\,\s+/ig))]              //split into array based on regex
+                .split(/;\s*|\s*--\s*|\,\s+/ig))]              //split into array based on regex
                 .filter(item => item)                                //filter out empty strings
                 .map((tag) => {                                      //asign html to each array item
                     return `<button type="button" class="tag" id="${tag}">${tag}</button>`;          
@@ -566,7 +588,7 @@ function toHtml(bookArray, location, chapterArr) {
 
         let chapters = "";
 
-        const chapterRegex = /(?<!\s(mr)|(ms)|(mrs)|(dr)|(sr)|(jr))\.\s+/i
+        const chapterRegex = /(?<!\s(mr)|(ms)|(mrs)|(dr)|(sr)|(jr))\.\s+/i;
 
         let bookNumber = Object.values(book)[0];
 
@@ -581,6 +603,7 @@ function toHtml(bookArray, location, chapterArr) {
         }
 
         let buttonHtml = "";
+        let numberHtml = "";
         if (location == bookList && Object.keys(book)[0] === "Text#") {
             bookNumber = "results" + bookNumber;
             buttonHtml = `
@@ -596,13 +619,13 @@ function toHtml(bookArray, location, chapterArr) {
                     <a class="button ${addDeleteLabel}" id="${addDeleteId}-button" ></a>
                 </div>`
         } else if (location == chapterList && Object.keys(book)[0] === "Text#") {
-            // issuedHtml = `<h3 class="issued">Issued as an eBook on ${issued}</h3>`
+            numberHtml = `<h3 class="number">Project Gutenberg Ebook# ${bookNumber}</h3>`
             bookNumber = "chapter" + bookNumber;
             tags = ``;
             if (chapterArr) {
                 chapters = chapterArr.map((chapter) => {
                     return `
-                        <button type="button" class="chapterButton" id="${chapter[0]}">${chapter[1].replace(chapterRegex, "<br>")}</button>`
+                        <button type="button" class="chapter-button" id="${chapter[0]}">${chapter[1].replace(chapterRegex, "<br>")}</button>`
                 }).join("");
                 buttonHtml = `
                     <div class="book-buttons">
@@ -617,6 +640,7 @@ function toHtml(bookArray, location, chapterArr) {
             <h1 class="title">${shortTitle}</h1>
             <h3 class="sub-title">${subTitle}</h3>
             ${author}
+            ${numberHtml}
             <div class="subjects">${tags}</div>
             ${buttonHtml}
             <div class="subjects">${chapters}</div>
@@ -752,7 +776,7 @@ function toggleSettings() {
  if (settingsPanel.classList.contains("active")) {
     settingsPanel.classList.remove("active");
     settingsButton.classList.remove("active");
-    document.documentElement.style.setProperty('--settings-height', "16px");
+    document.documentElement.style.setProperty('--settings-height', "8px");
     localStorage.setItem("settings", JSON.stringify(settings))
     paginate();
  } else {
@@ -807,7 +831,6 @@ function color(e) {
     document.documentElement.style.setProperty('--saturation1', `${saturation1}%`);
     document.documentElement.style.setProperty('--saturation2', `${saturation2}%`);
     document.documentElement.style.setProperty('--saturation3', `${saturation3}%`);
-
     settings.colorSlider = sliderValue;
 }
 
@@ -823,6 +846,7 @@ function brightness(e) {
     let opE;
     let txt;
     let lit;
+    let pic = sliderValue / 255 * 50 + 50;
     if (sliderValue > 128) {
         bw = 255;
         opA = sliderValue / 255
@@ -836,12 +860,12 @@ function brightness(e) {
         txt = (sliderValue / 2) + 36;
         lit = sliderValue / 4;
     }
-
     document.documentElement.style.setProperty('--bw', bw);
     document.documentElement.style.setProperty('--opA', opA);
     document.documentElement.style.setProperty('--opE', opE);
     document.documentElement.style.setProperty('--txt', `${txt}%`);
     document.documentElement.style.setProperty('--lit', `${lit}%`);
+    document.documentElement.style.setProperty('--pic', `${pic}%`);
 
     settings.brightnessSlider = sliderValue;
 }
@@ -856,12 +880,16 @@ function onLoad() {
     }
 }
 
-// ---------  Open Last Tab  ------------
+// ---------  Restore Settings  ------------
+
 if (localStorage.getItem("settings")) {
     settings = JSON.parse(localStorage.getItem("settings"));
     fontSize();
     color();
     brightness();
+    document.getElementById("font-slider").setAttribute("value", settings.fontSlider);
+    document.getElementById("color-slider").setAttribute("value", settings.colorSlider);
+    document.getElementById("brightness-slider").setAttribute("value", settings.brightnessSlider);
 }
 
 // ---------  Open Last Tab  ------------
@@ -886,6 +914,7 @@ const eventMap = {
     "delete-button": { click: deleteBook },
     "add-button": { click: addBook },
     "restart-button": { click: restartBook },
+    "chapter-button": { click: goToChapter },
     "start-button": { click: loadPage },
     "full-screen-button": { click: enterFullScreen },
     // "previous-book-button": { click: previousBook },
