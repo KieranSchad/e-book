@@ -347,10 +347,12 @@ function nextPage() {
                 } else if (!skipGaps && /<h1|<img|class="chapter"/i.test(bookArray[wordIndex])) {
                     break;
                 } else {
+                    if (!/<a|<p|<\/p/i.test(bookArray[wordIndex])) {
+                        skipGaps = false;
+                    }
                     pageArray.push(bookArray[wordIndex]);
                     page.innerHTML = pageArray.join(" ");
                     wordIndex++;
-                    skipGaps = false;
                 }
                 
             }
@@ -384,20 +386,20 @@ function paginate() {
             let skipGaps = true;
             wordIndex = firstWord;
             while (page.scrollHeight <= page.offsetHeight && wordIndex < bookArray.length) {
-                
                 if (skipGaps && /^(<br|<div|<hr|&nbsp)/i.test(bookArray[wordIndex])) {
                     wordIndex++;
-                    
                 } else if (!skipGaps && /<h1|<img|class="chapter"/i.test(bookArray[wordIndex])) {
-                    
                     break;
-                    
                 } else {
+                    if (!/<a|<p|<\/p/i.test(bookArray[wordIndex])) {
+                        skipGaps = false;
+                    }
                     pageArray.push(bookArray[wordIndex]);
                     page.innerHTML = pageArray.join(" ");
                     wordIndex++;
-                    skipGaps = false;
+
                 }
+                // console.log(skipGaps)
             }
             if (page.scrollHeight > page.offsetHeight && pageArray.length > 1) {
                 pageArray.pop();
@@ -435,10 +437,12 @@ function previousPage() {
                     page.innerHTML = pageArray.join(" ");
                     break;
                 } else {
+                    if (!/<a|<p|<\/p/i.test(bookArray[wordIndex])) {
+                        skipGaps = false;
+                    }
                     pageArray.unshift(bookArray[wordIndex]);
                     page.innerHTML = pageArray.join(" ");
                     wordIndex--;
-                    skipGaps = false;
                 }
             }
             if (page.scrollHeight > page.offsetHeight && pageArray.length > 1) {
@@ -588,7 +592,7 @@ function toHtml(bookArray, location, chapterArr) {
 
         let chapters = "";
 
-        const chapterRegex = /(?<!\s(mr)|(ms)|(mrs)|(dr)|(sr)|(jr))\.\s+/i;
+        // const chapterRegex = /(?<!\s(mr)|(ms)|(mrs)|(dr)|(sr)|(jr))\.\s+/i;
 
         let bookNumber = Object.values(book)[0];
 
@@ -625,7 +629,7 @@ function toHtml(bookArray, location, chapterArr) {
             if (chapterArr) {
                 chapters = chapterArr.map((chapter) => {
                     return `
-                        <button type="button" class="chapter-button" id="${chapter[0]}">${chapter[1].replace(chapterRegex, "<br>")}</button>`
+                        <button type="button" class="chapter-button" id="${chapter[0]}">${chapter[1].replace(/(?<!\s(mr)|(ms)|(mrs)|(dr)|(sr)|(jr))\.\s+/i, "<br>")}</button>`
                 }).join("");
                 buttonHtml = `
                     <div class="book-buttons">
