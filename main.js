@@ -177,27 +177,29 @@ function loadBook(bookIndex, goToPanel) {
     let chapters;
     if (/href="#/.test(bookData)) {
         chapters = bookData
-            .match(/(?<=href="#).[^n](.|[\s\S])+?(?=\s*<)/g)             // match any links
-            .map((item, index) => [...item.split(/">\s*/), index])
+            .match(/href="#.[^n](.|[\s\S])+?(?=\s*<)/gi)             // match any links that don't start with n
+            .map((item, index) => [...item
+                .replace(/href="#/i, "")
+                .split(/">\s*/), index])
             .filter((pair) => pair[1].length > 0);
     } else if (/(Chapter|CHAPTER)\s+(1|I)/.test(bookData)) {
         chapters = bookData
             .replace(/[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?\*/, "")    
             .replace(/END\sOF\sTH..?\sPROJECT\sGUTENBERG[\s\S]*/, "")        
-            .match(/(Chapter|CHAPTER)\s+((\d)+|(|I|V|X|C|L)+)/g)                   // match chapter + number or roman numeral
+            .match(/(Chapter|CHAPTER)\s+((\d)+|(|I|V|X|C|L)+)/gi)                   // match chapter + number or roman numeral
             .map((item, index) => ["chapter", item, index]);           
     } else if (/<h2>/.test(bookData)) {
         chapters = bookData
             .replace(/[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?\*/, "")  
             .replace(/END\sOF\sTH..?\sPROJECT\sGUTENBERG[\s\S]*/, "")          
-            .match(/(?<=<h2>)[\s\S]*?(?=<\/h2>)/g)                              // match anything in an h2 tag
-            .map((item, index) => ["h2", item, index]);
+            .match(/<h2>[\s\S]*?(?=<\/h2>)/gi)                              // match anything in an h2 tag
+            .map((item, index) => ["h2", item.replace(/<h2>/i, ""), index]);
     } else {
         chapters = bookData
             .replace(/[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?\*/, "")    
             .replace(/END\sOF\sTH..?\sPROJECT\sGUTENBERG[\s\S]*/, "")         
             .split(/\n/g)                                                          // split book into lines
-            .filter((line) => {                                                    // only keep lines that pass the test
+            .filter((line) => {                                                    // only keep lines that pass the test - caps
                 return (!(line.match(/[a-z]+/g)) && line.match(/[A-Z]/g))           
                 })
             .map((item, index) => ["capital", item, index]);
@@ -263,7 +265,8 @@ function loadPage(e, bookNumber, gotoPanel) {
             .replace(/<br[\s\S]*?>/gi, "<hr>")
             // .replace(/<table[\s\S]*?>/gi, "<hr>")
             .replace(/<\/tr[\s\S]*?>/gi, "</tr><hr>")
-            .split(/(?=<)|(?<=>)/g)
+            .replace(/>/g, ">split>here")
+            .split(/(?=<)|split>here/g)
             .forEach((item) => {
                 if (tag === "split" && !/^</.test(item)) {
                     bookArray.push(...item.split(/\s|\r|\n/g).filter(item => item))
@@ -630,7 +633,7 @@ function toHtml(bookArray, location, chapterArr) {
             if (chapterArr) {
                 chapters = chapterArr.map((chapter) => {
                     return `
-                        <button type="button" class="chapter-button" id="${chapter[0]}">${chapter[1].replace(/(?<!\s(mr)|(ms)|(mrs)|(dr)|(sr)|(jr))\.\s+/i, "<br>")}</button>`
+                        <button type="button" class="chapter-button" id="${chapter[0]}">${chapter[1].replace(/\.\s+/i, "<br>")}</button>`
                 }).join("");
                 buttonHtml = `
                     <div class="book-buttons">
