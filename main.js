@@ -175,7 +175,6 @@ function getBook(e, bookNumber, goToPanel) {
 // ---------  Load Book  ------------
 
 function loadBook(bookIndex, goToPanel) {
-    
     let chapters;
     if (/href="#/.test(bookData)) {
         chapters = bookData
@@ -209,12 +208,13 @@ function loadBook(bookIndex, goToPanel) {
         //     .map((item, index) => ["capital", item, index]);
     }
     chapters.unshift(["beginning", "START. Read from the Beginning"])
-    
+    bookMark = 0;
     toHtml([database[bookIndex]], chapterList, chapters)
     loadPage(false, currentBook, "stay")
     if (goToPanel !== "stay") {
         tabClick("book-tab");
     }
+    chapterList.scrollTo(0, 0);
 }
 
 // ---------  Restart Book  ------------
@@ -243,8 +243,9 @@ function goToChapter(id) {
             arrIndex = index;
         }
     })
-    bookMark = arrIndex;
+    
     if (arrIndex >= 0) {
+        bookMark = arrIndex;
         loadPage(false, currentBook);
         if (libraryIndex >= 0) {
             libraryArray[libraryIndex].bookMark = bookMark;
@@ -253,7 +254,7 @@ function goToChapter(id) {
     } else {
         alert(`That didn't work`)
     }
-    
+    console.log(id, arrIndex)
 }
 
 // ---------  Load Text  ------------
@@ -398,9 +399,7 @@ function paginate() {
         if (currentBook > 0 && wordIndex < bookArray.length) {
             pageArray = [];
             page.innerHTML = pageArray;
-            if (libraryIndex >= 0) {
                 firstWord = bookMark;
-            }
             let skipGaps = true;
             wordIndex = firstWord;
             while (page.scrollHeight <= page.offsetHeight && wordIndex < bookArray.length) {
@@ -566,6 +565,7 @@ function tagSearch(inputValue) {
 // ---------  Display Search Results  ------------
 
 function toHtml(bookArray, location, chapterArr) {
+    
     const htmlString = bookArray.map((book) => {
         let shortTitle = "";
         let subTitle = "";
@@ -670,6 +670,7 @@ function toHtml(bookArray, location, chapterArr) {
     })
     .join('');
     location.innerHTML = htmlString;
+    
 }
 
 // ---------  Full Screen  ------------
