@@ -261,6 +261,8 @@ function loadPage(e, bookNumber, gotoPanel) {
             .replace(/<\/body>[\s\S]*?$/i, "")                          // delete everything after /body tag
             .replace(/src="images/gi, `src="https://www.gutenberg.org/files/${bookNumber}/${bookNumber}-h/images`)
             .replace(/<br[\s\S]*?>/gi, "<hr>")
+            // .replace(/<table[\s\S]*?>/gi, "<hr>")
+            .replace(/<\/tr[\s\S]*?>/gi, "</tr><hr>")
             .split(/(?=<)|(?<=>)/g)
             .forEach((item) => {
                 if (tag === "split" && !/^</.test(item)) {
@@ -278,7 +280,7 @@ function loadPage(e, bookNumber, gotoPanel) {
                     tag = "i";
                 } else if (tag == "split" && /<h\d/i.test(item)) {
                     tag = "h";
-                } else if (tag == "split" && /<table/i.test(item)) {
+                } else if (tag == "split" && /<tr/i.test(item)) {
                     tag = "table";
                 } else if (tag == "a" && /<\/a/i.test(item)) {
                     tag = "split";
@@ -288,7 +290,7 @@ function loadPage(e, bookNumber, gotoPanel) {
                     tag = "split";
                 } else if (tag == "h" && /<\/h\d/i.test(item)) {
                     tag = "split";
-                } else if (tag == "table" && /<\/table/i.test(item)) {
+                } else if (tag == "table" && /<\/tr/i.test(item)) {
                     tag = "split";
                 }
             })
@@ -347,7 +349,7 @@ function nextPage() {
                 } else if (!skipGaps && /<h1|<img|class="chapter"/i.test(bookArray[wordIndex])) {
                     break;
                 } else {
-                    if (!/<a|<p|<\/p/i.test(bookArray[wordIndex])) {
+                    if (!/^(<a|<p|<\/p)/i.test(bookArray[wordIndex])) {
                         skipGaps = false;
                     }
                     pageArray.push(bookArray[wordIndex]);
@@ -391,7 +393,7 @@ function paginate() {
                 } else if (!skipGaps && /<h1|<img|class="chapter"/i.test(bookArray[wordIndex])) {
                     break;
                 } else {
-                    if (!/<a|<p|<\/p/i.test(bookArray[wordIndex])) {
+                    if (!/^(<a|<p|<\/p)/i.test(bookArray[wordIndex])) {
                         skipGaps = false;
                     }
                     pageArray.push(bookArray[wordIndex]);
@@ -429,7 +431,6 @@ function previousPage() {
             wordIndex = lastWord;
             let skipGaps = true;
             while (page.scrollHeight <= page.offsetHeight && wordIndex >= 0) {
-                
                 if (skipGaps && /^(<br|<div|<hr|&nbsp)/i.test(bookArray[wordIndex])) {
                     wordIndex--;
                 } else if (/<h1|<img|class="chapter"/i.test(bookArray[wordIndex])) {
@@ -437,7 +438,7 @@ function previousPage() {
                     page.innerHTML = pageArray.join(" ");
                     break;
                 } else {
-                    if (!/<a|<p|<\/p/i.test(bookArray[wordIndex])) {
+                    if (!/^(<a|<p|<\/p)/i.test(bookArray[wordIndex])) {
                         skipGaps = false;
                     }
                     pageArray.unshift(bookArray[wordIndex]);
