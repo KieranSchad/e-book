@@ -214,33 +214,41 @@ function loadBook(bookIndex, goToPanel) {
 
 // ---------  Restart Book  ------------
 
-function restartBook(e) {
-    bookMark = 0;
-    if (libraryIndex >= 0) {
-        libraryArray[libraryIndex].bookMark = bookMark;
-        localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
-    }
-    loadPage(e);
-}
+// function restartBook(e) {
+//     bookMark = 0;
+//     if (libraryIndex >= 0) {
+//         libraryArray[libraryIndex].bookMark = bookMark;
+//         localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
+//     }
+//     loadPage(e);
+// }
 
 // ---------  Go To Chapter  ------------
 
 function goToChapter(id) {
-    let link = `id="${id}"`
+    
+    let linkI = `id="${id}"`
+    let linkN = `name="${id}"`
+
     let arrIndex
     bookArray.forEach((item, index) => {
-        if (item.includes(link)) {
+        if (item.includes(linkI)) {
+            arrIndex = index;
+        } else if (item.includes(linkN)) {
             arrIndex = index;
         }
     })
-
     bookMark = arrIndex;
-    if (libraryIndex >= 0) {
-        libraryArray[libraryIndex].bookMark = bookMark;
-        localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
+    if (arrIndex >= 0) {
+        loadPage(false, currentBook);
+        if (libraryIndex >= 0) {
+            libraryArray[libraryIndex].bookMark = bookMark;
+            localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
+        }
+    } else {
+        alert(`That didn't work`)
     }
-
-    loadPage(false, currentBook);
+    
 }
 
 // ---------  Load Text  ------------
@@ -472,7 +480,7 @@ function previousPage() {
 
 function getProgress() {
     let progress = lastWord / bookArray.length;
-    if (progress < 0.01 || bookArray.length <= 1) {
+    if (progress < 0.01 || bookArray.length <= 2) {
         progress = 0;
     } else if (progress > 1) {
         progress = 1;
@@ -921,7 +929,7 @@ const eventMap = {
     "read-button": { click: getBook },
     "delete-button": { click: deleteBook },
     "add-button": { click: addBook },
-    "restart-button": { click: restartBook },
+    // "restart-button": { click: restartBook },
     "chapter-button": { click: goToChapter },
     "start-button": { click: loadPage },
     "full-screen-button": { click: enterFullScreen },
