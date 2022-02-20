@@ -151,6 +151,7 @@ function getBook(e, bookNumber, goToPanel) {
                                             .then((data) => {
                                                 bookData = data;
                                                 loadBook(bookIndex, goToPanel);
+                                                
                                                 // loadPage(false, currentBook, "stay");
                                             })
                                     } else {
@@ -174,6 +175,7 @@ function getBook(e, bookNumber, goToPanel) {
 // ---------  Load Book  ------------
 
 function loadBook(bookIndex, goToPanel) {
+    
     let chapters;
     if (/href="#/.test(bookData)) {
         chapters = bookData
@@ -195,16 +197,19 @@ function loadBook(bookIndex, goToPanel) {
             .match(/<h2>[\s\S]*?(?=<\/h2>)/gi)                              // match anything in an h2 tag
             .map((item, index) => ["h2", item.replace(/<h2>/i, ""), index]);
     } else {
-        chapters = bookData
-            .replace(/[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?\*/, "")    
-            .replace(/END\sOF\sTH..?\sPROJECT\sGUTENBERG[\s\S]*/, "")         
-            .split(/\n/g)                                                          // split book into lines
-            .filter((line) => {                                                    // only keep lines that pass the test - caps
-                return (!(line.match(/[a-z]+/g)) && line.match(/[A-Z]/g))           
-                })
-            .map((item, index) => ["capital", item, index]);
+        chapters = [];
+        
+        // bookData
+        //     .replace(/[\s\S]*?START\sOF\sTH..?\sPROJECT\sGUTENBERG.+?\*/, "")    
+        //     .replace(/END\sOF\sTH..?\sPROJECT\sGUTENBERG[\s\S]*/, "")         
+        //     .split(/\n/g)                                                          // split book into lines
+        //     .filter((line) => {                                                    // only keep lines that pass the test - caps
+        //         return (!(line.match(/[a-z]+/g)) && line.match(/[A-Z]/g))           
+        //         })
+        //     .map((item, index) => ["capital", item, index]);
     }
     chapters.unshift(["beginning", "START. Read from the Beginning"])
+    
     toHtml([database[bookIndex]], chapterList, chapters)
     loadPage(false, currentBook, "stay")
     if (goToPanel !== "stay") {
