@@ -46,95 +46,23 @@ function resizeHeight() {
 
 resizeHeight();
 
+// ---------  Browse tags  ------------
 
+function tagList() {
 
-// ---------  library  ------------
+    let subjects = [];
+    for (let i = 1000; i < 2000; i++) {
+        subjects.push(database[i].Subjects)
+    }
+    let subjectList = subjects.join("--");
+    let tags = [{
+        key0: "Tags",
+        Subjects: subjectList
+    }]
+    toHtml(tags, bookList)
+    focusCard("Tags")
+}
 
-// let displayLibrary = [];
-// let htmlLibrary = [];
-
-// ---------  Get local library  ------------
-
-// function getLocalLibrary() {
-//     if (localStorage.getItem("displayLibrary") && localStorage.getItem("htmlLibrary")) {
-//         displayLibrary = JSON.parse(localStorage.getItem("displayLibrary"));
-//         htmlLibrary = JSON.parse(localStorage.getItem("htmlLibrary"));
-
-//     } else {
-//         fetch('./library/12-h.htm', {mode: 'no-cors'})
-//             .then(response => response.text())
-//             .then(data=> htmlLibrary[0] = data)
-//             .catch(error => console.error(error));
-            
-//         fetch('./library/61.txt', {mode: 'no-cors'})
-//             .then(response => response.text())
-//             .then(data=> htmlLibrary[1] = data)
-//             .catch(error => console.error(error));
-
-//         fetch('./library/76-h.htm', {mode: 'no-cors'})
-//             .then(response => response.text())
-//             .then(data=> htmlLibrary[2] = data)
-//             .catch(error => console.error(error));
-
-//         displayLibrary = [ {
-//             "Text#": 12,
-//             "Type": "Text",
-//             "Issued": "2008-06-25",
-//             "Title": "Through the Looking-Glass",
-//             "Language": "en",
-//             "Authors": "Carroll, Lewis, 1832-1898",
-//             "Subjects": "Fantasy fiction; Children's stories; Imaginary places -- Juvenile fiction; Alice (Fictitious character from Carroll) -- Juvenile fiction",
-//             "LoCC": "PR; PZ",
-//             "Bookshelves": "Best Books Ever Listings; Children's Literature"
-//             },
-//             {
-//             "Text#": 61,
-//             "Type": "Text",
-//             "Issued": "2005-01-25",
-//             "Title": "The Communist Manifesto",
-//             "Language": "en",
-//             "Authors": "Engels, Friedrich, 1820-1895; Marx, Karl, 1818-1883",
-//             "Subjects": "Socialism; Communism",
-//             "LoCC": "HX",
-//             "Bookshelves": "Politics; Philosophy; Banned Books from Anne Haight's list"
-//             },
-//             {
-//             "Text#": 76,
-//             "Type": "Text",
-//             "Issued": "2004-06-29",
-//             "Title": "Adventures of Huckleberry Finn",
-//             "Language": "en",
-//             "Authors": "Twain, Mark, 1835-1910; Kemble, E. W. (Edward Windsor), 1861-1933 [Illustrator]",
-//             "Subjects": "Humorous stories; Bildungsromans; Boys -- Fiction; Male friendship -- Fiction; Adventure stories; Missouri -- Fiction; Race relations -- Fiction; Runaway children -- Fiction; Finn, Huckleberry (Fictitious character) -- Fiction; Fugitive slaves -- Fiction; Mississippi River -- Fiction",
-//             "LoCC": "PS",
-//             "Bookshelves": "Best Books Ever Listings; Banned Books from Anne Haight's list; Banned Books List from the American Library Association"
-//             } ];
-//     }
-// }
-
-// ---------  Upload  ------------
-
-// function handleFileSelect(event) {
-//     const bookId = parseInt(event.target.files[0].name.match(/\d+(?=((-\w)*\.(htm|txt)))/i), 10)   //match number in filename, lookahead to extension
-//     if (database.some((book) => Object.values(book)[0] == bookId)) {
-//         const bookIndex = database.map((book) => parseInt(Object.values(book)[0], 10)).indexOf(bookId);
-//         displayLibrary.push(database[bookIndex]);
-//         const reader = new FileReader();
-//         reader.onload = handleFileLoad;
-//         reader.readAsText(event.target.files[0])
-//         card = document.getElementsByClassName('card');
-//     } else {
-//         alert("File does not match any books in the database")
-//     }
-
-//   }
-  
-//   function handleFileLoad(event) {
-//     htmlLibrary.push(event.target.result);
-//     localStorage.setItem("displayLibrary", JSON.stringify(displayLibrary))
-//     localStorage.setItem("htmlLibrary", JSON.stringify(htmlLibrary));
-//     showLibrary();;
-//   }
 
 
 // ---------  Get Index from Number  ------------
@@ -540,19 +468,25 @@ function searchWithDelay(e) {
 function searchFunction(e) {
     const inputValue = e.target.value
         .toLowerCase().split(" ")
-        .filter(item => item) ;
-    let searchResult = [];
-    for (let i = 0; i < database.length && searchResult.length < 100; i++) {
-        const bookData = Object.values(database[i]).join(" ").toLowerCase();
-        if (inputValue.every(el => bookData.includes(el))) {
-            searchResult.push({...database[i]});
-            
-        } 
-    }
-    timeoutId = 0;
-    toHtml(searchResult, bookList);
-    lastSearch = searchResult;
+        .filter(item => item);
 
+    let searchResult = [];
+
+    if (inputValue.length > 0) {
+        for (let i = 0; i < database.length && searchResult.length < 100; i++) {
+            const bookData = Object.values(database[i]).join(" ").toLowerCase();
+            if (inputValue.every(el => bookData.includes(el))) {
+                searchResult.push({...database[i]});
+                
+            } 
+        } 
+        toHtml(searchResult, bookList);
+    } else {
+        tagList();
+    }
+    
+    timeoutId = 0;
+    lastSearch = searchResult;
 }
 
 function authorSearch(inputValue) {
@@ -589,46 +523,51 @@ function tagSearch(inputValue) {
 // ---------  Display Search Results  ------------
 
 function toHtml(bookArray, location, chapterArr) {
-    
     const htmlString = bookArray.map((book) => {
-        const shortTitle = book.Title.split("\n")[0];
+        let shortTitle = "";
         let subTitle = "";
-        if (book.Title.split("\n").length > 1) {
-            subTitle = book.Title.split("\n")[1];
+        if (book.Title) {
+            shortTitle = book.Title.split("\n")[0];
+            subTitle = "";
+            if (book.Title.split("\n").length > 1) {
+                subTitle = book.Title.split("\n")[1];
+            }
+    
+            if (book.Title.split("\n").length > 1) {
+                book.subTitle = book.Title.split("\n")[1];
+            }
+        }
+        let author = "";
+        if (book.Authors) {
+            author = book.Authors
+                .split(/;\s*/g).map((item) => item.split(/,s*/g))
+                .filter(item => item)
+                .map((aut) => {
+                    if (aut.length == 2) {
+                        return `<h2 class="author" id="${aut.join(",")}">${aut[0]}</h2>`;
+                    } else {
+                        return `<h2 class="author" id="${aut.join(",")}">${aut.splice(0, 2).reverse().join(" ")}</h2>`;          
+                    }
+                })
+                .join('');  
+        }
+        let tags = "";
+        if (book.Subjects) {
+            tags = [...new Set(book.Subjects                         //only keep unique tabs
+                .concat(';', book.Bookshelves)                       //join subjects and bookshelves to one string
+                .split(/;\s*|\s*--\s*|\.\s+|\,\s+/ig))]              //split into array based on regex
+                .filter(item => item)                                //filter out empty strings
+                .map((tag) => {                                      //asign html to each array item
+                    return `<button type="button" class="tag" id="${tag}">${tag}</button>`;          
+                })
+                .join('');                                           //convert array to string
         }
 
-        if (book.Title.split("\n").length > 1) {
-            book.subTitle = book.Title.split("\n")[1];
-        }
 
-        const date = book.Issued.split("-").map((item) => item.replace(/^0+/, ''));
-        let issued = [date[1], date[2], date[0]].join("-");
-        // let issuedHtml = "";
+        let chapters = "";
 
-        const author = book.Authors
-            .split(/;\s*/g).map((item) => item.split(/,s*/g))
-            .filter(item => item)
-            .map((aut) => {
-                if (aut.length == 2) {
-                    return `<h2 class="author" id="${aut.join(",")}">${aut[0]}</h2>`;
-                } else {
-                    return `<h2 class="author" id="${aut.join(",")}">${aut.splice(0, 2).reverse().join(" ")}</h2>`;          
-                }
-            })
-            .join(''); 
-
-        
-        let tags = [...new Set(book.Subjects
-            .concat(';', book.Bookshelves)                       //join subjects and bookshelves to one string
-            .split(/;\s*|\s*--\s*|\.\s+|\,\s+/ig))]              //split into array based on regex
-            .filter(item => item)                                //filter out empty strings
-            .map((tag) => {                                      //asign html to each array item
-                return `<button type="button" class="tag" id="${tag}">${tag}</button>`;          
-            })
-            .join('');                                           //convert array to string
-
-        let chapters = ``;
         const chapterRegex = /(?<!\s(mr)|(ms)|(mrs)|(dr)|(sr)|(jr))\.\s+/i
+
         let bookNumber = Object.values(book)[0];
 
         let addDeleteId;
@@ -641,34 +580,36 @@ function toHtml(bookArray, location, chapterArr) {
             addDeleteLabel = "fas fa-trash-alt";
         }
 
-        let buttonHtml;
-        if (location == bookList) {
+        let buttonHtml = "";
+        if (location == bookList && Object.keys(book)[0] === "Text#") {
             bookNumber = "results" + bookNumber;
             buttonHtml = `
             <div class="library-buttons">
                 <a class="button fas fa-book-open" id="read-button" ></a>
                 <a class="button ${addDeleteLabel}" id="${addDeleteId}-button" ></a>
             </div>`
-        } else if (location == libraryList) {
+        } else if (location == libraryList && Object.keys(book)[0] === "Text#") {
             bookNumber = "library" + bookNumber;
             buttonHtml = `
                 <div class="library-buttons">
                     <a class="button fas fa-book-open" id="read-button" ></a>
                     <a class="button ${addDeleteLabel}" id="${addDeleteId}-button" ></a>
                 </div>`
-        } else if (location == chapterList) {
+        } else if (location == chapterList && Object.keys(book)[0] === "Text#") {
             // issuedHtml = `<h3 class="issued">Issued as an eBook on ${issued}</h3>`
             bookNumber = "chapter" + bookNumber;
             tags = ``;
-            chapters = chapterArr.map((chapter) => {
-                return `
-                    <button type="button" class="chapterButton" id="${chapter[0]}">${chapter[1].replace(chapterRegex, "<br>")}</button>`
-            }).join("");
-            buttonHtml = `
-                <div class="book-buttons">
-                    <a class="button fas fa-play" id="start-button" ></a>
-                    <a class="button ${addDeleteLabel}" id="${addDeleteId}-button" ></a>
-                </div>`
+            if (chapterArr) {
+                chapters = chapterArr.map((chapter) => {
+                    return `
+                        <button type="button" class="chapterButton" id="${chapter[0]}">${chapter[1].replace(chapterRegex, "<br>")}</button>`
+                }).join("");
+                buttonHtml = `
+                    <div class="book-buttons">
+                        <a class="button fas fa-play" id="start-button" ></a>
+                        <a class="button ${addDeleteLabel}" id="${addDeleteId}-button" ></a>
+                    </div>`
+            }
         }
         
         return `
@@ -736,7 +677,8 @@ function clearSearch() {
     searchBar.value = "";
     searchBar.placeholder = "Search";
     searchBar.focus();
-    toHtml([], bookList);
+    // toHtml([], bookList);
+    tagList();
 }
 
 // ---------  Delete Book  ------------
@@ -907,6 +849,7 @@ function brightness(e) {
 // ---------  After Page Load  ------------
 
 function onLoad() {
+    tagList();
     showLibrary();
     if (currentBook >= 0) {
         getBook(false, currentBook, "stay");
