@@ -1,6 +1,5 @@
-
-
 // ---------  Get frequently used elements  ------------
+
 let database;
 const tab = document.getElementsByClassName('tab');
 const pageTab = document.getElementById('page-tab');
@@ -22,11 +21,6 @@ const brightnessSlider = document.getElementById("brightness-slider");
 
 // ---------  Get Gutenberg Project catalog  ------------
 
-// import database from "./pg_caralog_2022_01_28.json" assert { type: "json" };
-
-
-// Header always set Access-Control-Allow-Origin "https://kieranschad.github.io/e-book/"
-// Header always set Access-Control-Allow-Origin "*"
 
 fetch("https://kieranschad.github.io/e-book/library/pg_caralog_2022_01_28.json")
     .then(res => (res.json())
@@ -124,16 +118,18 @@ function getUrl() {
     } else if (/^(browse|library|book|page)-tab$/i.test(hash)) {
         urlLocation = hash;
     } else if (/^search=/i.test(hash)) {
-        let searchValue = hash.replace(/^.+?=/, "").replace("_", " ");
-        searchFunction(false, searchValue);
+        let searchValue = hash.replace(/^search=/i, "").replace(/_/g, " ");
+        searchFunction(false, searchValue, "url");
         urlLocation = "browse-tab"
     } else if (/^author=/i.test(hash)) {
-        let searchValue = hash.replace(/^.+?=/, "").replace("_", " ");
-        authorSearch(searchValue);
+        
+        let searchValue = hash.replace(/^author=/i, "").replace(/_/g, " ");
+        console.log(searchValue)
+        authorSearch(searchValue, "url");
         urlLocation = "browse-tab"
     } else if (/^tag=/i.test(hash)) {
-        let searchValue = hash.replace(/^.+?=/, "").replace("_", " ");
-        tagSearch(searchValue);
+        let searchValue = hash.replace(/^tag=/i, "").replace(/_/g, " ");
+        tagSearch(searchValue, "url");
         urlLocation = "browse-tab"
     } else {
         urlLocation = false;
@@ -176,7 +172,6 @@ function getBook(e, bookNumber, goToPanel) {
                     .then((data) => {
                         bookData = data;
                         loadBook(bookIndex, goToPanel);
-                        // loadPage(false, currentBook, "stay");
                     })
             } else {
                 fetch(`/library/html/${bookNumber}.html`)
@@ -186,7 +181,6 @@ function getBook(e, bookNumber, goToPanel) {
                                 .then((data) => {
                                     bookData = data;
                                     loadBook(bookIndex, goToPanel);
-                                    // loadPage(false, currentBook, "stay");
                                 })
                         } else {
                             fetch(`/library/txt/${bookNumber}.txt`)
@@ -197,7 +191,6 @@ function getBook(e, bookNumber, goToPanel) {
                                                 bookData = data;
                                                 loadBook(bookIndex, goToPanel);
                                                 
-                                                // loadPage(false, currentBook, "stay");
                                             })
                                     } else {
                                         alert("Book Not Found");
@@ -209,12 +202,6 @@ function getBook(e, bookNumber, goToPanel) {
                     })
             }
         })
-        // .then(res => (res.text())
-        // .then((data) => {
-        //     bookData = data;
-        //     loadBook(bookIndex, goToPanel);
-        //     // loadPage(false, currentBook, "stay");
-        // }))
 }
 
 // ---------  Load Book  ------------
@@ -267,17 +254,6 @@ function loadBook(bookIndex, goToPanel) {
     }
     chapterList.scrollTo(0, 0);
 }
-
-// ---------  Restart Book  ------------
-
-// function restartBook(e) {
-//     bookMark = 0;
-//     if (libraryIndex >= 0) {
-//         libraryArray[libraryIndex].bookMark = bookMark;
-//         localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
-//     }
-//     loadPage(e);
-// }
 
 // ---------  Go To Chapter  ------------
 
@@ -545,7 +521,8 @@ function getProgress() {
 // ---------  Search  ------------
 
 let timeoutId = 0;
-let lastSearch = [];
+let lastSearchArr = [];
+let lastSearch = "#search=";
 
 function searchWithDelay(e) {
     if (timeoutId == 0) {
@@ -556,7 +533,7 @@ function searchWithDelay(e) {
     }
 }
 
-function searchFunction(e, inputValue) {
+function searchFunction(e, inputValue, source) {
     if (e) {
         inputValue = e.target.value;
     } else {
@@ -580,13 +557,19 @@ function searchFunction(e, inputValue) {
     } else {
         tagList();
     }
+
+    let url = `#search=${inputArr.join("_")}`;
     
     timeoutId = 0;
-    location.hash = `search=${inputArr.join("_")}`;
-    lastSearch = searchResult;
+    if (source != "url") {
+        history.replaceState(currentBook, currentBook, url);
+    }
+
+    lastSearchArr = searchResult;
+    lastSearch = url;
 }
 
-function authorSearch(inputValue) {
+function authorSearch(inputValue, source) {
     let authorSearchResult = [];
     searchBar.value = "";
     searchBar.placeholder = "Author: " + inputValue;
@@ -597,12 +580,19 @@ function authorSearch(inputValue) {
         } 
     }
     toHtml(authorSearchResult, bookList);
-    tabClick("browse-tab");
-    location.hash = `author=${inputValue.replace(/\s+?/g, "_")}`;
-    lastSearch = authorSearchResult;
+    if (currentTab != "browse-tab") {
+        tabClick("browse-tab", "search");
+    }
+    let url = `#author=${inputValue.replace(/\s+?/g, "_")}`;
+    if (source != "url") {
+        window.history.pushState(currentBook, currentBook, url);
+    }
+
+    lastSearchArr = authorSearchResult;
+    lastSearch = url;
 }
 
-function tagSearch(inputValue) {
+function tagSearch(inputValue, source) {
     let tagSearchResult = [];
     searchBar.value = "";
     searchBar.placeholder = "Tag: " + inputValue;
@@ -614,9 +604,16 @@ function tagSearch(inputValue) {
         } 
     }
     toHtml(tagSearchResult, bookList);
-    tabClick("browse-tab");
-    location.hash = `tag=${inputValue.replace(/\s+?/g, "_")}`;
-    lastSearch = tagSearchResult;
+    if (currentTab != "browse-tab") {
+        tabClick("browse-tab", "search");
+    }
+    let url = `#tag=${inputValue.replace(/\s+?/g, "_")}`;
+    if (source != "url") {
+        window.history.pushState(currentBook, currentBook, url);
+    }
+
+    lastSearchArr = tagSearchResult;
+    lastSearch = url;
 }
 
 // ---------  Display Search Results  ------------
@@ -627,19 +624,20 @@ function toHtml(bookArray, location, chapterArr) {
         let shortTitle = "";
         let subTitle = "";
         if (book.Title) {
-            shortTitle = book.Title.split("\n")[0];
+            shortTitle = book.Title.toString().split("\n")[0];
             subTitle = "";
-            if (book.Title.split("\n").length > 1) {
-                subTitle = book.Title.split("\n")[1];
+            if (book.Title.toString().split("\n").length > 1) {
+                subTitle = book.Title.toString().split("\n")[1];
             }
     
-            if (book.Title.split("\n").length > 1) {
-                book.subTitle = book.Title.split("\n")[1];
+            if (book.Title.toString().split("\n").length > 1) {
+                book.subTitle = book.Title.toString().split("\n")[1];
             }
         }
         let author = "";
         if (book.Authors) {
             author = book.Authors
+                .toString()
                 .split(/;\s*/g).map((item) => item.split(/,s*/g))
                 .filter(item => item)
                 .map((aut) => {
@@ -654,6 +652,7 @@ function toHtml(bookArray, location, chapterArr) {
         let tags = "";
         if (book.Subjects) {
             tags = [...new Set(book.Subjects                         //only keep unique tabs
+                .toString()
                 .concat(';', book.Bookshelves)                       //join subjects and bookshelves to one string
                 .split(/;\s*|\s*--\s*|\,\s+/ig))]              //split into array based on regex
                 .filter(item => item)                                //filter out empty strings
@@ -780,7 +779,6 @@ function clearSearch() {
     searchBar.value = "";
     searchBar.placeholder = "Search";
     searchBar.focus();
-    // toHtml([], bookList);
     tagList();
     location.hash = currentTab;
 }
@@ -793,7 +791,7 @@ function deleteBook(e) {
     let bookTitle = database[bookIndex].Title;
     if (confirm(`Remove "${bookTitle}" from your library?`)) {
         libraryArray.splice(libraryArray.map(obj => obj.number).indexOf(bookNumber), 1);
-        toHtml(lastSearch, bookList);
+        toHtml(lastSearchArr, bookList);
         if (bookNumber = currentBook) {
             getBook(false, currentBook, "stay");
         }
@@ -808,7 +806,7 @@ function deleteBook(e) {
 function addBook(e) {
     let bookNumber = parseInt(e.target.parentElement.parentElement.id.slice(7), 10);
     libraryArray.unshift({number: bookNumber, bookMark: 0});
-    toHtml(lastSearch, bookList);
+    toHtml(lastSearchArr, bookList);
     if (bookNumber = currentBook) {
         getBook(false, currentBook, "stay");
     }
@@ -819,22 +817,20 @@ function addBook(e) {
 
 // ---------  Panel Navigation  ------------
 
-function tabClick(id) {
+function tabClick(id, source) {
     Array.from(tab).forEach((item) => {item.classList.remove("active")});
     Array.from(panel).forEach((item) => {item.classList.remove("active")});
     document.getElementById(id).classList.add("active");
     document.getElementById(id.replace("tab", "panel")).classList.add("active");
 
-    currentTab = id;
-    localStorage.setItem("tab", currentTab);
 
-    if (currentTab == "browse-tab") {
-        window.history.pushState(currentTab, currentTab, `#${currentTab}`);        // insert tab into url and history
-    } else if (currentTab == "library-tab") {
-        window.history.pushState(currentTab, currentTab, `#${currentTab}`);        // insert tab into url and history
+    if (id == "browse-tab" && currentTab != "browse-tab" && source != "search") {
+        window.history.pushState(id, id, lastSearch);        // insert tab into url and history
+    } else if (id == "library-tab") {
+        window.history.pushState(id, id, `#${id}`);        // insert tab into url and history
     } else if (currentBook < 0) {
-        window.history.pushState(currentTab, currentTab, `#${currentTab}`);        // insert tab into url and history
-    } else if (currentTab == "book-tab") {
+        window.history.pushState(id, id, `#${id}`);        // insert tab into url and history
+    } else if (id == "book-tab") {
         window.history.pushState(currentBook, currentBook, `#${currentBook}`);        // insert book number into url and history
     } else {
         window.history.pushState(currentBook, currentBook, `#${currentBook}/${bookMark}`);        // insert book number and page into url and history
@@ -843,25 +839,11 @@ function tabClick(id) {
 
     if (id == "page-tab" && currentBook >= 0) {
         loadPage(false, currentBook, "stay");
-        // paginate();
     }
+
+    currentTab = id;
+    localStorage.setItem("tab", currentTab);
 }
-
-// ---------  Book Navigation  ------------
-
-// function previousBook() {
-//     if (currentBook == 0) {
-//         currentBook = libraryArray.length;
-//     }
-//     getBook(false, currentBook -1);
-// }
-
-// function nextBook() {
-//     if (currentBook == libraryArray.length - 1) {
-//         currentBook = -1;
-//     }
-//     getBook(false, currentBook + 1);
-// }
 
 // ---------  Settings Panel  ------------
 
@@ -1004,36 +986,38 @@ function loadTab() {
 
 // ---------  Back / Forwards  ------------
 
-function stateRefresh() {
-    onLoad();
+function stateRefresh(e) {
+    if (e.state != null) {
+        onLoad();
+        console.log(e.state)
+    }
+    
+    
 }
 
 
 // ---------  User Inputs  ------------
 
 const eventMap = {
-    tag: { click: tagSearch },
-    author: { click: authorSearch },
-    clear: { click: clearSearch },
-    card: { click: focusCard },
+    "tag": { click: tagSearch },
+    "author": { click: authorSearch },
+    "clear": { click: clearSearch },
+    "card": { click: focusCard },
     "card active": { click: focusCard },
     "read-button": { click: getBook },
     "delete-button": { click: deleteBook },
     "add-button": { click: addBook },
-    // "restart-button": { click: restartBook },
     "chapter-button": { click: goToChapter },
     "start-button": { click: loadPage },
     "full-screen-button": { click: enterFullScreen },
-    // "previous-book-button": { click: previousBook },
-    // "next-book-button": { click: nextBook },
     "next-page-button": { click: nextPage },
     "previous-page-button": { click: previousPage },
     "settings-button": { click: toggleSettings },
-    tab: { click: tabClick },
-    ArrowLeft: { keydown: previousPage },
-    ArrowRight: { keydown: nextPage },
-    ArrowUp: { keydown: toggleSettings },
-    ArrowDown: { keydown: toggleSettings }
+    "tab": { click: tabClick },
+    "ArrowLeft": { keydown: previousPage },
+    "ArrowRight": { keydown: nextPage },
+    "ArrowUp": { keydown: toggleSettings },
+    "ArrowDown": { keydown: toggleSettings }
 }
 
 function eventHandler(ev) {
@@ -1060,11 +1044,6 @@ searchBar.addEventListener('input', searchWithDelay);
 fontSlider.addEventListener('input', fontSize);
 colorSlider.addEventListener('input', color);
 brightnessSlider.addEventListener('input', brightness);
-// document.getElementById('fileInput').addEventListener('change', handleFileSelect, false);
-// window.addEventListener('load', getLocalLibrary);
-// window.addEventListener("load", () => setTimeout(function(){
-//     onLoad();
-// },50));
 window.addEventListener('resize', resizeHeight);
 window.addEventListener('popstate', stateRefresh)
 
