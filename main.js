@@ -264,7 +264,6 @@ function loadBook(bookIndex, goToPanel) {
     loadPage(false, currentBook, "stay")
     if (goToPanel !== "stay") {
         tabClick("book-tab");
-        window.history.pushState(currentBook, currentBook, `#${currentBook}`);        // insert book number into url and history
     }
     chapterList.scrollTo(0, 0);
 }
@@ -375,7 +374,7 @@ function loadPage(e, bookNumber, gotoPanel) {
 
     if (gotoPanel !== "stay") {
         tabClick("page-tab");
-        window.history.pushState(currentBook, currentBook, `#${currentBook}/${bookMark}`);        // insert book number and page into url and history
+
         firstWord = -1;
     }
     paginate();
@@ -438,7 +437,7 @@ function nextPage() {
                 libraryArray[libraryIndex].bookMark = bookMark;
                 localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
             }
-            location.hash = `#${currentBook}/${bookMark}`;
+            history.replaceState(currentBook, currentBook, `#${currentBook}/${bookMark}`);
             getProgress();
         }
     }
@@ -524,7 +523,7 @@ function previousPage() {
                 libraryArray[libraryIndex].bookMark = bookMark;
                 localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
             }
-            location.hash = `#${currentBook}/${bookMark}`;
+            history.replaceState(currentBook, currentBook, `#${currentBook}/${bookMark}`);
             getProgress();
         }
     }
@@ -560,6 +559,8 @@ function searchWithDelay(e) {
 function searchFunction(e, inputValue) {
     if (e) {
         inputValue = e.target.value;
+    } else {
+        searchBar.value = inputValue;
     }
     inputArr = inputValue
         .toLowerCase().split(" ")
@@ -1001,6 +1002,11 @@ function loadTab() {
     document.getElementById(currentTab.replace("tab", "panel")).classList.add("active");
 }
 
+// ---------  Back / Forwards  ------------
+
+function stateRefresh() {
+    onLoad();
+}
 
 
 // ---------  User Inputs  ------------
@@ -1060,6 +1066,7 @@ brightnessSlider.addEventListener('input', brightness);
 //     onLoad();
 // },50));
 window.addEventListener('resize', resizeHeight);
+window.addEventListener('popstate', stateRefresh)
 
 
 // ---------  Swipe  ------------

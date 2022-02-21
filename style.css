@@ -409,10 +409,10 @@ a {
 #page img {
     object-fit: contain;
     width: calc(100% + 2rem);
-    height: calc(100% - 2.6rem);
+    height: calc(100% - 1rem);
     /* border-radius: var(--element-border-radius); */
-    margin: 1rem -1rem;
-    filter: brightness(var(--pic, 0%)) saturate(var(--saturation2, 100%))
+    margin: 0rem -1rem;
+    filter: brightness(var(--pic, 81.37%)) saturate(var(--saturation2, 100%))
 }
 
 #page hr {
