@@ -64,7 +64,6 @@ function tagList() {
 }
 
 
-
 // ---------  Get Index from Number  ------------
 
 function getIndexFromNumber(number) {
@@ -97,19 +96,65 @@ function showLibrary() {
     toHtml(libraryObjectArray, libraryList);
 }
 
-
-// ---------  Get Book  ------------
-
 let currentBook = -1;
+let bookMark = -1;
 let libraryIndex;
 let bookData = "<h2>Loading...</h2>";
-if (localStorage.getItem("currentBook")) {
-    currentBook = localStorage.getItem("currentBook");
-    libraryIndex = getLibraryIndex(currentBook);
+
+// ---------  Get URL info  ------------
+let urlLocation;
+
+function getUrl() {
+    let hash = location.hash.slice(1);
+    if (/^\d+\/\d+$/.test(hash)) {
+        currentBook = hash.split("/")[0];
+        bookMark = hash.split("/")[1];
+        libraryIndex = getLibraryIndex(currentBook);
+        if (libraryIndex >= 0 && libraryArray[libraryIndex].bookMark != bookMark) {
+            if (confirm("This book is in your library. Do you want to overwrite your bookmark?")) {
+                libraryArray[libraryIndex].bookMark = bookMark;
+                localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
+            }
+        }
+        urlLocation = "page-tab"
+    } else if (/^\d+$/.test(hash)) {
+        currentBook = hash;
+        bookMark = -1;
+        urlLocation = "book-tab"
+    } else if (/^(browse|library|book|page)-tab$/i.test(hash)) {
+        urlLocation = hash;
+    } else if (/^search=/i.test(hash)) {
+        let searchValue = hash.replace(/^.+?=/, "").replace("_", " ");
+        searchFunction(false, searchValue);
+        urlLocation = "browse-tab"
+    } else if (/^author=/i.test(hash)) {
+        let searchValue = hash.replace(/^.+?=/, "").replace("_", " ");
+        authorSearch(searchValue);
+        urlLocation = "browse-tab"
+    } else if (/^tag=/i.test(hash)) {
+        let searchValue = hash.replace(/^.+?=/, "").replace("_", " ");
+        tagSearch(searchValue);
+        urlLocation = "browse-tab"
+    } else {
+        urlLocation = false;
+    }
 }
 
 
 
+// ---------  Get Current Book From Local Storage ------------
+
+if (currentBook < 0 && localStorage.getItem("currentBook")) {
+    currentBook = localStorage.getItem("currentBook");
+    libraryIndex = getLibraryIndex(currentBook);
+    if (libraryIndex >= 0) {
+        bookMark = libraryArray[libraryIndex].bookMark;
+    }
+}
+
+
+
+// ---------  Get Book Data  ------------
 
 function getBook(e, bookNumber, goToPanel) {
     if (e) {
@@ -175,6 +220,9 @@ function getBook(e, bookNumber, goToPanel) {
 // ---------  Load Book  ------------
 
 function loadBook(bookIndex, goToPanel) {
+
+    
+
     let chapters;
     if (/href="#/.test(bookData)) {
         chapters = bookData
@@ -216,6 +264,7 @@ function loadBook(bookIndex, goToPanel) {
     loadPage(false, currentBook, "stay")
     if (goToPanel !== "stay") {
         tabClick("book-tab");
+        window.history.pushState(currentBook, currentBook, `#${currentBook}`);        // insert book number into url and history
     }
     chapterList.scrollTo(0, 0);
 }
@@ -269,6 +318,7 @@ function loadPage(e, bookNumber, gotoPanel) {
     if (e) {
         bookNumber = parseInt(e.target.parentElement.parentElement.id.slice(7), 10);
     }
+    
     bookArray = [];
     
     if (/<!DOCTYPE\s+?html/i.test(bookData)) {
@@ -325,6 +375,7 @@ function loadPage(e, bookNumber, gotoPanel) {
 
     if (gotoPanel !== "stay") {
         tabClick("page-tab");
+        window.history.pushState(currentBook, currentBook, `#${currentBook}/${bookMark}`);        // insert book number and page into url and history
         firstWord = -1;
     }
     paginate();
@@ -338,11 +389,7 @@ function loadPage(e, bookNumber, gotoPanel) {
 
 // ---------  Paginate  ------------
 
-let bookMark = 0;
 
-if (libraryIndex >= 0) {
-    bookMark = libraryArray[libraryIndex].bookMark;
-}
 function getLibraryIndex(number) {
     return libraryArray.map((obj) => parseInt(obj.number, 10)).indexOf(parseInt(number, 10));
 }
@@ -391,7 +438,7 @@ function nextPage() {
                 libraryArray[libraryIndex].bookMark = bookMark;
                 localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
             }
-
+            location.hash = `#${currentBook}/${bookMark}`;
             getProgress();
         }
     }
@@ -434,7 +481,7 @@ function paginate() {
                 libraryArray[libraryIndex].bookMark = bookMark;
                 localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
             }
-
+            
             getProgress();
         }
     }
@@ -477,7 +524,7 @@ function previousPage() {
                 libraryArray[libraryIndex].bookMark = bookMark;
                 localStorage.setItem("libraryArray", JSON.stringify(libraryArray));
             }
-
+            location.hash = `#${currentBook}/${bookMark}`;
             getProgress();
         }
     }
@@ -510,17 +557,20 @@ function searchWithDelay(e) {
     }
 }
 
-function searchFunction(e) {
-    const inputValue = e.target.value
+function searchFunction(e, inputValue) {
+    if (e) {
+        inputValue = e.target.value;
+    }
+    inputArr = inputValue
         .toLowerCase().split(" ")
         .filter(item => item);
-
+    
     let searchResult = [];
 
-    if (inputValue.length > 0) {
+    if (inputArr.length > 0) {
         for (let i = 0; i < database.length && searchResult.length < 100; i++) {
             const bookData = Object.values(database[i]).join(" ").toLowerCase();
-            if (inputValue.every(el => bookData.includes(el))) {
+            if (inputArr.every(el => bookData.includes(el))) {
                 searchResult.push({...database[i]});
                 
             } 
@@ -531,6 +581,7 @@ function searchFunction(e) {
     }
     
     timeoutId = 0;
+    location.hash = `search=${inputArr.join("_")}`;
     lastSearch = searchResult;
 }
 
@@ -546,6 +597,7 @@ function authorSearch(inputValue) {
     }
     toHtml(authorSearchResult, bookList);
     tabClick("browse-tab");
+    location.hash = `author=${inputValue.replace(/\s+?/g, "_")}`;
     lastSearch = authorSearchResult;
 }
 
@@ -562,6 +614,7 @@ function tagSearch(inputValue) {
     }
     toHtml(tagSearchResult, bookList);
     tabClick("browse-tab");
+    location.hash = `tag=${inputValue.replace(/\s+?/g, "_")}`;
     lastSearch = tagSearchResult;
 }
 
@@ -728,6 +781,7 @@ function clearSearch() {
     searchBar.focus();
     // toHtml([], bookList);
     tagList();
+    location.hash = currentTab;
 }
 
 // ---------  Delete Book  ------------
@@ -773,6 +827,19 @@ function tabClick(id) {
     currentTab = id;
     localStorage.setItem("tab", currentTab);
 
+    if (currentTab == "browse-tab") {
+        window.history.pushState(currentTab, currentTab, `#${currentTab}`);        // insert tab into url and history
+    } else if (currentTab == "library-tab") {
+        window.history.pushState(currentTab, currentTab, `#${currentTab}`);        // insert tab into url and history
+    } else if (currentBook < 0) {
+        window.history.pushState(currentTab, currentTab, `#${currentTab}`);        // insert tab into url and history
+    } else if (currentTab == "book-tab") {
+        window.history.pushState(currentBook, currentBook, `#${currentBook}`);        // insert book number into url and history
+    } else {
+        window.history.pushState(currentBook, currentBook, `#${currentBook}/${bookMark}`);        // insert book number and page into url and history
+    }
+    
+
     if (id == "page-tab" && currentBook >= 0) {
         loadPage(false, currentBook, "stay");
         // paginate();
@@ -815,7 +882,7 @@ function toggleSettings() {
 let timeout;
 
 let settings = {
-    "fontSlider": 16,
+    "fontSlider": 160,
     "colorSlider": 200,
     "brightnessSlider": 160
 }
@@ -900,6 +967,8 @@ function brightness(e) {
 function onLoad() {
     tagList();
     showLibrary();
+    getUrl();
+    loadTab();
     if (currentBook >= 0) {
         getBook(false, currentBook, "stay");
     }
@@ -920,11 +989,18 @@ if (localStorage.getItem("settings")) {
 // ---------  Open Last Tab  ------------
 
 let currentTab;
-
-if (localStorage.getItem("tab")) {
-    currentTab = localStorage.getItem("tab");
-    tabClick(currentTab);
+function loadTab() {
+    if (urlLocation) {
+        currentTab = urlLocation;
+    } else if (localStorage.getItem("tab")) {
+        currentTab = localStorage.getItem("tab");
+    }
+    Array.from(tab).forEach((item) => {item.classList.remove("active")});
+    Array.from(panel).forEach((item) => {item.classList.remove("active")});
+    document.getElementById(currentTab).classList.add("active");
+    document.getElementById(currentTab.replace("tab", "panel")).classList.add("active");
 }
+
 
 
 // ---------  User Inputs  ------------

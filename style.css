@@ -265,13 +265,13 @@ a {
     border-radius: var(--element-border-radius);
     background: var(--element-background);
     padding: 0.5rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: .5rem;
 }
 
 #book-panel .card {
     /* text-align: center; */
-    min-height: 100%;
-    margin-bottom: 0;
+    min-height: calc(100% - 8px);
+    margin-bottom: 8px;
     padding-bottom: 0;
 }
 
