@@ -73,12 +73,28 @@ function getNumberFromIndex(index) {
 // ---------  Get Library  ------------
 
 let libraryArray = [
-    {number: 11, bookMark: 0}, 
-    {number: 2600, bookMark: 0}, 
+    {number: 205, bookMark: 0},
+    {number: 84, bookMark: 0},
+    {number: 64317, bookMark: 0},
+    {number: 2638, bookMark: 0},
+    {number: 1661, bookMark: 0},
+    {number: 98, bookMark: 0},
+    {number: 11, bookMark: 0},
+    {number: 12, bookMark: 0},
     {number: 1399, bookMark: 0},
-    {number: 15, bookMark: 0},
-    {number: 76, bookMark: 0},
-    {number: 24, bookMark: 0}
+    {number: 2600, bookMark: 0},
+    {number: 1524, bookMark: 0},
+    {number: 32325, bookMark: 0},
+    {number: 1342, bookMark: 0},
+    {number: 2554, bookMark: 0},
+    {number: 28054, bookMark: 0},
+    {number: 1004, bookMark: 0},
+    {number: 20, bookMark: 0},
+    {number: 2701, bookMark: 0},
+    {number: 996, bookMark: 0},
+    {number: 4300, bookMark: 0},
+    {number: 103, bookMark: 0},
+    {number: 215, bookMark: 0}
 ];
 
 if (localStorage.getItem("libraryArray")) {
@@ -131,6 +147,14 @@ function getUrl() {
         let searchValue = hash.replace(/^tag=/i, "").replace(/_/g, " ");
         tagSearch(searchValue, "url");
         urlLocation = "browse-tab"
+    } else if (/^reset$/i.test(hash)) {
+        if (confirm("Press OK to reset your Library, Bookmarks, and Settings \nYour Library and Bookmarks will be deleted.")) {
+            localStorage.clear();
+            currentBook = -1;
+            bookMark = -1;
+        }
+        window.location.hash = ""
+        window.location.reload();
     } else {
         urlLocation = false;
     }
@@ -877,6 +901,9 @@ function fontSize(e) {
     } else {
         sliderValue = settings.fontSlider;
     }
+    if (sliderValue < 120 || sliderValue > 160) {
+        sliderValue = 160;
+    }
     let fontSize = sliderValue / 10;
     let controlSize = 12 + fontSize / 4;
     document.documentElement.style.setProperty('--font-size', `${fontSize}px`);
@@ -894,6 +921,9 @@ function color(e) {
         sliderValue = e.target.value;
     } else {
         sliderValue = settings.colorSlider;
+    }
+    if (sliderValue < 0 || sliderValue > 400) {
+        sliderValue = 200;
     }
     let hue = sliderValue;
     let saturation1 = 50;
@@ -915,6 +945,9 @@ function brightness(e) {
         sliderValue = e.target.value;
     } else {
         sliderValue = settings.brightnessSlider;
+    }
+    if (sliderValue < 0 || sliderValue > 255) {
+        sliderValue = 160;
     }
     let bw;
     let opA;
