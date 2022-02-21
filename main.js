@@ -998,7 +998,6 @@ function loadTab() {
     Array.from(tab).forEach((item) => {item.classList.remove("active")});
     Array.from(panel).forEach((item) => {item.classList.remove("active")});
     document.getElementById(currentTab).classList.add("active");
-    console.log(currentTab)
     document.getElementById(currentTab.replace("tab", "panel")).classList.add("active");
 }
 
