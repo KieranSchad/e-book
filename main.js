@@ -901,7 +901,7 @@ function fontSize(e) {
     } else {
         sliderValue = settings.fontSlider;
     }
-    if (sliderValue < 120 || sliderValue > 160) {
+    if (sliderValue < 120 || sliderValue > 200) {
         sliderValue = 160;
     }
     let fontSize = sliderValue / 10;
