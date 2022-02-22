@@ -22,7 +22,7 @@ const brightnessSlider = document.getElementById("brightness-slider");
 // ---------  Get Gutenberg Project catalog  ------------
 
 
-fetch("https://kieranschad.github.io/e-book/library/pg_caralog_2022_01_28.json")
+fetch("/library/pg_caralog_2022_01_28.json")
     .then(res => (res.json())
     .then(data => {
         database = data
